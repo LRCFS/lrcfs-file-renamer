@@ -1,3 +1,37 @@
+
+# Development
+
+Install node.js
+goto root dir and run:
+npm install (installs all required libraries)
+npm start (starts application)
+
+
+#Deployment
+
+Install node.js
+Go to root dir and run:
+npm run distwin
+or
+npm run distmac
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # electron-boilerplate
 
 > Boilerplate to kickstart creating an app with [Electron](https://github.com/electron/electron)
