@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>LRCFS File Renamer</title>
+
+	<link rel="stylesheet" href="../css/index.css">
+	<link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../node_modules/jquery-nice-select/css/nice-select.css">
+	<link rel="stylesheet" href="../../node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css">
+
+	<script>window.$ = window.jQuery = require('jquery');</script>
+	<script src="../../node_modules/jquery-nice-select/js/jquery.nice-select.min.js" "></script>
+
+	<script src="../../node_modules/popper.js/dist/umd/popper.js"></script>
+	<script src="../../node_modules/popper.js/dist/umd/popper.js"></script>
+
+	<script src="../../node_modules/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="../../node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"></script>
+
+	<script>require("./index")</script>
+</head>
+<body>
+	<div class="container">
+		<header class="row">
+			<div class="col">
+				<h1>LRCFS File Renamer</h1>
+				<p></p>
+				<p>
+					Use the LRCFS File Renamer to quickly rename your files based on your metadata for your project.
+				</p>
+			</div>
+		</header>
+		<section class="row">
+			<div class="col">
+				<select id="selectRenamer" name="selectRenamer" class="mdb-select md-form"></select>
+				<button id="btnFileSelect" class="btn btn-primary">Select Metadata File</button>
+			</div>
+			<div class="col right-align">
+				<input id="chkCreateCopies" type="checkbox" checked data-toggle="toggle" data-on="Create Copies" data-off="Rename Originals" data-onstyle="success" data-offstyle="danger" data-width="180" data-height="39">
+				<button id="btnRename" class="btn btn-primary">Start Processing</button>
+			</div>
+		</section>
+		<div class="row">
+			&nbsp;
+		</div>
+		<div class="row">
+			<div class="col">
+				<h2>Selected Project</h2>
+				<p><strong>Title:</strong> <span id="renamerName"></span></p>
+				<p><strong>Description:</strong> <span id="renamerDesc"></span></p>
+				<p><strong>Website:</strong> <a id="renamerUrl" target="_blank">Visit website</a></p>
+			</div>
+			<div class="col">
+				<h2>Project Properties</h2>
+				<p><strong>Original Filename Column:</strong> <span id="renamerOriginalFilenameColumn"></span></p>
+				<p><strong>Filename Old Column:</strong> <span id="renamerFilenameOldColumn"></span></p>
+				<p><strong>Filename New Column:</strong> <span id="renamerFilenameNewColumn"></span></p>
+				<p><strong>Value Seperator:</strong> <span id="renamerValueSeperator"></span></p>
+				<p><strong>Property Seperator:</strong> <span id="renamerPropertySeperator"></span></p>
+			</div>
+			<div class="col">
+				<h2>Filename Metadata</h2>
+				<span id="renamerColumns"></span>
+			</div>
+		</div>
+		<div class="row">
+			&nbsp;
+		</div>
+		<section class="row">
+			<div class="col" id="htmlout"></div>
+		</section>
+	</div>
+</body>
+</html>

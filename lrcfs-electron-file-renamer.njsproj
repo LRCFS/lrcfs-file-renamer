@@ -1,0 +1,65 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>lrcfs-electron-file-renamer</Name>
+    <RootNamespace>lrcfs-electron-file-renamer</RootNamespace>
+    <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
+    <NodeExePath>"D:\nodejs\npm.cmd"</NodeExePath>
+    <NodeExeArguments> start</NodeExeArguments>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>f9bb2bfa-ebac-49a5-9fb6-ac755b4ffc02</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>main.js</StartupFile>
+    <StartWebBrowser>False</StartWebBrowser>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <StartWebBrowser>False</StartWebBrowser>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="app\config.js" />
+    <Content Include="app\controllers\menu.js" />
+    <Content Include="app\controllers\renamers.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="app\css\index.css" />
+    <Content Include="app\pages\index.html" />
+    <Content Include="app\pages\index.js" />
+    <Content Include="app\renamers\solesearching.json" />
+    <Content Include="app\renamers\tandp.json" />
+    <Content Include="build\background%402x.png" />
+    <Content Include="build\background.png" />
+    <Content Include="build\icon.png" />
+    <Content Include="license" />
+    <Content Include="main.js" />
+    <Content Include="package.json" />
+    <Content Include="preload.js" />
+    <Content Include="README.md" />
+    <Content Include="static\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="app\" />
+    <Folder Include="app\controllers\" />
+    <Folder Include="app\css\" />
+    <Folder Include="app\pages\" />
+    <Folder Include="app\renamers\" />
+    <Folder Include="build\" />
+    <Folder Include="static\" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
+</Project>

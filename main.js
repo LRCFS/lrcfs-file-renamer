@@ -1,55 +1,95 @@
-const { app, BrowserWindow } = require('electron')
+console.log("main.js")
+'use strict';
+const path = require('path');
+const {app, BrowserWindow, Menu} = require('electron');
+/// const {autoUpdater} = require('electron-updater');
+const {is} = require('electron-util');
+const unhandled = require('electron-unhandled');
+const debug = require('electron-debug');
+const contextMenu = require('electron-context-menu');
+const config = require('./app/config');
+const menu = require('./app/controllers/menu');
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win
+unhandled();
+debug();
+contextMenu();
 
-function createWindow () {
-  // Create the browser window.
-  win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  })
 
-  // and load the index.html of the app.
-  win.loadFile('index.html')
+// Note: Must match `build.appId` in package.json
+app.setAppUserModelId('com.company.AppName');
 
-  // Open the DevTools.
-  win.webContents.openDevTools()
+// Uncomment this before publishing your first version.
+// It's commented out as it throws an error if there are no published versions.
+// if (!is.development) {
+// 	const FOUR_HOURS = 1000 * 60 * 60 * 4;
+// 	setInterval(() => {
+// 		autoUpdater.checkForUpdates();
+// 	}, FOUR_HOURS);
+//
+// 	autoUpdater.checkForUpdates();
+// }
 
-  // Emitted when the window is closed.
-  win.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    win = null
-  })
+// Prevent window from being garbage collected
+let mainWindow;
+
+const createMainWindow = async () => {
+	const win = new BrowserWindow({
+		title: app.getName(),
+		show: false,
+		width: 1800,
+		height: 1000,
+		webPreferences: {
+			nodeIntegration: true
+		}
+	});
+
+	win.on('ready-to-show', () => {
+		win.show();
+	});
+
+	win.on('closed', () => {
+		// Dereference the window
+		// For multiple windows store them in an array
+		mainWindow = undefined;
+	});
+
+	await win.loadFile(path.join(__dirname, '/app/pages/index.html'));
+
+	return win;
+};
+
+// Prevent multiple instances of the app
+if (!app.requestSingleInstanceLock()) {
+	app.quit();
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('second-instance', () => {
+	if (mainWindow) {
+		if (mainWindow.isMinimized()) {
+			mainWindow.restore();
+		}
 
-// Quit when all windows are closed.
+		mainWindow.show();
+	}
+});
+
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+	if (!is.macos) {
+		app.quit();
+	}
+});
 
-app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (win === null) {
-    createWindow()
-  }
-})
+app.on('activate', async () => {
+	if (!mainWindow) {
+		mainWindow = await createMainWindow();
+	}
+});
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+(async () => {
+	await app.whenReady();
+	Menu.setApplicationMenu(menu);
+	mainWindow = await createMainWindow();
+
+	const favoriteAnimal = config.get('favoriteAnimal');
+	mainWindow.webContents.executeJavaScript(`document.querySelector('header p').textContent = 'Your favorite animal is ${favoriteAnimal}'`);
+})();

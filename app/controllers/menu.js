@@ -1,4 +1,5 @@
 'use strict';
+console.log("menu.js")
 const path = require('path');
 const {app, Menu, shell} = require('electron');
 const {
@@ -9,7 +10,7 @@ const {
 	openNewGitHubIssue,
 	debugInfo
 } = require('electron-util');
-const config = require('./config');
+const config = require('../config');
 
 const showPreferences = () => {
 	// Show the app's preferences here
