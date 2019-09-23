@@ -11,7 +11,7 @@ const config = require('./app/config');
 const menu = require('./app/controllers/menu');
 
 unhandled();
-debug();
+//debug();
 contextMenu();
 
 

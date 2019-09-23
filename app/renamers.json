@@ -25,7 +25,6 @@
 		"propertySeperator": "_",
 		"filenameColumns":
 		{
-			"Counter": "c",
 			"Weight": "w",
 			"Time": "t"
 		}

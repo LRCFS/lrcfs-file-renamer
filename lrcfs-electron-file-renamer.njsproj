@@ -40,8 +40,7 @@
     <Content Include="app\css\index.css" />
     <Content Include="app\pages\index.html" />
     <Content Include="app\pages\index.js" />
-    <Content Include="app\renamers\solesearching.json" />
-    <Content Include="app\renamers\tandp.json" />
+    <Content Include="app\renamers.json" />
     <Content Include="build\background%402x.png" />
     <Content Include="build\background.png" />
     <Content Include="build\icon.png" />
@@ -57,7 +56,6 @@
     <Folder Include="app\controllers\" />
     <Folder Include="app\css\" />
     <Folder Include="app\pages\" />
-    <Folder Include="app\renamers\" />
     <Folder Include="build\" />
     <Folder Include="static\" />
   </ItemGroup>

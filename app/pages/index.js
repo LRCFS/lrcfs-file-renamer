@@ -6,15 +6,20 @@ const XLSX = require('xlsx');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path')
+const _ = require('underscore');
+
 const config = require('../config');
 
 var renamers;
-var selectedRenamer;
+var selectedRenamerConfig;
 var createCopies;
 var metadata;
 var metadataFilePath;
+var metadataDirectory;
+var outputDirectory;
 
 (async () => {
+	debugger
 	await app.whenReady();
 		
 	$("#btnFileSelect").click(function() {
@@ -52,12 +57,9 @@ function SetConfigs() {
 
 function StartProcessing() {
 
-	var metadataDirectory = path.dirname(metadataFilePath);
-
 	$.each(metadata, function (key, metadataItem) {
-		var originalFilename = metadataItem[selectedRenamer.originalFilenameColumn];
-		var originalFilenameExtension = path.extname(originalFilename);
-		var newFilename = GetNewFilename(metadataItem) + originalFilenameExtension;
+		var originalFilename = metadataItem[selectedRenamerConfig.originalFilenameColumn];
+		var newFilename = GetNewFilename(metadataItem);
 
 		if (createCopies) {
 			fs.copyFile(path.join(metadataDirectory, originalFilename), path.join(metadataDirectory, newFilename), (err) => {
@@ -79,13 +81,17 @@ function GetNewFilename(metdataItem){
 	var newFilename = ""
 
 	var i = 0;
-	$.each(selectedRenamer.filenameColumns, function (oldPropertyName, newPropertyName) {
+	$.each(selectedRenamerConfig.filenameColumns, function (oldPropertyName, newPropertyName) {
 		var propertyValue = metdataItem[oldPropertyName];
 		if (i != 0) {
-			newFilename += selectedRenamer.propertySeperator;
+			newFilename += selectedRenamerConfig.propertySeperator;
 		}
-		newFilename += newPropertyName + propertyValue;
+		newFilename += newPropertyName + selectedRenamerConfig.valueSeperator + propertyValue;
+		i++
 	})
+
+	//Get extension from old file name and add it on the end
+	newFilename += path.extname(metdataItem[selectedRenamerConfig.originalFilenameColumn]);
 
 	return (newFilename);
 }
@@ -140,27 +146,26 @@ async function GetRenamers()
 }
 
 function UpdateSelectedRenamer(renamerId) {
-	selectedRenamer = renamers[renamerId];
+	selectedRenamerConfig = renamers[renamerId];
 
-	$("#renamerName").html(selectedRenamer.name);
-	$("#renamerDesc").html(selectedRenamer.description);
-	$("#renamerUrl").attr('href',selectedRenamer.url);
-	$("#renamerOriginalFilenameColumn").html(selectedRenamer.originalFilenameColumn);
-	$("#renamerFilenameOldColumn").html(selectedRenamer.filenameOldColumn);
-	$("#renamerFilenameNewColumn").html(selectedRenamer.filenameNewColumn);
-	$("#renamerValueSeperator").html(selectedRenamer.valueSeperator);
-	$("#renamerPropertySeperator").html(selectedRenamer.propertySeperator);
+	$("#renamerName").html(selectedRenamerConfig.name);
+	$("#renamerDesc").html(selectedRenamerConfig.description);
+	$("#renamerUrl").attr('href',selectedRenamerConfig.url);
+	$("#renamerOriginalFilenameColumn").html(selectedRenamerConfig.originalFilenameColumn);
+	$("#renamerFilenameOldColumn").html(selectedRenamerConfig.filenameOldColumn);
+	$("#renamerFilenameNewColumn").html(selectedRenamerConfig.filenameNewColumn);
+	$("#renamerValueSeperator").html(selectedRenamerConfig.valueSeperator);
+	$("#renamerPropertySeperator").html(selectedRenamerConfig.propertySeperator);
 
 	$("#renamerColumns").html("");
-	$.each(selectedRenamer.filenameColumns, function (key, filenameColumn) {
+	$.each(selectedRenamerConfig.filenameColumns, function (key, filenameColumn) {
 		var existingText = $("#renamerColumns").html();
 		$("#renamerColumns").html(existingText + key + ": " + filenameColumn + "<br />");
 	})
 
 	console.log("selectedRenamer...");
-	console.log(selectedRenamer);
+	console.log(selectedRenamerConfig);
 }
-
 
 function OpenFileDialog(){
 	dialog.showOpenDialog({
@@ -170,14 +175,22 @@ function OpenFileDialog(){
 			extensions: "xls|xlsx|xlsm|csv".split("|")
 		}],
 		properties: ['openFile']
-	}, function (files) { ReadFiles(files); });
+	}, function (files) {
+			LoadMetadata(files[0]);
+			AddRowNumbers();
+			GenerateNewFilenames();
+			ValidateMetadata();
+			ShowMetadata();
+	});
 }
 
-function ReadFiles(files) {
-	if (files !== undefined && files.length > 0) {
-		var file = files[0];
+function LoadMetadata(file) {
+	if (file !== undefined) {
 		metadataFilePath = file;
+		metadataDirectory = path.dirname(metadataFilePath);
+		outputDirectory = path.join(path.dirname(metadataFilePath), $("#txtOutputDir").val());
 		var fileExtension = path.extname(file);
+
 		if (fileExtension == ".csv") {
 			LoadMetadataCsv(file);
 		} else {
@@ -186,19 +199,75 @@ function ReadFiles(files) {
 	}
 }
 
+function AddRowNumbers() {
+	$.each(metadata, function (key, metadataItem) {
+		metadataItem['id'] = key;
+	})
+}
+
+function GenerateNewFilenames() {
+	$.each(metadata, function (key, metadataItem) {
+		metadataItem[selectedRenamerConfig.filenameNewColumn] = GetNewFilename(metadataItem);
+	})
+}
+
+function ValidateMetadata() {
+	ValidateOriginalFilenameExists();
+	ValidateNewFilenameExists();
+	ValidateSameOldFilename();
+	ValidateSameNewFilename();
+}
+
+function ValidateOriginalFilenameExists() {
+	var validationResults_originalFileDoesNotExist = [];
+	$.each(metadata, function (key, metadataItem) {
+		var fileExists = fs.existsSync(path.join(metadataDirectory, metadataItem[selectedRenamerConfig.originalFilenameColumn]));
+		if (!fileExists) {
+			validationResults_originalFileDoesNotExist.push(metadataItem);
+		}
+	})
+	console.log("validationResults_originalFileDoesNotExist...");
+	console.log(validationResults_originalFileDoesNotExist);
+}
+
+function ValidateNewFilenameExists() {
+	var validationResults_newFilenameExists = [];
+	$.each(metadata, function (key, metadataItem) {
+		var fileExists = fs.existsSync(path.join(outputDirectory, metadataItem[selectedRenamerConfig.filenameNewColumn]));
+		if (fileExists) {
+			validationResults_newFilenameExists.push(metadataItem);
+		}
+	})
+	console.log("validationResults_newFilenameExists...");
+	console.log(validationResults_newFilenameExists);
+}
+
+function ValidateSameOldFilename() {
+	var validationResults_sameOldFilename = _.groupBy(metadata, selectedRenamerConfig.originalFilenameColumn);
+
+	//Because we're only interested in old filenames that occur more than once, filter to only include those with more than one result
+	validationResults_sameOldFilename = _.filter(validationResults_sameOldFilename, function (item) { return item.length > 1; });
+
+	console.log("validationResults_sameOldFilename...");
+	console.log(validationResults_sameOldFilename);
+}
+
+function ValidateSameNewFilename() {
+	var validationResults_sameNewFilename = _.groupBy(metadata, selectedRenamerConfig.filenameNewColumn);
+
+	//Because we're only interested in new filenames that occur more than once, filter to only include those with more than one result
+	validationResults_sameNewFilename = _.filter(validationResults_sameNewFilename, function (item) { return item.length > 1; });
+
+	console.log("validationResults_sameNewFilename...");
+	console.log(validationResults_sameNewFilename);
+}
+
+
+
 function LoadMetadataExcel(file) {
 	var workbook = XLSX.readFile(file);
 	console.log("Loaded EXCEL file...");
 	console.log(workbook);
-
-	var HTMLOUT = document.getElementById('htmlout');
-	
-	HTMLOUT.innerHTML = "";
-	workbook.SheetNames.forEach(function (sheetName) {
-		var htmlstr = XLSX.write(workbook, { sheet: sheetName, type: 'string', bookType: 'html' });
-		HTMLOUT.innerHTML += htmlstr;
-	});
-
 
 	var results = {};
 	results = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
@@ -207,6 +276,52 @@ function LoadMetadataExcel(file) {
 	metadata = results;
 	console.log("EXCEL as new metadata...");
 	console.log(metadata);
+}
+
+function ShowMetadata() {
+	CreateTableFromJSON("htmlout", metadata);
+}
+
+function CreateTableFromJSON(elementId, data) {
+
+	// EXTRACT VALUE FOR HTML HEADER. 
+	// ('Book ID', 'Book Name', 'Category' and 'Price')
+	var col = [];
+	for (var i = 0; i < data.length; i++) {
+		for (var key in data[i]) {
+			if (col.indexOf(key) === -1) {
+				col.push(key);
+			}
+		}
+	}
+
+	// CREATE DYNAMIC TABLE.
+	var table = document.createElement("table");
+
+	// CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+	var tr = table.insertRow(-1);                   // TABLE ROW.
+
+	for (var i = 0; i < col.length; i++) {
+		var th = document.createElement("th");      // TABLE HEADER.
+		th.innerHTML = col[i];
+		tr.appendChild(th);
+	}
+
+	// ADD JSON DATA TO THE TABLE AS ROWS.
+	for (var i = 0; i < data.length; i++) {
+
+		tr = table.insertRow(-1);
+
+		for (var j = 0; j < col.length; j++) {
+			var tabCell = tr.insertCell(-1);
+			tabCell.innerHTML = data[i][col[j]];
+		}
+	}
+
+	// FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+	var divContainer = document.getElementById(elementId);
+	divContainer.innerHTML = "";
+	divContainer.appendChild(table);
 }
 
 
