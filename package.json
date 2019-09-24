@@ -1,7 +1,7 @@
 {
 	"name": "lrcfs-file-renamer",
 	"productName": "LRCFS File Renamer",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Rename files based on metadata",
 	"license": "MIT",
 	"repository": "https://github.com/LRCFS/",
@@ -23,6 +23,8 @@
 		"release": "np"
 	},
 	"dependencies": {
+		"bootstrap": "^4.3.1",
+		"popper.js": "^1.15.0",
 		"bootstrap4-toggle": "^3.5.0",
 		"csv-parser": "^2.3.0",
 		"electron-context-menu": "^0.15.0",
@@ -38,11 +40,9 @@
 		"xlsx": "^0.15.1"
 	},
 	"devDependencies": {
-		"bootstrap": "^4.3.1",
 		"electron": "^6.0.7",
 		"electron-builder": "^21.2.0",
 		"np": "^5.0.3",
-		"popper.js": "^1.15.0",
 		"xo": "^0.24.0"
 	},
 	"xo": {
