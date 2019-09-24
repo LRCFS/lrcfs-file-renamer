@@ -10,9 +10,8 @@
 	<link rel="stylesheet" href="../../node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css">
 
 	<script>window.$ = window.jQuery = require('jquery');</script>
-	<script src="../../node_modules/jquery-nice-select/js/jquery.nice-select.min.js" "></script>
+	<script src="../../node_modules/jquery-nice-select/js/jquery.nice-select.min.js"></script>
 
-	<script src="../../node_modules/popper.js/dist/umd/popper.js"></script>
 	<script src="../../node_modules/popper.js/dist/umd/popper.js"></script>
 
 	<script src="../../node_modules/bootstrap/dist/js/bootstrap.js"></script>
@@ -21,14 +20,40 @@
 	<script>require("./index")</script>
 </head>
 <body>
+
+	<!-- Modals -->
+	<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Metadata Errors</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<h6>There are errors with your metadata</h6>
+				<p>Use the information below to update your metadata file and correct the errors.</p>
+				<p>Reselect your metadata once you have fixed all issues to try again.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+
+
 	<div class="container">
 		<header class="row">
 			<div class="col">
 				<h1>LRCFS File Renamer</h1>
-				<p></p>
+				<p>&nbsp;</p>
 				<p>
 					Use the LRCFS File Renamer to quickly rename your files based on your metadata for your project.
 				</p>
+				<p>&nbsp;</p>
 			</div>
 		</header>
 		<section class="row">
@@ -37,9 +62,9 @@
 				<button id="btnFileSelect" class="btn btn-primary">Select Metadata File</button>
 			</div>
 			<div class="col right-align">
-				<input id="txtOutputDir" type="text" class="txt" value="output" />
+				<input id="txtOutputDir" type="text" class="txt" value="output" style="display:none" />
 				<input id="chkCreateCopies" type="checkbox" checked data-toggle="toggle" data-on="Create Copies" data-off="Rename Originals" data-onstyle="success" data-offstyle="danger" data-width="180" data-height="39">
-				<button id="btnRename" class="btn btn-primary">Start Processing</button>
+				<button id="btnRename" class="btn btn-primary" disabled>Start Processing</button>
 			</div>
 		</section>
 		<div class="row">
@@ -68,9 +93,44 @@
 		<div class="row">
 			&nbsp;
 		</div>
+		<section id="errorLists">
+			<div class="row">
+				<div class="col">
+					<h4>Original File Does Not Exist</h4>
+					<p>The following files are missing.</p>
+					<div id="e1"></div>
+				</div>
+				<div class="col">
+					<h4>New Filename Exists</h4>
+					<p>The following metadata rows will generate filenames that already exist.</p>
+					<div id="e2"></div>
+				</div>
+			</div>
+			<div class="row">
+				&nbsp;
+			</div>
+			<div class="row">
+				<div class="col">
+					<h4>Same Original Filename</h4>
+					<p>The following rows contain duplicate filenames.</p>
+					<div id="e3"></div>
+				</div>
+				<div class="col">
+					<h4>Same New Filename</h4>
+					<p>The following rows will generate files of the same name.</p>
+					<div id="e4"></div>
+				</div>
+			</div>
+			<div class="row">
+				&nbsp;
+			</div>
+		</section>
 		<section class="row">
 			<div class="col" id="htmlout"></div>
 		</section>
+		<div class="row">
+			&nbsp;
+		</div>
 	</div>
 </body>
 </html>

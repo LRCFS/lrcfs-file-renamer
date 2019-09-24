@@ -7,6 +7,7 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path')
 const _ = require('underscore');
+const {parse} = require('json2csv');
 
 const config = require('../config');
 
@@ -18,10 +19,18 @@ var metadataFilePath;
 var metadataDirectory;
 var outputDirectory;
 
+var validationResults_originalFileDoesNotExist;
+var validationResults_newFilenameExists;
+var validationResults_sameOldFilename;
+var validationResults_sameNewFilename;
+
+var isValid;
+
 (async () => {
 	debugger
 	await app.whenReady();
 		
+	//Bind events
 	$("#btnFileSelect").click(function() {
 		OpenFileDialog();
 	});
@@ -30,16 +39,28 @@ var outputDirectory;
 		StartProcessing();
 	});
 
+	//Load setup "data"
 	await GetRenamers();
 
+	//Make things look nice
 	$("#selectRenamer").change(function () {
 		SaveSelectedRenamer($("#selectRenamer option:selected").text());
 		UpdateSelectedRenamer($("#selectRenamer").val());
+		GenerateNewFilenames();
+		ValidateMetadata();
+		ShowMetadata();
+		ShowValidation();
+		AllowProcessing();
 	});
 
 	$("#chkCreateCopies").change(function () {
 		SaveCreateCopies($("#chkCreateCopies").is(":checked"));
 		UpdateCreateCopies($("#chkCreateCopies").is(":checked"));
+		GenerateNewFilenames();
+		ValidateMetadata();
+		ShowMetadata();
+		ShowValidation();
+		AllowProcessing();
 	});
 
 	$("#selectRenamer").niceSelect();
@@ -56,25 +77,34 @@ function SetConfigs() {
 }
 
 function StartProcessing() {
+	MakeOutputDir();
+
+	CopyMetadata();
 
 	$.each(metadata, function (key, metadataItem) {
 		var originalFilename = metadataItem[selectedRenamerConfig.originalFilenameColumn];
 		var newFilename = GetNewFilename(metadataItem);
 
 		if (createCopies) {
-			fs.copyFile(path.join(metadataDirectory, originalFilename), path.join(metadataDirectory, newFilename), (err) => {
+			fs.copyFile(path.join(metadataDirectory, originalFilename), path.join(outputDirectory, newFilename), (err) => {
 				if (err) throw err;
 				console.log("Copied file:" + originalFilename + "->" + newFilename);
 			});
 		} else {
-
-			fs.rename(path.join(metadataDirectory, originalFilename), path.join(metadataDirectory, newFilename), (err) => {
+			fs.rename(path.join(metadataDirectory, originalFilename), path.join(outputDirectory, newFilename), (err) => {
 				if (err) throw err;
 				console.log("Renamed file:" + originalFilename + "->" + newFilename);
 			});
 		}
 	})
-	
+
+}
+
+function MakeOutputDir(){
+	if(!fs.existsSync(outputDirectory))
+	{
+		fs.mkdirSync(outputDirectory);
+	}
 }
 
 function GetNewFilename(metdataItem){
@@ -94,6 +124,27 @@ function GetNewFilename(metdataItem){
 	newFilename += path.extname(metdataItem[selectedRenamerConfig.originalFilenameColumn]);
 
 	return (newFilename);
+}
+
+function CopyMetadata(){
+	//Use the json2csv parse method to save to CSV
+	try {
+		//Use underscorejs to "omit" the temporary id column for saving to file
+		var metadataForWriting = new Array();
+		$.each(metadata, function(key,item){
+			metadataForWriting.push(_.omit(item,"id"));
+		});
+		console.log("metadata...");	
+		console.log(metadata);	
+		console.log("metadataForWriting...");	
+		console.log(metadataForWriting);	
+		const csv = parse(metadataForWriting);
+		console.log("CSV Metadata to be written...");
+		console.log(csv);
+		fs.writeFileSync(path.join(outputDirectory,"metadata.csv"),csv);
+	} catch (err) {
+		console.error(err);
+	}
 }
 
 function SaveSelectedRenamer(value)
@@ -181,6 +232,8 @@ function OpenFileDialog(){
 			GenerateNewFilenames();
 			ValidateMetadata();
 			ShowMetadata();
+			ShowValidation();
+			AllowProcessing();
 	});
 }
 
@@ -201,7 +254,8 @@ function LoadMetadata(file) {
 
 function AddRowNumbers() {
 	$.each(metadata, function (key, metadataItem) {
-		metadataItem['id'] = key;
+		//If loading from EXCEL or CSV then the row number will actually start at 2
+		metadataItem['id'] = key + 2;
 	})
 }
 
@@ -216,10 +270,28 @@ function ValidateMetadata() {
 	ValidateNewFilenameExists();
 	ValidateSameOldFilename();
 	ValidateSameNewFilename();
+
+	ShowHideErrors();
+}
+
+function ShowHideErrors(){
+	if(validationResults_originalFileDoesNotExist.length == 0 &&
+		validationResults_newFilenameExists.length == 0 &&
+		validationResults_sameOldFilename.length == 0 &&
+		validationResults_sameNewFilename.length == 0)
+		{
+			isValid = true;
+			$('#errorLists').hide();
+		}
+		else{
+			isValid = false;
+			$('#errorLists').show();
+			$('#errorModal').modal('show');
+		}
 }
 
 function ValidateOriginalFilenameExists() {
-	var validationResults_originalFileDoesNotExist = [];
+	validationResults_originalFileDoesNotExist = [];
 	$.each(metadata, function (key, metadataItem) {
 		var fileExists = fs.existsSync(path.join(metadataDirectory, metadataItem[selectedRenamerConfig.originalFilenameColumn]));
 		if (!fileExists) {
@@ -231,9 +303,11 @@ function ValidateOriginalFilenameExists() {
 }
 
 function ValidateNewFilenameExists() {
-	var validationResults_newFilenameExists = [];
+	validationResults_newFilenameExists = [];
 	$.each(metadata, function (key, metadataItem) {
-		var fileExists = fs.existsSync(path.join(outputDirectory, metadataItem[selectedRenamerConfig.filenameNewColumn]));
+		var newFilePath = path.join(outputDirectory, metadataItem[selectedRenamerConfig.filenameNewColumn])
+		console.log("Path to check..." + newFilePath)
+		var fileExists = fs.existsSync(newFilePath);
 		if (fileExists) {
 			validationResults_newFilenameExists.push(metadataItem);
 		}
@@ -243,7 +317,7 @@ function ValidateNewFilenameExists() {
 }
 
 function ValidateSameOldFilename() {
-	var validationResults_sameOldFilename = _.groupBy(metadata, selectedRenamerConfig.originalFilenameColumn);
+	validationResults_sameOldFilename = _.groupBy(metadata, selectedRenamerConfig.originalFilenameColumn);
 
 	//Because we're only interested in old filenames that occur more than once, filter to only include those with more than one result
 	validationResults_sameOldFilename = _.filter(validationResults_sameOldFilename, function (item) { return item.length > 1; });
@@ -253,7 +327,7 @@ function ValidateSameOldFilename() {
 }
 
 function ValidateSameNewFilename() {
-	var validationResults_sameNewFilename = _.groupBy(metadata, selectedRenamerConfig.filenameNewColumn);
+	validationResults_sameNewFilename = _.groupBy(metadata, selectedRenamerConfig.filenameNewColumn);
 
 	//Because we're only interested in new filenames that occur more than once, filter to only include those with more than one result
 	validationResults_sameNewFilename = _.filter(validationResults_sameNewFilename, function (item) { return item.length > 1; });
@@ -282,10 +356,57 @@ function ShowMetadata() {
 	CreateTableFromJSON("htmlout", metadata);
 }
 
+function ShowValidation(){
+
+	var divContainer = document.getElementById('e1');
+	divContainer.innerHTML = "<ul>";
+	$.each(validationResults_originalFileDoesNotExist, function (key, item) {
+		divContainer.innerHTML += "<li><strong>" + item['id'] + ":</strong> " + item[selectedRenamerConfig.originalFilenameColumn] + "</li>";
+	})
+	divContainer.innerHTML += "</ul>";
+
+	var divContainer = document.getElementById('e2');
+	divContainer.innerHTML = "<ul>";
+	$.each(validationResults_newFilenameExists, function (key, item) {
+		divContainer.innerHTML += "<li><strong>" + item['id'] + ":</strong> " + item[selectedRenamerConfig.filenameNewColumn] + "</li>";
+	})
+	divContainer.innerHTML += "</ul>";
+
+	var divContainer = document.getElementById('e3');
+	divContainer.innerHTML = "<ul>";
+	$.each(validationResults_sameOldFilename, function (key, item) {
+		var string = "";
+		$.each(item, function (key, subitem) {
+			string += "<strong>" + subitem['id'] + ":</strong> " + subitem[selectedRenamerConfig.originalFilenameColumn] + ", ";
+		})
+		divContainer.innerHTML += "<li>" + string + "</li>";
+	})
+	divContainer.innerHTML += "</ul>";
+
+	var divContainer = document.getElementById('e4');
+	divContainer.innerHTML = "<ul>";
+	$.each(validationResults_sameNewFilename, function (key, item) {
+		var string = "";
+		$.each(item, function (key, subitem) {
+			string += "<strong>" + subitem['id'] + ":</strong> " + subitem[selectedRenamerConfig.filenameNewColumn] + ", ";
+		})
+		divContainer.innerHTML += "<li>" + string + "</li>";
+	})
+	divContainer.innerHTML += "</ul>";
+}
+
+function AllowProcessing(){
+	if(isValid){
+		$('#btnRename').removeAttr('disabled');
+	}else{
+		$('#btnRename').attr('disabled','disabled');
+	}
+	
+}
+
 function CreateTableFromJSON(elementId, data) {
 
 	// EXTRACT VALUE FOR HTML HEADER. 
-	// ('Book ID', 'Book Name', 'Category' and 'Price')
 	var col = [];
 	for (var i = 0; i < data.length; i++) {
 		for (var key in data[i]) {

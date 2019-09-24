@@ -82,6 +82,7 @@ header h1 {
 #htmlout table td, #htmlout table th {
   border: 1px solid #ddd;
   padding: 8px;
+  white-space: nowrap;
 }
 
 #htmlout table tr:nth-child(even){background-color: #f2f2f2;}
@@ -94,4 +95,11 @@ header h1 {
   text-align: left;
   background-color: #4CAF50;
   color: white;
+}
+
+#errorLists{
+	display: none;
+    background: rgb(255, 66, 66);
+    color: rgb(255, 255, 255);
+    padding: 5px;
 }
