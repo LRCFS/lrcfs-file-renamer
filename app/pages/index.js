@@ -37,6 +37,7 @@ var isValid;
 
 	$("#btnRename").click(function () {
 		StartProcessing();
+		$('#successModal').modal('show');
 	});
 
 	//Load setup "data"
@@ -97,7 +98,6 @@ function StartProcessing() {
 			});
 		}
 	})
-
 }
 
 function MakeOutputDir(){
