@@ -176,25 +176,50 @@ function LoadRenamersJson(renamersFilePath) {
 
 async function GetRenamers()
 {
-	console.log("process.env.INIT_CWD:"+process.env.INIT_CWD);
-	console.log("process.env.PORTABLE_EXECUTABLE_FILE:" + path.dirname(process.env.PORTABLE_EXECUTABLE_FILE));
-	console.log("app.getPath('exe'):"+app.getPath('exe'));
-	console.log("process.execPath:"+process.execPath);
-
 	/*Check if there's a renamers file next to the executable*/
 	var renamersFilename = "renamers.json";
 	var renamersFilePath = "";
-	var externalRenamersPath = path.join(path.dirname(process.env.PORTABLE_EXECUTABLE_FILE),renamersFilename);
 	var internalRenamersPath = path.join(__dirname, '../', renamersFilename);
-
-	console.log("externalRenamersPath:" + externalRenamersPath);
 	console.log("internalRenamersPath:" + internalRenamersPath);
 
-	if(fs.existsSync(externalRenamersPath)){
-		renamersFilePath = externalRenamersPath;
+	console.log("process.env.INIT_CWD:" + process.env.INIT_CWD);
+	console.log("process.env.PORTABLE_EXECUTABLE_FILE:" + process.env.PORTABLE_EXECUTABLE_FILE);
+	console.log("app.getPath('exe'):" + app.getPath('exe'));
+	console.log("process.execPath:" + process.execPath);
+
+	var externalRenamersPath = ""
+	var isWin = process.platform === "win32";
+	//If it's windows
+	if(isWin)
+	{
+		//If it's a built application then use the process.env.PORTABLE_EXECUTABLE_FILE
+		if(process.env.PORTABLE_EXECUTABLE_FILE != undefined)
+		{
+			externalRenamersPath = path.join(path.dirname(process.env.PORTABLE_EXECUTABLE_FILE), renamersFilename)
+		}
+		//Else, we're still developing/debugging so just ignore and set to null value so we use the internal file
+		else{
+			externalRenamersPath = null;
+		}
 	}
 	else{
+		//If we're not using windows then do app.getPath('exe')
+		if(app.getPath('exe') != undefined)
+		{
+			externalRenamersPath = path.join(path.dirname(app.getPath('exe')), renamersFilename)
+		}
+		else{
+			externalRenamersPath = null
+		}
+		
+	}
+	console.log("externalRenamersPath:" + externalRenamersPath);
+
+	if(externalRenamersPath == null || !fs.existsSync(externalRenamersPath)){
 		renamersFilePath = internalRenamersPath;
+	}
+	else{
+		renamersFilePath = externalRenamersPath;
 	}
 
 	var configRenamer = config.get('renamer');
