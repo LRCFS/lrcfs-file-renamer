@@ -176,8 +176,28 @@ function LoadRenamersJson(renamersFilePath) {
 
 async function GetRenamers()
 {
+	console.log("process.env.INIT_CWD:"+process.env.INIT_CWD);
+	console.log("process.env.PORTABLE_EXECUTABLE_FILE:" + path.dirname(process.env.PORTABLE_EXECUTABLE_FILE));
+	console.log("app.getPath('exe'):"+app.getPath('exe'));
+	console.log("process.execPath:"+process.execPath);
+
+	/*Check if there's a renamers file next to the executable*/
+	var renamersFilename = "renamers.json";
+	var renamersFilePath = "";
+	var externalRenamersPath = path.join(path.dirname(process.env.PORTABLE_EXECUTABLE_FILE),renamersFilename);
+	var internalRenamersPath = path.join(__dirname, '../', renamersFilename);
+
+	console.log("externalRenamersPath:" + externalRenamersPath);
+	console.log("internalRenamersPath:" + internalRenamersPath);
+
+	if(fs.existsSync(externalRenamersPath)){
+		renamersFilePath = externalRenamersPath;
+	}
+	else{
+		renamersFilePath = internalRenamersPath;
+	}
+
 	var configRenamer = config.get('renamer');
-	var renamersFilePath = path.join(__dirname, '../', 'renamers.json')
 	let dropdown = $('#selectRenamer');
 
 	dropdown.empty();
