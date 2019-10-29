@@ -1,0 +1,6 @@
+Filename,colname1,Weight,colname3,Time,ColumnWithNoData,Line
+IMG_001.JPG,data1-1,10g,data1-3,2s,,a
+IMG_002.JPG,data2-1,20g,data2-3,2s,,b
+missing.JPG,data2-1,30g,data2-3,2s,,c
+IMG_004.JPG,data2-1,20g,data2-3,2s,,d
+IMG_001.JPG,data1-1,50g,data1-3,1s,,e

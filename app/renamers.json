@@ -1,26 +1,26 @@
 [
 	{
-		"name": "Sole Searching",
-		"description": "Make your mark",
-		"url": "https://www.dundee.ac.uk/leverhulme/citizenscience/details/sole-searching.php",
-		"originalFilenameColumn": "OriginalFilename",
-		"filenameOldColumn": "OriginalFilename",
-		"filenameNewColumn": "Filename",
+		"name": "Transfer & Persistance - Don't keep og filename",
+		"description": "Transfer and Persistance Project",
+		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
+		"filenameCurrentColumnName": "Filename",
+		"filenameOldColumnName": "",
+		"filenameNewColumnName": "Filename",
 		"valueSeperator": "-",
 		"propertySeperator": "_",
 		"filenameColumns":
 		{
-			"Weight": "w1",
-			"Time": "t1"
+			"Weight": "w",
+			"Time": "t"
 		}
 	},
 	{
 		"name": "Transfer & Persistance",
 		"description": "Transfer and Persistance Project",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
-		"originalFilenameColumn": "OriginalFilename",
-		"filenameOldColumn": "OriginalFilename",
-		"filenameNewColumn": "Filename",
+		"filenameCurrentColumnName": "Filename",
+		"filenameOldColumnName": "OriginalFilename",
+		"filenameNewColumnName": "Filename",
 		"valueSeperator": "-",
 		"propertySeperator": "_",
 		"filenameColumns":

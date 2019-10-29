@@ -22,7 +22,31 @@
 <body>
 
 	<!-- Modals -->
-	<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal fade" id="errorModalPre" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Metadata Errors</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<h6>You are missing the following metadata columns</h6>
+				<ul id="errorsMissingFilenameColumn"></ul>
+				<ul id="errorsMissingColumns"></ul>
+				<p><strong>Please note that columns are case sensative.</strong><p>
+				<p>Reselect your metadata once you have fixed all issues to try again.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="errorModalPost" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 			<div class="modal-header">
@@ -80,10 +104,11 @@
 			<div class="col">
 				<select id="selectRenamer" name="selectRenamer" class="mdb-select md-form"></select>
 				<button id="btnFileSelect" class="btn btn-primary">Select Metadata File</button>
+				<button id="btnRefershMetadata" class="btn btn-primary">Refresh</button>
 			</div>
 			<div class="col right-align">
 				<input id="txtOutputDir" type="text" class="txt" value="output" style="display:none" />
-				<input id="chkCreateCopies" type="checkbox" checked data-toggle="toggle" data-on="Create Copies" data-off="Rename Originals" data-onstyle="success" data-offstyle="danger" data-width="180" data-height="39">
+				<input disabled id="chkCreateCopies" type="checkbox" checked data-toggle="toggle" data-on="Create Copies" data-off="Rename Originals" data-onstyle="success" data-offstyle="danger" data-width="180" data-height="39">
 				<button id="btnRename" class="btn btn-primary" disabled>Start Processing</button>
 			</div>
 		</section>
@@ -99,9 +124,9 @@
 			</div>
 			<div class="col">
 				<h2>Project Properties</h2>
-				<p><strong>Original Filename Column:</strong> <span id="renamerOriginalFilenameColumn"></span></p>
-				<p><strong>Filename Old Column:</strong> <span id="renamerFilenameOldColumn"></span></p>
-				<p><strong>Filename New Column:</strong> <span id="renamerFilenameNewColumn"></span></p>
+				<p><strong>Filename Current Column:</strong> <span id="renamerFilenameCurrentColumnName"></span></p>
+				<p><strong>Filename Old Column:</strong> <span id="renamerFilenameOldColumnName"></span></p>
+				<p><strong>Filename New Column:</strong> <span id="renamerFilenameNewColumnName"></span></p>
 				<p><strong>Value Seperator:</strong> <span id="renamerValueSeperator"></span></p>
 				<p><strong>Property Seperator:</strong> <span id="renamerPropertySeperator"></span></p>
 			</div>
@@ -117,13 +142,13 @@
 			<div class="row">
 				<div class="col">
 					<h4>Original File Does Not Exist</h4>
-					<p>The following files are missing.</p>
-					<div id="e1"></div>
+					<p>The following files can not be found in the same folder as your metadata.</p>
+					<ul id="e1"></ul>
 				</div>
 				<div class="col">
 					<h4>New Filename Exists</h4>
-					<p>The following metadata rows will generate filenames that already exist.</p>
-					<div id="e2"></div>
+					<p>The following rows will generate new filenames that already exist in the output folder.</p>
+					<ul id="e2"></ul>
 				</div>
 			</div>
 			<div class="row">
@@ -131,14 +156,14 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<h4>Same Original Filename</h4>
-					<p>The following rows contain duplicate filenames.</p>
-					<div id="e3"></div>
+					<h4>Same Current Filename</h4>
+					<p>The following rows of your metadata contain duplicate filenames.</p>
+					<ul id="e3"></ul>
 				</div>
 				<div class="col">
 					<h4>Same New Filename</h4>
-					<p>The following rows will generate files of the same name.</p>
-					<div id="e4"></div>
+					<p>The following rows will generate new files that have the same name.</p>
+					<ul id="e4"></ul>
 				</div>
 			</div>
 			<div class="row">
