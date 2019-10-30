@@ -12,21 +12,34 @@
 		{
 			"Weight": "w",
 			"Time": "t"
-		}
+		},
+		"replaceSpacesInFilenameWith": " ",
+		"trimHeadersAndData": true
 	},
 	{
 		"name": "Transfer & Persistance",
 		"description": "Transfer and Persistance Project",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
-		"filenameCurrentColumnName": "Filename",
+		"filenameCurrentColumnName": "OriginalFilename",
 		"filenameOldColumnName": "OriginalFilename",
 		"filenameNewColumnName": "Filename",
-		"valueSeperator": "-",
-		"propertySeperator": "_",
+		"valueSeperator": "",
+		"propertySeperator": "-",
 		"filenameColumns":
 		{
-			"Weight": "w",
-			"Time": "t"
-		}
+			"Date": "",
+			"Substrate": "S",
+			"ActivityID": "A",
+			"ObsType": "O",
+			"Evidence type": "E",
+			"Mass": "M",
+			"Duration": "S",
+			"Time": "T",
+			"Group": "G",
+			"Count": "C",
+			"Repeat": "R"
+		},
+		"replaceSpacesInFilenameWith": " ",
+		"trimHeadersAndData": true
 	}
 ]

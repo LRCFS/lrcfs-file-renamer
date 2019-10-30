@@ -8,6 +8,7 @@ debugLog("'Index.js' - Loaded index.js");
 const { app, dialog } = require('electron').remote;
 const XLSX = require('xlsx');
 const csv = require('csv-parser');
+const stripBomStream = require('strip-bom-stream');
 const fs = require('fs');
 const path = require('path')
 const _ = require('underscore');
@@ -28,10 +29,6 @@ var metadata;
 var newMetadataColumnNames;
 var newMetadata;
 
-var filenameCurrentColumnName;
-var filenameNewColumnName;
-var filenameOldColumnName;
-
 var filenamesOld = [];
 var filenamesNew = [];
 
@@ -44,7 +41,6 @@ var validationResults_currentFileDoesNotExist;
 var validationResults_newFilenameExists;
 var validationResults_sameCurrentFilename;
 var validationResults_sameNewFilename;
-
 var outputPath;
 
 (async () => {
@@ -199,6 +195,7 @@ function UpdateSelectedRenamer(renamerId) {
 	$("#renamerFilenameNewColumnName").html(selectedRenamerConfig.filenameNewColumnName);
 	$("#renamerValueSeperator").html(selectedRenamerConfig.valueSeperator);
 	$("#renamerPropertySeperator").html(selectedRenamerConfig.propertySeperator);
+	$("#renamerTrimHeadersAndData").html(selectedRenamerConfig.trimHeadersAndData);
 
 	$("#renamerColumns").html("");
 	$.each(selectedRenamerConfig.filenameColumns, function (key, filenameColumn) {
@@ -252,21 +249,26 @@ async function LoadMetadata() {
 
 async function LoadMetadataCsv() {
 	var lineNumber = 2;
+	metadataColumnNames = [];
+	metadata = [];
 	return new Promise((loadedData) => {
-		fs.createReadStream(metadataPath)
+		fs.createReadStream(metadataPath, { encoding: 'utf8' })
+		.pipe(stripBomStream())
 		.pipe(csv())
 		.on('headers', (headers) => {
-			metadataColumnNames = [];
 			metadataColumnNames = headers;
-			metadata = [];
 		  })
 		.on('data', (row) => {
-			console.log(row);
 			row[lineNumberColumnName] = lineNumber;
 			metadata.push(row);
 			lineNumber++;
 		})
 		.on('end', () => {
+			if(selectedRenamerConfig.trimHeadersAndData)
+			{
+				metadataColumnNames = metadataColumnNames.map(e => e.trim()); //trim whitespace from header rows
+				metadata = JSON.parse(JSON.stringify(metadata).replace(/"\s+|\s+"/g, '"')); //trim whitespace from data rows
+			}
 			debugLog("'LoadMetadataCsv' - 'metadataColumnNames'...", metadataColumnNames);
 			debugLog("'LoadMetadataCsv' - 'metadata'...", metadata);
 			debugLog("CSV file successfully processed");
@@ -274,6 +276,14 @@ async function LoadMetadataCsv() {
 		});
 	})
 }
+
+function trimStrings(key, value) {
+	if (typeof value === 'string') {
+	  return value.trim();
+	}
+	
+	return value;
+  }
 
 async function ValidateMetadataPre(){
 	//Check for filename column
@@ -288,10 +298,7 @@ async function ValidateMetadataPre(){
 			validationResults_missingColumns.push(key);
 		}
 	})
-
 	debugLog("'ValidateMetadataPre' - 'validationResults_missingColumns'...", validationResults_missingColumns);
-
-
 
 	ShowHideErrorsPre();
 }
@@ -490,6 +497,7 @@ function GetNewFilename(metdataItem){
 			newFilename += selectedRenamerConfig.propertySeperator;
 		}
 		newFilename += newPropertyName + selectedRenamerConfig.valueSeperator + propertyValue;
+		newFilename = newFilename.replace(" ", selectedRenamerConfig.replaceSpacesInFilenameWith)
 		i++
 	})
 
@@ -553,7 +561,7 @@ function ShowValidation(){
 	$.each(validationResults_sameCurrentFilename, function (key, item) {
 		var string = "";
 		$.each(item, function (key, subitem) {
-			string += "<strong>" + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameCurrentColumnName] + ", ";
+			string += "<strong>" + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameCurrentColumnName] + "<br />";
 		})
 		errorList.append("<li>" + string + "</li>");
 	})
@@ -563,7 +571,7 @@ function ShowValidation(){
 	$.each(validationResults_sameNewFilename, function (key, item) {
 		var string = "";
 		$.each(item, function (key, subitem) {
-			string += "<strong>" + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameNewColumnName] + ", ";
+			string += "<strong>" + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameNewColumnName] + "<br />";
 		})
 		errorList.append("<li>" + string + "</li>");
 	})
@@ -629,11 +637,17 @@ function CopyMetadata(){
 	});
 	
 	//Add each metadata row to csv
+	var columnCount = 1;
 	$.each(newMetadata, function(key, newMetadataItem){
+		var columnCount = 1; //Keep track of the column count and have a varialbe for the seperator so we don't add it on the last element
+		var columnSeperator = ",";
+
 		$.each(newMetadataColumnNamesToSave, function(id,columnName){
-			fs.appendFileSync(outputFile,newMetadataItem[columnName] + ",", function (err) {
+			if(columnCount == newMetadataColumnNamesToSave.length) columnSeperator = "";
+			fs.appendFileSync(outputFile,"\"" +newMetadataItem[columnName] + "\"" + columnSeperator, function (err) {
 				if (err) throw err;
 			});
+			columnCount++;
 		});
 		fs.appendFileSync(outputFile,"\n", function (err) {
 			if (err) throw err;

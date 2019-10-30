@@ -32,11 +32,13 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<h6>You are missing the following metadata columns</h6>
+				<h6>There are problems with your metadata headers</h6>
+				<h7>The following headers is missing and is needed for identifiying your files...</h7>
 				<ul id="errorsMissingFilenameColumn"></ul>
+				<h7>The required headers are missing that will be used to rename your files...</h7>
 				<ul id="errorsMissingColumns"></ul>
 				<p><strong>Please note that columns are case sensative.</strong><p>
-				<p>Reselect your metadata once you have fixed all issues to try again.</p>
+				<p>Once corrected in your metadata press the refresh button to try again.</p>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
@@ -123,15 +125,16 @@
 				<p><strong>Website:</strong> <a id="renamerUrl" target="_blank">Visit website</a></p>
 			</div>
 			<div class="col">
-				<h2>Project Properties</h2>
-				<p><strong>Filename Current Column:</strong> <span id="renamerFilenameCurrentColumnName"></span></p>
-				<p><strong>Filename Old Column:</strong> <span id="renamerFilenameOldColumnName"></span></p>
-				<p><strong>Filename New Column:</strong> <span id="renamerFilenameNewColumnName"></span></p>
+				<h2>Renamer Properties</h2>
+				<p><strong>Current Filename Column:</strong> <span id="renamerFilenameCurrentColumnName"></span></p>
+				<p><strong>Old Filename Column:</strong> <span id="renamerFilenameOldColumnName"></span></p>
+				<p><strong>New Filename Column:</strong> <span id="renamerFilenameNewColumnName"></span></p>
 				<p><strong>Value Seperator:</strong> <span id="renamerValueSeperator"></span></p>
 				<p><strong>Property Seperator:</strong> <span id="renamerPropertySeperator"></span></p>
+				<p><strong>Trim Headers &amp; Data:</strong> <span id="renamerTrimHeadersAndData"></span></p>
 			</div>
 			<div class="col">
-				<h2>Filename Metadata</h2>
+				<h2>New Filename Data</h2>
 				<span id="renamerColumns"></span>
 			</div>
 		</div>
