@@ -74,9 +74,7 @@ app.on('second-instance', () => {
 });
 
 app.on('window-all-closed', () => {
-	if (!is.macos) {
-		app.quit();
-	}
+	app.quit();
 });
 
 app.on('activate', async () => {
