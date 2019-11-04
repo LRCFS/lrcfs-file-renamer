@@ -10,8 +10,15 @@
 		"propertySeperator": "_",
 		"filenameColumns":
 		{
-			"Weight": "w",
-			"Time": "t"
+			"Date": "",
+			"Experiment": "EX",
+			"Replicate": "R"
+			"Substrate": "S",
+			"SubstrateType": "T",
+			"ObservationType": "O",
+			"Mass (g)": "M",
+			"TransferTime (s)": "TT",
+			"PersistenceTime (min)": "PT"
 		},
 		"replaceSpacesInFilenameWith": " ",
 		"trimHeadersAndData": true
@@ -28,16 +35,14 @@
 		"filenameColumns":
 		{
 			"Date": "",
+			"Experiment": "E",
+			"Replicate": "R"
 			"Substrate": "S",
-			"ActivityID": "A",
-			"ObsType": "O",
-			"Evidence type": "E",
-			"Mass": "M",
-			"Duration": "S",
-			"Time": "T",
-			"Group": "G",
-			"Count": "C",
-			"Repeat": "R"
+			"SubstrateType": "T",
+			"ObservationType": "O",
+			"Mass (g)": "M",
+			"TransferTime (s)": "TT",
+			"PersistenceTime (min)": "PT"
 		},
 		"replaceSpacesInFilenameWith": " ",
 		"trimHeadersAndData": true
