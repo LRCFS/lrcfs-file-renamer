@@ -1,5 +1,5 @@
 'use strict';
-var debug = true;
+var debug = false;
 
 var lineNumberColumnName = 'Line&nbsp;No.&nbsp;';
 
@@ -639,20 +639,24 @@ function CopyMetadata(){
 	//Add each metadata row to csv
 	var columnCount = 1;
 	$.each(newMetadata, function(key, newMetadataItem){
+		var line = "";
 		var columnCount = 1; //Keep track of the column count and have a varialbe for the seperator so we don't add it on the last element
 		var columnSeperator = ",";
 
 		$.each(newMetadataColumnNamesToSave, function(id,columnName){
 			if(columnCount == newMetadataColumnNamesToSave.length) columnSeperator = "";
-			fs.appendFileSync(outputFile,"\"" +newMetadataItem[columnName] + "\"" + columnSeperator, function (err) {
-				if (err) throw err;
-			});
+			line += "\"" +newMetadataItem[columnName] + "\"" + columnSeperator;
 			columnCount++;
 		});
-		fs.appendFileSync(outputFile,"\n", function (err) {
+		line += "\n";
+
+		//write line to file
+		fs.appendFileSync(outputFile,line, function (err) {
 			if (err) throw err;
 		});
 	});
+
+
 }
 
 function ShowMetadataTable(elementId, columnNames, data) {

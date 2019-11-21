@@ -27,7 +27,7 @@
 		"name": "Transfer & Persistance",
 		"description": "Transfer and Persistance Project",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
-		"filenameCurrentColumnName": "OriginalFilename",
+		"filenameCurrentColumnName": "Filename",
 		"filenameOldColumnName": "OriginalFilename",
 		"filenameNewColumnName": "Filename",
 		"valueSeperator": "",
