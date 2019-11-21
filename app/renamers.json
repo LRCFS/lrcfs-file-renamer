@@ -12,7 +12,7 @@
 		{
 			"Date": "",
 			"Experiment": "EX",
-			"Replicate": "R"
+			"Replicate": "R",
 			"Substrate": "S",
 			"SubstrateType": "T",
 			"ObservationType": "O",
@@ -36,7 +36,7 @@
 		{
 			"Date": "",
 			"Experiment": "E",
-			"Replicate": "R"
+			"Replicate": "R",
 			"Substrate": "S",
 			"SubstrateType": "T",
 			"ObservationType": "O",
