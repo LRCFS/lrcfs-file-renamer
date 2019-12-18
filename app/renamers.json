@@ -48,7 +48,7 @@
 		"trimHeadersAndData": true
 	},
 	{
-		"name": "Sole Searching",
+		"name": "Sole Searching - Website Submission",
 		"description": "Transfer and Persistance Project",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
 		"filenameCurrentColumnName": "Filename",
@@ -67,6 +67,28 @@
 			"ShoeMake": "",
 			"ShoeAge": "",
 			"PhotoType": "",
+			"Replicate": ""
+		},
+		"replaceSpacesInFilenameWith": "",
+		"trimHeadersAndData": true
+	},
+	{
+		"name": "Sole Searching - Print Scan",
+		"description": "Transfer and Persistance Project",
+		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
+		"filenameCurrentColumnName": "Filename",
+		"filenameOldColumnName": "OriginalFilename",
+		"filenameNewColumnName": "Filename",
+		"valueSeperator": "",
+		"propertySeperator": "_",
+		"filenameColumns":
+		{
+			"event": "",
+			"dateCaptured": "",
+			"shoeSize": "",
+			"shoeMake": "",
+			"shoeAge": "",
+			"Activity": "",
 			"Replicate": ""
 		},
 		"replaceSpacesInFilenameWith": "",
