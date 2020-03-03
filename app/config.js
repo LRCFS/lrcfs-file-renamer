@@ -16,8 +16,7 @@ const Store = require('electron-store');
 
 module.exports = new Store({
 	defaults: {
-		favoriteAnimal: '🦄',
 		createCopies: true,
-		renamer: 'Transfer & Persistance'
+		renamer: ''
 	}
 });

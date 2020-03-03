@@ -15,30 +15,23 @@
 	<script>require("../../node_modules/bootstrap")</script>
 	<script>require("../../node_modules/bootstrap4-toggle")</script>
 
-	
-
 	<script>require("./index")</script>
 </head>
 <body>
 
-	<!-- Modals -->
-	<div class="modal fade" id="errorModalPre" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
+	<!-- Modal error box for pre validation problems (i.e. metadata headers) -->
+	<div class="modal fade" id="errorModalPre" tabindex="-1" role="dialog" aria-labelledby="errorModalPre" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Metadata Errors</h5>
+				<h5 class="modal-title" id="errorModalPre">Metadata Errors</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 			<div class="modal-body">
 				<h6>There are problems with your metadata headers</h6>
-				<h7>The following headers is missing and is needed for identifiying your files...</h7>
-				<ul id="errorsMissingFilenameColumn"></ul>
-				<h7>The required headers are missing that will be used to rename your files...</h7>
-				<ul id="errorsMissingColumns"></ul>
-				<p><strong>Please note that columns are case sensative.</strong><p>
-				<p>Once corrected in your metadata press the refresh button to try again.</p>
+				<p>Please correct the errors before trying to refresh your data.</p>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
@@ -47,12 +40,12 @@
 		</div>
 	</div>
 
-
-	<div class="modal fade" id="errorModalPost" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
+	<!-- Modal error box for post error checking - like files named incorrectly -->
+	<div class="modal fade" id="errorModalPost" tabindex="-1" role="dialog" aria-labelledby="errorModalPost" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Metadata Errors</h5>
+				<h5 class="modal-title" id="errorModalPost">Metadata Errors</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 				</button>
@@ -69,116 +62,284 @@
 		</div>
 	</div>
 
-	<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel">Processing Complete</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<h6>Your files have been renamed</h6>
-					<p>Please check your metadata directory for your renamed files.</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
-				</div>
-				</div>
+	<!-- modal success box for renaming all the files -->
+	<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModal" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="successModal">Processing Complete</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<h6>Your files have been renamed</h6>
+				<p>Please check your metadata directory for your renamed files.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+			</div>
 			</div>
 		</div>
+	</div>
 
-
-
-	<div class="container">
-		<header class="row">
-			<div class="col">
-				<h1>LRCFS File Renamer</h1>
-				<p>&nbsp;</p>
-				<p>
-					Use the LRCFS File Renamer to quickly rename your files based on your metadata for your project.
-				</p>
-				<p>&nbsp;</p>
-			</div>
-		</header>
-		<section class="row">
-			<div class="col">
-				<select id="selectRenamer" name="selectRenamer" class="mdb-select md-form"></select>
-				<button id="btnFileSelect" class="btn btn-primary">Select Metadata File</button>
-				<button id="btnRefershMetadata" class="btn btn-primary">Refresh</button>
-			</div>
-			<div class="col right-align">
-				<input id="txtOutputDir" type="text" class="txt" value="output" style="display:none" />
-				<input disabled id="chkCreateCopies" type="checkbox" checked data-toggle="toggle" data-on="Create Copies" data-off="Rename Originals" data-onstyle="success" data-offstyle="danger" data-width="180" data-height="39">
-				<button id="btnRename" class="btn btn-primary" disabled>Start Processing</button>
-			</div>
-		</section>
-		<div class="row">
-			&nbsp;
-		</div>
-		<div class="row">
-			<div class="col">
-				<h2>Selected Project</h2>
-				<p><strong>Title:</strong> <span id="renamerName"></span></p>
-				<p><strong>Description:</strong> <span id="renamerDesc"></span></p>
-				<p><strong>Website:</strong> <a id="renamerUrl" target="_blank">Visit website</a></p>
-			</div>
-			<div class="col">
-				<h2>Renamer Properties</h2>
-				<p><strong>Current Filename Column:</strong> <span id="renamerFilenameCurrentColumnName"></span></p>
-				<p><strong>Old Filename Column:</strong> <span id="renamerFilenameOldColumnName"></span></p>
-				<p><strong>New Filename Column:</strong> <span id="renamerFilenameNewColumnName"></span></p>
-				<p><strong>Value Seperator:</strong> <span id="renamerValueSeperator"></span></p>
-				<p><strong>Property Seperator:</strong> <span id="renamerPropertySeperator"></span></p>
-				<p><strong>Trim Headers &amp; Data:</strong> <span id="renamerTrimHeadersAndData"></span></p>
-			</div>
-			<div class="col">
-				<h2>New Filename Data</h2>
-				<span id="renamerColumns"></span>
-			</div>
-		</div>
-		<div class="row">
-			&nbsp;
-		</div>
-		<section id="errorLists">
+	<!-- The blue header bar at the top of the page -->
+	<header id="pageHeader">
+		<div class="container">
 			<div class="row">
 				<div class="col">
-					<h4>Original File Does Not Exist</h4>
-					<p>The following files can not be found in the same folder as your metadata.</p>
-					<ul id="e1"></ul>
+					<a href="https://www.dundee.ac.uk/leverhulme"><img src="../img/lrcfs-logo-white-transparent-bg.png" width="500px" /></a>
+				</div>
+				<div class="col text-right">
+					<img src="../img/Leverhulme_Trust_RGB_white.png" />
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Information about the application -->
+	<div id="topInfo">
+		<div class="container">
+			<div class="row">
+				<div class="col-8">
+					<h1 class="display-4">LRCFS File Renamer</h1>
+					<p class="lead">Welcome to the Leverhulme Research Centre for Forensic Science File Renamer.</p>
+					<hr>
+					<p>
+						This application has been developed to help you automaticlaly rename files for your project based on your metadata.
+					</p>
+					<p>
+						With this application you can automatically rename hunderds of files at from: <br />
+						<strong>DCS_0002.jpg</strong> to <strong>20201231-Exp1-Rep2-UVLIGHT.jpg</strong>
+					</p>
+					<p>
+						Not only will this make your files more meaningful to you, but it will also allow your data to be better understood by people you collaborate with as well as any future researchers that want to work with your data.
+					</p>
+				</div>
+				<div class="col-4">
+					<div class="card text-center mt-2">
+						<div class="card-body">
+							<h5 class="card-title">Customise LRCFS Renamer</h5>
+							<p class="card-text">You can create your own renamer configuration files that let you customise what metadata you expect and how you want your files to be renamed.</p>
+							<a class="btn btn-primary" href="https://lrcfs-shiny.test.dundee.ac.uk/internal/tnp-dashboard/" role="button" target="_blank"><span class="fa fa-dashboard fa-lg" aria-hidden="true"></span> Visit GitHub to find out more</a>
+						</div>
+					</div>				
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- The getting started step i.e. select your project profile -->
+	<div id="gettingStarted">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<h2>1. Getting started</h2>
+					<p>
+						To start renaming your files, first we need to know what your metadata is going to look like and how you'd like to rename your files.
+					</p>
+					<p>
+						Select the project you're working on from the drop down menu.
+					</p>
 				</div>
 				<div class="col">
+					<div class="row">
+						<div class="col">
+							<h5>Select Project</h5>
+							<select id="selectRenamer" name="selectRenamer" class="mdb-select md-form"></select>
+						</div>
+					</div>
+					<div id="exampleDataDownload">
+						<div class="row">
+							<div class="col">
+								<h5>Example Metadata</h5>
+								<p>If you've not yet started collecting your metadata you can create an blank file for your selected project to make sure it will work correctly.</p>
+								<button id="btnDownloadExampleCsv" class="btn btn-primary btn-block">Create Blank Metadata File</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Load metadata / start processing steps -->
+	<div id="operations">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<h2>2. Load your Metadata</h2>
+					<p>
+						Now that we know what project you're working on, and if you're happy with the <a id="linkScrollToRenamerInfo" href="#">project settings outlined below</a>, we can load your metadata:
+					</p>
+					<p>
+						<button id="btnFileSelect" class="btn btn-primary btn-block">Select Metadata File</button>
+						<input type="text" class="form-control" id="selectedMetadataPath" placeholder="Selected metadata.csv..." disabled></input>
+					</p>
+					<h5>Refresh your Metadata</h5>
+					<p>
+						If you've made changes to your metadata to fix any errors, or even if you're just added new data since you last loaded it, click below to refresh and check all your files.
+					</p>
+					<p>
+						<button id="btnRefershMetadata" class="btn btn-secondary btn-block">Refresh</button>
+					</p>	
+				</div>
+				<div class="col">
+					<div class="row">
+						<div class="col">
+							<h2>3. Rename your Files</h2>
+							<p>If you're happy with your data beind renamed as outline in the Results panel below, click Start Processing to beging renaming your files.</p>
+							
+							<!--<input id="chkCreateCopies" type="checkbox" checked data-toggle="toggle" data-on="Create Copies" data-off="Rename Originals" data-onstyle="success" data-offstyle="danger" data-width="180" data-height="39">-->
+							<button id="btnRename" class="btn btn-primary btn-block" disabled>Start Processing</button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col">
+							<br />
+							<h5>Output Directory</h5>
+							<p>By default you files will be copied to a folder called 'output' that will be created in the same directory as your metadata file. To change this, click the button below to select a new directory.</p>
+							<button id="btnSelectOutputDir" class="btn btn-secondary btn-block">Change Output Directory</button>
+							<input id="txtOutputDir" type="text" class="form-control" disabled/><br />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Error list for problems with CSV headers -->
+	<div id="errorListPre">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<h4>There are problems with the headings in your metadata</h4>
+					<hr/>
+					<p><strong>Please note that header names are case sensative.</strong><p></p>
+					<div id="errorsMissingFilenameColumnHeading">
+						<p>Your selected Project requires a heading that specifies your filenames in your metadata, but it appears to be missing.</p>
+						<p><strong>Please check your metadata contains the following header that specifies your filenames:</strong></p>
+						<ul id="errorsMissingFilenameColumn"></ul>
+					</div>
+					<div id="errorsMissingColumnsHeading">
+						<p>Your selected Project has some required headers for renaming your files, but the following headers are missing from your metadata.</p>
+						<p><strong>Please check that your metadata contains the following headers:</strong></p>
+						<ul id="errorsMissingColumns"></ul>
+					</div>
+					<hr />
+					<p>Once corrected in your metadata press the Refresh button to try again.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Error lists for problems with metadata checks -->
+	<div id="errorLists">
+		<div class="container">
+			<div class="row" id="errorFilesMissing">
+				<div class="col">
+					<h4>Files Missing</h4>
+					<hr />
+					<p>The following files are missing and can not be found in the same folder as your metadata.</p>
+					<p>
+						Please check these files exist in:<br />
+						<span id="errorFilesMissingFolder"></span>
+					</p>
+					<ul id="e1"></ul>
+				</div>
+			</div>
+			<div class="row" id="errorFilenameExists">
+				<div class="col">
 					<h4>New Filename Exists</h4>
+					<hr />
 					<p>The following rows will generate new filenames that already exist in the output folder.</p>
+					<p>
+						Please move the existing files or change the output directory:<br />
+						<span id="errorOutputFolder"></span>
+					</p>
 					<ul id="e2"></ul>
 				</div>
 			</div>
-			<div class="row">
-				&nbsp;
-			</div>
-			<div class="row">
+			<div class="row" id="errorSameCurrentFilename">
 				<div class="col">
 					<h4>Same Current Filename</h4>
-					<p>The following rows of your metadata contain duplicate filenames.</p>
+					<hr />
+					<p>The following rows of your metadata contain duplicate filenames. Duplicate filenames means that we can't assocaite one record of your metadata with that file and as such it can not be renamed.</p>
+					<p>Please ensure that your metadata rows are correctly references the appropriate files and correct where necessary.</p>
 					<ul id="e3"></ul>
 				</div>
+			</div>
+			<div class="row" id="errorSameNewFilename">
 				<div class="col">
 					<h4>Same New Filename</h4>
-					<p>The following rows will generate new files that have the same name.</p>
+					<hr />
+					<p>The following rows will generate new files that have the same name. Where different files represent different peices of data your metadata should individual distinguish them.</p>
+					<p>Please ensure that metadata is correct and uniquely identifies each image.</p>
 					<ul id="e4"></ul>
 				</div>
 			</div>
-			<div class="row">
-				&nbsp;
-			</div>
-		</section>
-		<section class="row">
-			<div class="col" id="htmlout"></div>
-		</section>
-		<div class="row">
-			&nbsp;
 		</div>
 	</div>
+
+	<!-- Information about the renamer profile loaded -->
+	<div id="renamerInfo">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<a id="renamerInfo"></a>
+					<h4>Selected Project Settings</h4>
+					<hr/>
+					<p><strong>Title:</strong> <span id="renamerName"></span></p>
+					<p><strong>Description:</strong> <span id="renamerDesc"></span></p>
+					<p><strong>Website:</strong> <a id="renamerUrl" target="_blank">Visit website</a></p>
+				</div>
+				<div class="col">
+					<h4>Renamer Properties</h4>
+					<hr/>
+					<p><strong>Current Filename Column:</strong> <span id="renamerFilenameCurrentColumnName"></span></p>
+					<p><strong>Old Filename Column:</strong> <span id="renamerFilenameOldColumnName"></span></p>
+					<p><strong>New Filename Column:</strong> <span id="renamerFilenameNewColumnName"></span></p>
+					<p><strong>Value Seperator:</strong> <span id="renamerValueSeperator"></span></p>
+					<p><strong>Property Seperator:</strong> <span id="renamerPropertySeperator"></span></p>
+					<p><strong>Trim Headers &amp; Data:</strong> <span id="renamerTrimHeadersAndData"></span></p>
+				</div>
+				<div class="col">
+					<h4>New Filename Data</h4>
+					<hr/>
+					<span id="renamerColumns"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- The metadata list -->
+	<div id="results">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<h4>Loaded Data</h4>
+					<hr />
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col">
+					<div id="htmlout"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--<div id="bottomOperations">
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<button id="btnRenameBottom" class="btn btn-primary btn-block" disabled>Start Processing</button>
+				</div>
+			</div>
+		</div>
+	</div>-->
+
 </body>
 </html>

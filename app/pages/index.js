@@ -5,6 +5,7 @@ var lineNumberColumnName = 'Line&nbsp;No.&nbsp;';
 
 debugLog("'Index.js' - Loaded index.js");
 
+
 const { app, dialog } = require('electron').remote;
 const XLSX = require('xlsx');
 const csv = require('csv-parser');
@@ -13,6 +14,7 @@ const fs = require('fs');
 const path = require('path')
 const _ = require('underscore');
 const {parse} = require('json2csv');
+const ProgressBar = require('electron-progressbar');
 
 const config = require('../config');
 
@@ -20,7 +22,8 @@ var renamers;
 var selectedRenamerConfig;
 var createCopies;
 
-var metadataPath;
+var defaultOutputPath = "./output";
+var metadataPath = "";
 var metadataDirectory;
 var metadataFilename;
 var metadataColumnNames;
@@ -47,7 +50,13 @@ var outputPath;
 	debugger
 	await app.whenReady();
 
+	$('#txtOutputDir').val(defaultOutputPath);
+
 	//Bind events
+	$("#btnDownloadExampleCsv").click(async function() {
+		DownloadExampleCsv();
+	});
+
 	$("#btnFileSelect").click(async function() {
 		OpenFileDialog();
 		await ProcessMetadata();
@@ -64,6 +73,7 @@ var outputPath;
 		UpdateSelectedRenamer($("#selectRenamer").val());
 		await ProcessMetadata();
 		UpdateDisplay();
+		ScrollToGettingStarted();
 	});
 
 	$("#chkCreateCopies").change(async function () {
@@ -79,6 +89,31 @@ var outputPath;
 		$('#successModal').modal('show');
 	});
 
+	$("#btnSelectOutputDir").click(async function () {
+		if(SelectOutputDir())
+		{
+			//If the selected directory has changed
+			await ProcessMetadata();
+			UpdateDisplay();
+		}
+	});
+
+	$("#linkScrollToRenamerInfo").click(function (e) {
+		e.preventDefault();
+		ScrollToRenamerInfo();
+	});
+
+	//Bind to modal events to scoll to position
+	$('#errorModalPre').on('hidden.bs.modal', function (e) {
+		ScrollToErrorListPre();
+	})
+
+	//Bind to modal events to scoll to position
+	$('#errorModalPost').on('hidden.bs.modal', function (e) {
+		ScrollToErrorList();
+	})
+	
+
 	//Load setup "data"
 	await GetRenamers();
 
@@ -87,11 +122,17 @@ var outputPath;
 
 	await SetConfigs();
 
+	UpdateDisplay();
+
 })();
 
 function UpdateDisplay(){
 	AllowProcessing();
 	ShowMetadataTable("htmlout", newMetadataColumnNames, newMetadata);
+	ShowOperationsPanel();
+	ShowRenamerInfoPanel();
+	ShowExampleDataDownload();
+	UpdateMetadataPath();
 }
 
 function ResetErrors(){
@@ -102,6 +143,57 @@ function ResetErrors(){
 	validationResults_newFilenameExists = [];
 	validationResults_sameCurrentFilename = [];
 	validationResults_sameNewFilename = [];
+}
+
+async function DownloadExampleCsv()
+{
+	//Create headers from required filename columns
+	var csvHeaders = "";
+	var i = 0
+	$.each(selectedRenamerConfig.filenameColumns, function (key, filenameColumn) {
+		if(i == 0){
+			csvHeaders = key;
+		}
+		else{
+			csvHeaders += "," + key;
+		}
+		i++;
+	})
+	debugLog("Created CSV Header Row", csvHeaders, true);
+	
+	//Open a file dialog to ask them where to save to
+	var savePath = dialog.showSaveDialogSync({
+		title : "Blank Project CSV",
+		filters: [
+			{ name: 'CSV', extensions: ['csv'] },
+			{ name: 'All Files', extensions: ['*'] }
+		]
+	});
+	if(savePath != null)
+	{
+		fs.writeFileSync(savePath,csvHeaders + "\n", function (err) {
+			if (err) throw err;
+			debugLog("Error saving file", savePath, true);
+		});
+	}
+}
+
+async function SelectOutputDir()
+{
+	var outputDir = dialog.showOpenDialogSync({
+		title : "Output Directory",
+		properties : ['openDirectory', 'createDirectory']
+	});
+	if(outputDir != null)
+	{
+		//The selected directory HAS changed
+		$('#txtOutputDir').val(outputDir);
+		return true;
+	}else{
+		//The selected directory has not changed
+		return false;
+	}
+
 }
 
 async function GetRenamers()
@@ -200,7 +292,7 @@ function UpdateSelectedRenamer(renamerId) {
 	$("#renamerColumns").html("");
 	$.each(selectedRenamerConfig.filenameColumns, function (key, filenameColumn) {
 		var existingText = $("#renamerColumns").html();
-		$("#renamerColumns").html(existingText + key + ": " + filenameColumn + "<br />");
+		$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + filenameColumn + "<br />");
 	})
 
 	debugLog("'UpdateSelectedRenamer' - 'selectedRenamerConfig'...", selectedRenamerConfig);
@@ -215,29 +307,61 @@ function OpenFileDialog(){
 		}],
 		properties: ['openFile']
 	});
-	metadataPath = files[0];
+	if(files != null)
+	{
+		metadataPath = files[0];
+	}
+
 	metadataFilename = path.basename(metadataPath);
 }
 
 async function ProcessMetadata(){
-	ResetErrors();
-	if (metadataPath !== undefined) {
-		await LoadMetadata();
-		await ValidateMetadataPre();
-		if(isValidPre)
-		{
-			await StoreCurrentFilenames();
-			await GenerateNewFilenames();
-			await GenerateNewMetadata();
-			ValidateMetadataPost();
+	if(metadataPath != null && fs.existsSync(metadataPath))
+	{
+		var progressBar = new ProgressBar({
+			title: 'Loading Metadata',
+			text: 'Loading and parsing metadata...',
+			detail: 'Please wait...'
+		}, app);
+
+		progressBar
+			.on('completed', function() {
+				console.info(`completed...`);
+				progressBar.detail = 'Load completed.';
+			})
+			.on('aborted', function() {
+				console.info(`aborted...`);
+			});
+
+		ResetErrors();
+		if (metadataPath !== undefined) {
+			await LoadMetadata();
+			await ValidateMetadataPre();
+			if(isValidPre)
+			{
+				await StoreCurrentFilenames();
+				await GenerateNewFilenames();
+				await GenerateNewMetadata();
+				ValidateMetadataPost();
+			}
+			ShowValidation();
 		}
-		ShowValidation();
+
+		progressBar.setCompleted();
 	}
 }
 
 async function LoadMetadata() {
 	metadataDirectory = path.dirname(metadataPath);
-	outputPath = path.join(path.dirname(metadataPath), $("#txtOutputDir").val());
+	var selectedOutDir = $("#txtOutputDir").val();
+	if(selectedOutDir == defaultOutputPath)
+	{
+		outputPath = path.join(path.dirname(metadataPath), $("#txtOutputDir").val());
+	}
+	else{
+		outputPath = selectedOutDir;
+	}
+	
 	var fileExtension = path.extname(metadataPath);
 
 	if (fileExtension == ".csv") {
@@ -320,7 +444,11 @@ function ShowHideErrorsPre(){
 	if(validationResults_currentFilenameColumnDoesNotExist)
 	{
 		errorsMissingFilenameColumn.append("<li>" + selectedRenamerConfig.filenameCurrentColumnName + "</li>");
+		$("#errorsMissingFilenameColumnHeading").show();
 		isValidPre = false;
+	}
+	else{
+		$("#errorsMissingFilenameColumnHeading").hide();
 	}
 
 	var errorsMissingColumns = $("#errorsMissingColumns");
@@ -330,12 +458,20 @@ function ShowHideErrorsPre(){
 		$.each(validationResults_missingColumns, async function (key, value) {
 			errorsMissingColumns.append("<li>" + value + "</li>");
 		})
+		$("#errorsMissingColumnsHeading").show();
 		isValidPre = false;
+	}
+	else{
+		$("#errorsMissingColumnsHeading").hide();
 	}
 
 	if(!isValidPre)
 	{
 		$('#errorModalPre').modal('show');
+		$('#errorListPre').show();
+	}
+	else{
+		$('#errorListPre').hide();
 	}
 }
 
@@ -534,51 +670,147 @@ function SaveCreateCopies(value) {
 	debugLog("'SaveCreateCopies' - 'config.get('createCopies')': " + config.get('createCopies'));
 }
 
-function AllowProcessing(){
-	if(isValidPost){
-		$('#btnRename').removeAttr('disabled');
-	}else{
-		$('#btnRename').attr('disabled','disabled');
+function AllowProcessing(forceStatus = null){
+	//if we've set a status then we want to force it
+	if(forceStatus != null)
+	{
+		if(forceStatus)
+		{
+			$('#btnRename').removeAttr('disabled');
+			$('#btnRenameBottom').removeAttr('disabled');
+		}
+		else{
+			$('#btnRename').attr('disabled','disabled');
+			$('#btnRenameBottom').attr('disabled','disabled');
+		}
+	}
+	//Else, try and work out what status it should be
+	else
+	{
+		if(isValidPost && isValidPre){
+			ScrollToOperations();
+			$('#btnRename').removeAttr('disabled');
+			$('#btnRenameBottom').removeAttr('disabled');
+		}
+		else
+		{
+			$('#btnRename').attr('disabled','disabled');
+			$('#btnRenameBottom').attr('disabled','disabled');
+		}
 	}
 }
 
-function ShowValidation(){
+function ShowOperationsPanel(){
+	if($('#selectRenamer').prop('selectedIndex') != 0)
+	{
+		$('#operations').show();
+	}else{
+		$('#operations').hide();
+	}
+}
 
+function ShowRenamerInfoPanel(){
+	if($('#selectRenamer').prop('selectedIndex') != 0)
+	{
+		$('#renamerInfo').show();
+	}else{
+		$('#renamerInfo').hide();
+	}
+}
+
+function ShowExampleDataDownload()
+{
+	if($('#selectRenamer').prop('selectedIndex') != 0)
+	{
+		$('#exampleDataDownload').show();
+	}else{
+		$('#exampleDataDownload').hide();
+	}
+}
+
+function UpdateMetadataPath()
+{
+	if(metadataPath != null && metadataPath.length > 0)
+	{
+		$('#selectedMetadataPath').show();
+		$('#selectedMetadataPath').val(metadataPath);
+	}else{
+		$('#selectedMetadataPath').hide();
+	}
+	
+}
+
+function ShowValidation(){
+	//add folder text to error messages
+	$('#errorFilesMissingFolder').html(metadataDirectory);
+	$('#errorOutputFolder').html(outputPath);
+
+	$('#errorFilesMissing').hide();
+	errorFilesMissing
 	var errorList = $('#e1');
 	errorList.html('');
 	$.each(validationResults_currentFileDoesNotExist, function (key, item) {
-		errorList.append("<li><strong>" + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.filenameCurrentColumnName] + "</li>");
+		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.filenameCurrentColumnName] + "</li>");
+		$('#errorFilesMissing').show();
 	})
 
+	$('#errorFilenameExists').hide();
 	var errorList = $('#e2');
 	errorList.html('');
 	$.each(validationResults_newFilenameExists, function (key, item) {
-		errorList.append("<li><strong>" + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.filenameNewColumnName] + "</li>");
+		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.filenameNewColumnName] + "</li>");
+		$('#errorFilenameExists').show();
 	})
 
+	$('#errorSameCurrentFilename').hide();
 	errorList = $('#e3');
 	errorList.html('');
 	$.each(validationResults_sameCurrentFilename, function (key, item) {
 		var string = "";
 		$.each(item, function (key, subitem) {
-			string += "<strong>" + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameCurrentColumnName] + "<br />";
+			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameCurrentColumnName] + "<br />";
 		})
 		errorList.append("<li>" + string + "</li>");
+		$('#errorSameCurrentFilename').show();
 	})
 
+	$('#errorSameNewFilename').hide();
 	errorList = $('#e4');
 	errorList.html('');
 	$.each(validationResults_sameNewFilename, function (key, item) {
 		var string = "";
 		$.each(item, function (key, subitem) {
-			string += "<strong>" + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameNewColumnName] + "<br />";
+			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameNewColumnName] + "<br />";
 		})
 		errorList.append("<li>" + string + "</li>");
+		$('#errorSameNewFilename').show();
 	})
 }
 
 
 function StartProcessing() {
+
+	var progressBar = new ProgressBar({
+		indeterminate: false,
+        title: 'Saving Files',
+		text: 'Renaming your files...',
+		detail: 'Please wait...',
+		maxValue: metadata.length
+	});
+
+	progressBar
+		.on('completed', function() {
+			console.info(`completed...`);
+			progressBar.detail = 'Task completed. Exiting...';
+		})
+		.on('aborted', function(value) {
+			console.info(`aborted... ${value}`);
+		})
+		.on('progress', function(value) {
+			progressBar.detail = `Completed ${value} out of ${progressBar.getOptions().maxValue}...`;
+		});
+
+
 	//Create the output directory if required
 	MakeOutputDir();
 
@@ -602,7 +834,13 @@ function StartProcessing() {
 				debugLog("Renamed file:" + currentFilename + "->" + newFilename);
 			});
 		}
+
+		if(!progressBar.isCompleted()){
+			progressBar.value += 1;
+		}
 	}
+
+	progressBar.setCompleted();
 }
 
 function MakeOutputDir(){
@@ -661,32 +899,70 @@ function CopyMetadata(){
 
 function ShowMetadataTable(elementId, columnNames, data) {
 
-	// Create table
-	var table = document.createElement("table");
+	if(data != null && isValidPre)
+	{
+		$('#results').show();
+		// Create table
+		var table = document.createElement("table");
 
-	// Add header row using the column names
-	var tr = table.insertRow(-1);   
-	$.each(columnNames, function(id,columnName){
-		var th = document.createElement("th");
-		th.innerHTML = columnName;
-		tr.appendChild(th);
-	});    
-
-	// Add data to the table as rows
-	//For each row in the metadata
-	for (var rowNum = 0; rowNum < data.length; rowNum++) {
-		tr = table.insertRow(-1);
-		//For each column
+		// Add header row using the column names
+		var tr = table.insertRow(-1);   
 		$.each(columnNames, function(id,columnName){
-			var tabCell = tr.insertCell(-1);
-			tabCell.innerHTML = data[rowNum][columnName];
-		});
-	}
+			var th = document.createElement("th");
+			th.innerHTML = columnName;
+			tr.appendChild(th);
+		});    
 
-	// FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
-	var divContainer = document.getElementById(elementId);
-	divContainer.innerHTML = "";
-	divContainer.appendChild(table);
+		// Add data to the table as rows
+		//For each row in the metadata
+		for (var rowNum = 0; rowNum < data.length; rowNum++) {
+			tr = table.insertRow(-1);
+			//For each column
+			$.each(columnNames, function(id,columnName){
+				var tabCell = tr.insertCell(-1);
+				tabCell.innerHTML = data[rowNum][columnName];
+			});
+		}
+
+		// FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+		var divContainer = document.getElementById(elementId);
+		divContainer.innerHTML = "";
+		divContainer.appendChild(table);
+	}
+	else{
+		$('#results').hide();
+	}
+}
+
+/*Scroll to functions*/
+function ScrollToGettingStarted()
+{
+	ScrollToElement('gettingStarted');
+}
+
+function ScrollToOperations()
+{
+	ScrollToElement('operations');
+}
+
+function ScrollToRenamerInfo()
+{
+	ScrollToElement('renamerInfo');
+}
+
+function ScrollToErrorListPre()
+{
+	ScrollToElement('errorListPre');
+}
+
+function ScrollToErrorList()
+{
+	ScrollToElement('errorLists');
+}
+
+function ScrollToElement(elementId)
+{
+	document.getElementById(elementId).scrollIntoView({ behavior:'smooth'});
 }
 
 function debugLog(message, property, ignoreDebugSetting){
@@ -699,3 +975,4 @@ function debugLog(message, property, ignoreDebugSetting){
 		}
 	}
 }
+

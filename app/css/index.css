@@ -3,7 +3,6 @@ select {
   display: none;
 }
 
-
 html,
 body {
 	padding: 0;
@@ -29,8 +28,103 @@ body {
 	font-feature-settings: 'liga', 'clig', 'kern';
 }
 
-header {
-	text-align: center;
+label{
+	font-size: 12px;
+	font-weight: bold;
+	margin: 0 2px 4px;
+    text-transform: uppercase;
+	float: left;
+}
+
+#pageHeader{
+	background: #4365E2;
+	padding: 20px 0 20px 0;
+	box-sizing: border-box;
+}
+
+#topInfo{
+}
+
+#gettingStarted{
+	background: #4365E2;
+	color: #FFF;
+	padding: 20px 0 20px 0;
+}
+
+	#gettingStarted .nice-select{
+		color: #000;
+	}
+
+	#exampleDataDownload{
+		padding-top: 20px;
+		display: none;
+	}
+
+#operations{
+	display: none;
+	background: #E9ECEF;
+	padding: 20px 0 20px 0;
+}
+
+	.btn-primary.disabled,
+	.btn-primary:disabled {
+		color: #000 !important;
+		background-color: #c7c7c7 !important;
+		border-color: #a5a5a5 !important;
+	}
+
+	.btn-secondary {
+		color: #fff !important;
+		background-color: #1993fe !important;
+		border-color: #0b8cff !important;
+	}
+
+#renamerInfo{
+	display: none;
+	background: #FFF;
+	padding: 20px 0 20px 0;
+}
+
+#errorListPre{
+	display: none;
+    background: #ff4242;
+    color:#FFF;
+	padding: 20px 0 20px 0;
+}
+
+	#errorListPre hr{
+		border-top: 1px solid rgba(255,255,255,.5)
+	}
+
+#errorLists{
+	display: none;
+    background: #ff4242;
+    color:#FFF;
+    padding: 40px 0 1px 0;
+}
+
+	#errorLists hr{
+		border-top: 1px solid rgba(255,255,255,.5)
+	}
+
+	#errorLists .row{
+		margin-bottom: 40px;
+	}
+
+	#errorFilesMissingFolder{
+		font-weight: bold;
+	}
+
+	#errorOutputFolder{
+		font-weight: bold;
+	}
+
+#results{
+	display: none;
+}
+
+#bottomOperations{
+	padding: 20px 0 20px 0;
 }
 
 header h1 {
@@ -50,23 +144,10 @@ header h1 {
 	text-align: right;
 }
 
-.nice-select{
-	width: 250px !important;
-	height: 38px !important;
-	border-radius: 5px 0px 0px 5px !important;
+#selectRenamer{
+	width: 100%;
 }
-
-	.nice-select .current{
-		display: block !important;
-		width: 200px !important;
-		overflow: hidden !important;
-		line-height: 35px !important;
-	}
 	
-#btnFileSelect{
-	border-radius: 0 .25rem .25rem 0;
-}
-
 #htmlout{
 	overflow:auto;
 	width:100%;
@@ -97,9 +178,58 @@ header h1 {
   color: white;
 }
 
-#errorLists{
-	display: none;
-    background: rgb(255, 66, 66);
-    color: rgb(255, 255, 255);
-    padding: 5px;
-}
+
+
+
+
+/** SPINNER CREATION **/
+
+.loader {
+	position: relative;
+	text-align: center;
+	margin: 15px auto 35px auto;
+	z-index: 9999;
+	display: block;
+	width: 80px;
+	height: 80px;
+	border: 10px solid rgba(0, 0, 0, .3);
+	border-radius: 50%;
+	border-top-color: #000;
+	animation: spin 1s ease-in-out infinite;
+	-webkit-animation: spin 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+	to {
+	  -webkit-transform: rotate(360deg);
+	}
+  }
+  
+  @-webkit-keyframes spin {
+	to {
+	  -webkit-transform: rotate(360deg);
+	}
+  }
+  
+  
+  /** MODAL STYLING **/
+  
+  .modal-content {
+	border-radius: 0px;
+	box-shadow: 0 0 20px 8px rgba(0, 0, 0, 0.7);
+  }
+  
+  .modal-backdrop.show {
+	opacity: 0.75;
+  }
+  
+  .loader-txt {
+	p {
+	  font-size: 13px;
+	  color: #666;
+	  small {
+		font-size: 11.5px;
+		color: #999;
+	  }
+	}
+  }
