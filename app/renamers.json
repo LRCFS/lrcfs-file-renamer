@@ -1,6 +1,6 @@
 [
 	{
-		"name": "Transfer & Persistance - Does NOT Keep Original Filename",
+		"name": "Transfer & Persistence - Does NOT Keep Original Filename",
 		"description": "We are creating and testing methods to detect how materials are transferred from places to people, or from people to people and how long materials can last in the environment once they have transferred. Methods have developed collaboratively by scientists at the LRCFS and over 50 academics from multiple disciplines and the judiciary.",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
 		"filenameCurrentColumnName": "Filename",
@@ -26,7 +26,7 @@
 		"trimHeadersAndData": true
 	},
 	{
-		"name": "Transfer & Persistance",
+		"name": "Transfer & Persistence",
 		"description": "We are creating and testing methods to detect how materials are transferred from places to people, or from people to people and how long materials can last in the environment once they have transferred. Methods have developed collaboratively by scientists at the LRCFS and over 50 academics from multiple disciplines and the judiciary.",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
 		"filenameCurrentColumnName": "Filename",
@@ -53,7 +53,7 @@
 	},
 	{
 		"name": "Sole Searching - Website Submission",
-		"description": "Transfer and Persistance Project",
+		"description": "",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
 		"filenameCurrentColumnName": "Filename",
 		"filenameOldColumnName": "OriginalFilename",
@@ -78,7 +78,7 @@
 	},
 	{
 		"name": "Sole Searching - Print Scan",
-		"description": "Transfer and Persistance Project",
+		"description": "",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
 		"filenameCurrentColumnName": "Filename",
 		"filenameOldColumnName": "OriginalFilename",
