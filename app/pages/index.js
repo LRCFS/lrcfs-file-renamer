@@ -37,6 +37,7 @@ var filenamesOld = [];
 var filenamesNew = [];
 
 var isValidPre;
+var validationResults_duplicateColumnName;
 var validationResults_currentFilenameColumnDoesNotExist;
 var validationResults_missingColumns;
 
@@ -150,8 +151,9 @@ function UpdateDisplay(){
 }
 
 function ResetErrors(){
+	validationResults_duplicateColumnName = [];
 	validationResults_currentFilenameColumnDoesNotExist = false;
-	validationResults_missingColumns = []
+	validationResults_missingColumns = [];
 
 	validationResults_currentFileDoesNotExist = [];
 	validationResults_newFilenameExists = [];
@@ -400,9 +402,23 @@ async function LoadMetadataCsv() {
 			metadataColumnNames = headers;
 		  })
 		.on('data', (row) => {
-			row[lineNumberColumnName] = lineNumber;
-			metadata.push(row);
-			lineNumber++;
+			//Check if the row has data
+			var hasData = false
+			$.each(row, function (key,value) {
+				if(value)
+				{
+					hasData = true;
+					//Break out of loop with return false
+					return false;
+				}
+			});
+			//If it does, then add it
+			if(hasData)
+			{
+				row[lineNumberColumnName] = lineNumber;
+				metadata.push(row);
+				lineNumber++;
+			}
 		})
 		.on('end', () => {
 			if(selectedRenamerConfig.trimHeadersAndData)
@@ -427,6 +443,20 @@ function trimStrings(key, value) {
   }
 
 async function ValidateMetadataPre(){
+	//Check for duplicate column names
+	var duplicateHeaderCheck = [];
+	$.each(metadataColumnNames, function(i){
+		if (duplicateHeaderCheck.indexOf(metadataColumnNames[i]) == -1)
+		{
+			duplicateHeaderCheck.push(metadataColumnNames[i]);
+		}
+		else
+		{
+			validationResults_duplicateColumnName.push(metadataColumnNames[i]);
+			debugLog("Duplicate column name", metadataColumnNames[i], true);
+		}
+	});
+
 	//Check for filename column
 	validationResults_currentFilenameColumnDoesNotExist = !CheckColumnExists(selectedRenamerConfig.filenameCurrentColumnName);
 	debugLog("'ValidateMetadataPre' - 'validationResults_currentFilenameColumnDoesNotExist'...", validationResults_currentFilenameColumnDoesNotExist);
@@ -455,6 +485,20 @@ function CheckColumnExists(columnName){
 
 function ShowHideErrorsPre(){
 	isValidPre = true;
+
+	var errorsDuplicateColumn = $("#errorsDuplicateColumn");
+	errorsDuplicateColumn.html('');
+	if(validationResults_duplicateColumnName.length > 0)
+	{
+		$.each(validationResults_duplicateColumnName, async function (key, value) {
+			errorsDuplicateColumn.append("<li>" + value + "</li>");
+		})
+		$("#errorsDuplicateColumnHeading").show();
+		isValidPre = false;
+	}
+	else{
+		$("#errorsDuplicateColumnHeading").hide();
+	}
 
 	var errorsMissingFilenameColumn = $("#errorsMissingFilenameColumn");
 	errorsMissingFilenameColumn.html('');
@@ -647,7 +691,6 @@ function ValidateSameNewFilename() {
 }
 
 function ValidateTypes(){
-	//TODO
 	debugLog("Validate Types", "");
 
 	//For each metadata item
@@ -708,7 +751,7 @@ function ValidateTypes(){
 		});
 	}
 
-	debugLog("validationResults_types", validationResults_typeErrors, true)
+	debugLog("validationResults_types", validationResults_typeErrors)
 }
 
 function GetNewFilename(metdataItem){
