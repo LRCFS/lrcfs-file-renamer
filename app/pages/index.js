@@ -15,6 +15,7 @@ const path = require('path')
 const _ = require('underscore');
 const {parse} = require('json2csv');
 const ProgressBar = require('electron-progressbar');
+const moment = require('moment');
 
 const config = require('../config');
 
@@ -44,7 +45,20 @@ var validationResults_currentFileDoesNotExist;
 var validationResults_newFilenameExists;
 var validationResults_sameCurrentFilename;
 var validationResults_sameNewFilename;
+
+class validationResults_typeError{
+	dateErrors = [];
+	intErrors = [];
+	floatErrors = [];
+	textErrors = [];
+}
+var validationResults_typeErrors = new validationResults_typeError();
+
+var validTypes = ["text", "date", "int", "float"]
+
 var outputPath;
+
+
 
 (async () => {
 	debugger
@@ -143,6 +157,8 @@ function ResetErrors(){
 	validationResults_newFilenameExists = [];
 	validationResults_sameCurrentFilename = [];
 	validationResults_sameNewFilename = [];
+
+	validationResults_typeErrors = new validationResults_typeError();
 }
 
 async function DownloadExampleCsv()
@@ -288,11 +304,12 @@ function UpdateSelectedRenamer(renamerId) {
 	$("#renamerValueSeperator").html(selectedRenamerConfig.valueSeperator);
 	$("#renamerPropertySeperator").html(selectedRenamerConfig.propertySeperator);
 	$("#renamerTrimHeadersAndData").html(selectedRenamerConfig.trimHeadersAndData);
+	$("#renamerMissingDataTag").html(selectedRenamerConfig.missingDataTag);
 
 	$("#renamerColumns").html("");
 	$.each(selectedRenamerConfig.filenameColumns, function (key, filenameColumn) {
 		var existingText = $("#renamerColumns").html();
-		$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + filenameColumn + "<br />");
+		$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + filenameColumn.renameTo + " (" + filenameColumn.type + ")<br />");
 	})
 
 	debugLog("'UpdateSelectedRenamer' - 'selectedRenamerConfig'...", selectedRenamerConfig);
@@ -555,6 +572,7 @@ function ValidateMetadataPost() {
 	ValidateNewFilenameExists();
 	ValidateSameCurrentFilename();
 	ValidateSameNewFilename();
+	ValidateTypes();
 
 	ShowHideErrorsPost();
 }
@@ -566,7 +584,12 @@ function ShowHideErrorsPost(){
 		validationResults_currentFileDoesNotExist.length == 0 &&
 		validationResults_newFilenameExists.length == 0 &&
 		validationResults_sameCurrentFilename.length == 0 &&
-		validationResults_sameNewFilename.length == 0)
+		validationResults_sameNewFilename.length == 0 &&
+		
+		validationResults_typeErrors.dateErrors.length == 0 &&
+		validationResults_typeErrors.intErrors.length == 0 &&
+		validationResults_typeErrors.floatErrors.length == 0 &&
+		validationResults_typeErrors.textErrors.length == 0)
 		{
 			isValidPost = true;
 			$('#errorLists').hide();
@@ -623,6 +646,71 @@ function ValidateSameNewFilename() {
 	debugLog("'ValidateSameNewFilename' - 'validationResults_sameNewFilename'...'", validationResults_sameNewFilename);
 }
 
+function ValidateTypes(){
+	//TODO
+	debugLog("Validate Types", "");
+
+	//For each metadata item
+	for(var i = 0; i < newMetadata.length; i++)
+	{
+		//Get all the renamer columns we're interested in
+		$.each(selectedRenamerConfig.filenameColumns, function (filenameColumnKey, filenameColumn) {
+
+			//Get the data from that column
+			var columnData = newMetadata[i][filenameColumnKey];
+			var columnDataType = filenameColumn.type;
+
+			debugLog("'columnData' 'columnDataType'", columnData + " - " + columnDataType);
+
+			if(columnData == selectedRenamerConfig.missingDataTag)
+			{
+				debugLog("Data is recognised as missing", newMetadata[i]);
+			}
+			else
+			{
+				var columnName = filenameColumnKey;
+				var columnData = columnData;
+				var columnFormat = filenameColumn.format;
+				var rowData = newMetadata[i];
+				switch(columnDataType) {
+					case "date":
+						//Use "moment" to parse date with strict parsing set to true - https://momentjs.com/docs/
+						if(!columnData || moment(columnData, columnFormat, true).isValid() == false)
+						{
+							debugLog("Date is invalid", newMetadata[i]);
+							validationResults_typeErrors.dateErrors.push({"columnName": columnName, "columnData": columnData, "columnFormat": columnFormat, "rowData": rowData})		
+						}
+						break;
+					case "int":
+						if(!columnData || isNaN(Number(columnData)) && !columnData.includes('.'))
+						{
+							debugLog("Int is invalid", newMetadata[i]);
+							validationResults_typeErrors.intErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData})		
+						}
+						break;
+					case "float":
+						if(!columnData || isNaN(Number(columnData)))
+						{
+							debugLog("Float is invalid", newMetadata[i]);
+							validationResults_typeErrors.floatErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData})		
+						}
+						break;
+					default:
+						//assume "text"
+						if(!columnData)
+						{
+							debugLog("Required text feild is missing", newMetadata[i]);
+							validationResults_typeErrors.textErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData})		
+						}
+						break;
+				}
+			}
+		});
+	}
+
+	debugLog("validationResults_types", validationResults_typeErrors, true)
+}
+
 function GetNewFilename(metdataItem){
 	var newFilename = "";
 
@@ -632,8 +720,11 @@ function GetNewFilename(metdataItem){
 		if (i != 0) {
 			newFilename += selectedRenamerConfig.propertySeperator;
 		}
-		newFilename += newPropertyName + selectedRenamerConfig.valueSeperator + propertyValue;
+		newFilename += newPropertyName.renameTo + selectedRenamerConfig.valueSeperator + propertyValue;
+		//Replace spaces if needed
 		newFilename = newFilename.replace(" ", selectedRenamerConfig.replaceSpacesInFilenameWith)
+		//Replace invalid filename characters
+		newFilename = newFilename.replace(/[\<\>\:\"\/\\\|\?\*]/g, selectedRenamerConfig.replaceInvalidCharactersInFilenameWith)
 		i++
 	})
 
@@ -744,6 +835,7 @@ function ShowValidation(){
 	//add folder text to error messages
 	$('#errorFilesMissingFolder').html(metadataDirectory);
 	$('#errorOutputFolder').html(outputPath);
+	$('#errorEmptyData').html(selectedRenamerConfig.missingDataTag)
 
 	$('#errorFilesMissing').hide();
 	errorFilesMissing
@@ -784,6 +876,44 @@ function ShowValidation(){
 		})
 		errorList.append("<li>" + string + "</li>");
 		$('#errorSameNewFilename').show();
+	})
+
+	//Type errors
+
+	$('#errorText').hide();
+	errorList = $('#eText');
+	errorList.html('');
+	$.each(validationResults_typeErrors.textErrors, function (key, item) {
+		var string = "";
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' is required</li>");
+		$('#errorText').show();
+	})
+
+	$('#errorDate').hide();
+	errorList = $('#eDate');
+	errorList.html('');
+	$.each(validationResults_typeErrors.dateErrors, function (key, item) {
+		var string = "";
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' does not match format '" + item.columnFormat + "'</li>");
+		$('#errorDate').show();
+	})
+
+	$('#errorInt').hide();
+	errorList = $('#eInt');
+	errorList.html('');
+	$.each(validationResults_typeErrors.intErrors, function (key, item) {
+		var string = "";
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' is not a valid integer</li>");
+		$('#errorInt').show();
+	})
+
+	$('#errorFloat').hide();
+	errorList = $('#eFloat');
+	errorList.html('');
+	$.each(validationResults_typeErrors.floatErrors, function (key, item) {
+		var string = "";
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' is not a valid float</li>");
+		$('#errorFloat').show();
 	})
 }
 

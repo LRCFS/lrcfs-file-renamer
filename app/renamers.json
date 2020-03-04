@@ -1,31 +1,5 @@
 [
 	{
-		"name": "Transfer & Persistence - Does NOT Keep Original Filename",
-		"description": "We are creating and testing methods to detect how materials are transferred from places to people, or from people to people and how long materials can last in the environment once they have transferred. Methods have developed collaboratively by scientists at the LRCFS and over 50 academics from multiple disciplines and the judiciary.",
-		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
-		"filenameCurrentColumnName": "Filename",
-		"filenameOldColumnName": "",
-		"filenameNewColumnName": "Filename",
-		"valueSeperator": "_",
-		"propertySeperator": "-",
-		"filenameColumns":
-		{
-			"Date": "",
-			"Experiment": "EX",
-			"Replicate": "RP",
-			"Substrate": "SB",
-			"SubstrateType": "ST",
-			"ObservationType": "OT",
-			"Mass (g)": "MA",
-			"TransferTime (s)": "TT",
-			"PersistenceTime (min)": "PT",
-			"Temperature (DegC)": "TP",
-			"Humidity (%)": "HM"
-		},
-		"replaceSpacesInFilenameWith": " ",
-		"trimHeadersAndData": true
-	},
-	{
 		"name": "Transfer & Persistence",
 		"description": "We are creating and testing methods to detect how materials are transferred from places to people, or from people to people and how long materials can last in the environment once they have transferred. Methods have developed collaboratively by scientists at the LRCFS and over 50 academics from multiple disciplines and the judiciary.",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
@@ -36,66 +10,21 @@
 		"propertySeperator": "-",
 		"filenameColumns":
 		{
-			"Date": "",
-			"Experiment": "EX",
-			"Replicate": "RP",
-			"Substrate": "SB",
-			"SubstrateType": "ST",
-			"ObservationType": "OT",
-			"Mass (g)": "MA",
-			"TransferTime (s)": "TT",
-			"PersistenceTime (min)": "PT",
-			"Temperature (DegC)": "TP",
-			"Humidity (%)": "HM"
+			"Date": {"renameTo": "", "type": "date", "format": "YYYYMMDD"},
+			"Experiment":{"renameTo": "EX", "type": "int"},
+			"Replicate": {"renameTo": "RP", "type": "int"},
+			"Substrate":{"renameTo": "SB", "type": "text"},
+			"SubstrateType": {"renameTo": "ST", "type": "text"},
+			"ObservationType":  {"renameTo": "OT", "type": "text"},
+			"Mass (g)": {"renameTo": "MA", "type": "int"},
+			"TransferTime (s)": {"renameTo": "TT", "type": "int"},
+			"PersistenceTime (min)": {"renameTo": "PT", "type": "int"},
+			"Temperature (DegC)": {"renameTo": "TP", "type": "int"},
+			"Humidity (%)": {"renameTo": "HM", "type": "int"}
 		},
 		"replaceSpacesInFilenameWith": " ",
-		"trimHeadersAndData": true
-	},
-	{
-		"name": "Sole Searching - Website Submission",
-		"description": "",
-		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
-		"filenameCurrentColumnName": "Filename",
-		"filenameOldColumnName": "OriginalFilename",
-		"filenameNewColumnName": "Filename",
-		"valueSeperator": "",
-		"propertySeperator": "_",
-		"filenameColumns":
-		{
-			"SubmissionID": "",
-			"PhotoID": "",
-			"Date": "",
-			"Country": "",
-			"City": "",
-			"ShoeSize": "",
-			"ShoeMake": "",
-			"ShoeAge": "",
-			"PhotoType": "",
-			"Replicate": ""
-		},
-		"replaceSpacesInFilenameWith": "",
-		"trimHeadersAndData": true
-	},
-	{
-		"name": "Sole Searching - Print Scan",
-		"description": "",
-		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
-		"filenameCurrentColumnName": "Filename",
-		"filenameOldColumnName": "OriginalFilename",
-		"filenameNewColumnName": "Filename",
-		"valueSeperator": "",
-		"propertySeperator": "_",
-		"filenameColumns":
-		{
-			"event": "",
-			"dateCaptured": "",
-			"shoeSize": "",
-			"shoeMake": "",
-			"shoeAge": "",
-			"Activity": "",
-			"Replicate": ""
-		},
-		"replaceSpacesInFilenameWith": "",
-		"trimHeadersAndData": true
+		"replaceInvalidCharactersInFilenameWith": "",
+		"trimHeadersAndData": true,
+		"missingDataTag": "NA"
 	}
 ]

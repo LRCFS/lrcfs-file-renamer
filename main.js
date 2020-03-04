@@ -86,6 +86,7 @@ app.on('activate', async () => {
 (async () => {
 	await app.whenReady();
 	Menu.setApplicationMenu(menu);
-	Menu.setApplicationMenu(null);
+	//Set menu to null for published application
+	//Menu.setApplicationMenu(null);
 	mainWindow = await createMainWindow();
 })();

@@ -121,7 +121,7 @@
 						<div class="card-body">
 							<h5 class="card-title">Customise LRCFS Renamer</h5>
 							<p class="card-text">You can create your own renamer configuration files that let you customise what metadata you expect and how you want your files to be renamed.</p>
-							<a class="btn btn-primary" href="https://lrcfs-shiny.test.dundee.ac.uk/internal/tnp-dashboard/" role="button" target="_blank"><span class="fa fa-dashboard fa-lg" aria-hidden="true"></span> Visit GitHub to find out more</a>
+							<a class="btn btn-primary" href="https://github.com/LRCFS/lrcfs-msb2019-photogrammetry" role="button" target="_blank"><span class="fa fa-dashboard fa-lg" aria-hidden="true"></span> Visit GitHub to find out more</a>
 						</div>
 					</div>				
 				</div>
@@ -278,6 +278,42 @@
 					<ul id="e4"></ul>
 				</div>
 			</div>
+			<div class="row" id="errorText">
+				<div class="col">
+					<h4>Missing Data</h4>
+					<hr />
+					<p>The following rows have text that is missing.</p>
+					<p>Please ensure that the following rows contain valus or specifically use '<span id="errorEmptyData"></span>'.</p>
+					<ul id="eText"></ul>
+				</div>
+			</div>
+			<div class="row" id="errorDate">
+				<div class="col">
+					<h4>Date Errors</h4>
+					<hr />
+					<p>The following rows have date columns that could not be parsed correctly.</p>
+					<p>Please ensure that the following rows contain dates in the correct format.</p>
+					<ul id="eDate"></ul>
+				</div>
+			</div>
+			<div class="row" id="errorInt">
+				<div class="col">
+					<h4>Integer Number Errors</h4>
+					<hr />
+					<p>The following rows have integer (whole number) columns that could not be parsed correctly.</p>
+					<p>Please ensure that the following rows contain only integers.</p>
+					<ul id="eInt"></ul>
+				</div>
+			</div>
+			<div class="row" id="errorFloat">
+				<div class="col">
+					<h4>Float Number Errors</h4>
+					<hr />
+					<p>The following rows have float (numbers with decimals places) columns that could not be parsed correctly.</p>
+					<p>Please ensure that the following rows contain only floats.</p>
+					<ul id="eFloat"></ul>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -302,6 +338,7 @@
 					<p><strong>Value Seperator:</strong> <span id="renamerValueSeperator"></span></p>
 					<p><strong>Property Seperator:</strong> <span id="renamerPropertySeperator"></span></p>
 					<p><strong>Trim Headers &amp; Data:</strong> <span id="renamerTrimHeadersAndData"></span></p>
+					<p><strong>Missing Data Tag:</strong> <span id="renamerMissingDataTag"></span></p>
 				</div>
 				<div class="col">
 					<h4>New Filename Data</h4>
