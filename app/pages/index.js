@@ -55,11 +55,7 @@ class validationResults_typeError{
 }
 var validationResults_typeErrors = new validationResults_typeError();
 
-var validTypes = ["text", "date", "int", "float"]
-
 var outputPath;
-
-
 
 (async () => {
 	debugger
@@ -712,7 +708,6 @@ function ValidateTypes(){
 			else
 			{
 				var columnName = filenameColumnKey;
-				var columnData = columnData;
 				var columnFormat = filenameColumn.format;
 				var rowData = newMetadata[i];
 				switch(columnDataType) {
