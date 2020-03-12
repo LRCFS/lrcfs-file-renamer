@@ -114,6 +114,11 @@ var outputPath;
 		ScrollToRenamerInfo();
 	});
 
+	$("#linkScrollToResults").click(function (e) {
+		e.preventDefault();
+		ScrollToResults();
+	});
+
 	//Bind to modal events to scoll to position
 	$('#errorModalPre').on('hidden.bs.modal', function (e) {
 		ScrollToErrorListPre();
@@ -1140,6 +1145,11 @@ function ScrollToErrorListPre()
 function ScrollToErrorList()
 {
 	ScrollToElement('errorLists');
+}
+
+function ScrollToResults()
+{
+	ScrollToElement('results');
 }
 
 function ScrollToElement(elementId)
