@@ -19,51 +19,85 @@
 </head>
 <body>
 
+	<div class="modal" id="progressLoadingMetadata" tabindex="-1" role="dialog" aria-labelledby="progressLoadingMetadata" aria-hidden="false">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="progressLoadingMetadata">Loading Metadata</h5>
+				</div>
+				<div class="modal-body">
+					<div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+					<h6>Loading your metadata</h6>
+					<p>Please wait while your metadata is loaded and checked.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal" id="progressProcessing" tabindex="-1" role="dialog" aria-labelledby="progressLoadingMetadata" aria-hidden="false">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="progressLoadingMetadata">Renaming Files</h5>
+				</div>
+				<div class="modal-body">
+					<h6>Renaming your files</h6>
+					<p>Please wait while your metadata is being updated and your files renamed.</p>
+					<div id="processingProgressContainer">
+						<div id="processingProgressBackground"></div>
+						<div id="processingProgressBar"></div>
+						<div id="processingProgressBarPercentage"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- Modal error box for pre validation problems (i.e. metadata headers) -->
 	<div class="modal fade" id="errorModalPre" tabindex="-1" role="dialog" aria-labelledby="errorModalPre" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="errorModalPre">Metadata Errors</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<h6>There are problems with your metadata headers</h6>
-				<p>Please correct the errors before trying to refresh your data.</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
-			</div>
+				<div class="modal-header">
+					<h5 class="modal-title" id="errorModalPre">Metadata Errors</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<h6>There are problems with your metadata headers</h6>
+					<p>Please correct the errors before trying to refresh your data.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Modal error box for post error checking - like files named incorrectly -->
-	<div class="modal fade" id="errorModalPost" tabindex="-1" role="dialog" aria-labelledby="errorModalPost" aria-hidden="true">
+	<div class="modal modal-error" id="errorModalPost" tabindex="-1" role="dialog" aria-labelledby="errorModalPost" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="errorModalPost">Metadata Errors</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<h6>There are errors with your metadata</h6>
-				<p>Use the information below to update your metadata file and correct the errors.</p>
-				<p>Reselect your metadata once you have fixed all issues to try again.</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
-			</div>
+				<div class="modal-header">
+					<h5 class="modal-title" id="errorModalPost">Metadata Errors</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<h6>There are errors with your metadata</h6>
+					<p>Use the information below to update your metadata file and correct the errors.</p>
+					<p>"Refresh" your metadata once you have fixed all issues to try again.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Ok</button>
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- modal success box for renaming all the files -->
-	<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModal" aria-hidden="true">
+	<div class="modal modal" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModal" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 			<div class="modal-header">
@@ -88,7 +122,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col">
-					<a href="https://www.dundee.ac.uk/leverhulme"><img src="../img/lrcfs-logo-white-transparent-bg.png" width="500px" /></a>
+					<img src="../img/lrcfs-logo-white-transparent-bg.png" width="500px" />
 				</div>
 				<div class="col text-right">
 					<img src="../img/Leverhulme_Trust_RGB_white.png" />
@@ -270,7 +304,7 @@
 					<h4>Same Current Filename</h4>
 					<hr />
 					<p>The following rows of your metadata contain duplicate filenames. Duplicate filenames means that we can't assocaite one record of your metadata with that file and as such it can not be renamed.</p>
-					<p>Please ensure that your metadata rows are correctly references the appropriate files and correct where necessary.</p>
+					<p>Please ensure that your metadata rows correctly reference the appropriate files and correct any errors.</p>
 					<ul id="e3"></ul>
 				</div>
 			</div>

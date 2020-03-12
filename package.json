@@ -12,6 +12,7 @@
 		"url": "https://www.dundee.ac.uk/leverhulme"
 	},
 	"scripts": {
+		"updateNpmPackages": "npm install",
 		"postinstall": "electron-builder install-app-deps",
 		"lint": "xo",
 		"test": "npm run lint",
@@ -39,7 +40,6 @@
 		"strip-bom-stream": "^4.0.0",
 		"underscore": "^1.9.1",
 		"xlsx": "^0.15.1",
-		"electron-progressbar": "^1.2.0",
 		"moment": "^2.24.0"
 	},
 	"devDependencies": {

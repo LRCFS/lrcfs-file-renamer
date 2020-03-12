@@ -1,7 +1,7 @@
 console.log("main.js")
 'use strict';
 const path = require('path');
-const {app, BrowserWindow, Menu} = require('electron');
+const {app, BrowserWindow, Menu, ipcMain} = require('electron');
 /// const {autoUpdater} = require('electron-updater');
 const {is} = require('electron-util');
 const unhandled = require('electron-unhandled');
@@ -30,7 +30,7 @@ app.setAppUserModelId('com.company.AppName');
 // }
 
 // Prevent window from being garbage collected
-let mainWindow;
+let mainWindow, workerWindow;
 
 const createMainWindow = async () => {
 	const win = new BrowserWindow({
@@ -58,10 +58,26 @@ const createMainWindow = async () => {
 	return win;
 };
 
-// Prevent multiple instances of the app
-if (!app.requestSingleInstanceLock()) {
-	app.quit();
-}
+const createWorkerWindow = async () => {
+	// create hidden worker window
+	const win = new BrowserWindow({
+		show: false,
+		webPreferences: { nodeIntegration: true }
+	});
+
+	win.on('ready-to-show', () => {
+		//win.show();
+	});
+
+	win.on('closed', () => {
+		// Dereference the window
+		// For multiple windows store them in an array
+		workerWindow = undefined;
+	});
+	await win.loadFile(path.join(__dirname, '/app/pages/worker.html'));
+
+	return win;
+};
 
 app.on('second-instance', () => {
 	if (mainWindow) {
@@ -81,6 +97,18 @@ app.on('activate', async () => {
 	if (!mainWindow) {
 		mainWindow = await createMainWindow();
 	}
+	if (!workerWindow) {
+		workerWindow = await createWorkerWindow();
+	}
+});
+
+app.on('ready', async () => {
+	ipcMain.on('update-processing-progress', (event, arg) => {
+		sendWindowMessage(mainWindow, 'update-processing-progress', arg);
+	});
+	ipcMain.on('start-worker-processing', (event, arg) => {
+		sendWindowMessage(workerWindow, 'start-worker-processing', arg);
+	});
 });
 
 (async () => {
@@ -89,4 +117,15 @@ app.on('activate', async () => {
 	//Set menu to null for published application
 	//Menu.setApplicationMenu(null);
 	mainWindow = await createMainWindow();
+	workerWindow = await createWorkerWindow();
 })();
+
+
+
+function sendWindowMessage(targetWindow, message, payload) {
+	if(typeof targetWindow === 'undefined') {
+		console.log('Target window does not exist');
+		return;
+	}
+	targetWindow.webContents.send(message, payload);
+}

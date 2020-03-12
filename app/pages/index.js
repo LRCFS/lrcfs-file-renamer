@@ -1,20 +1,18 @@
 'use strict';
+console.log('index.js');
 var debug = false;
 
 var lineNumberColumnName = 'Line&nbsp;No.&nbsp;';
 
-debugLog("'Index.js' - Loaded index.js");
-
-
-const { app, dialog } = require('electron').remote;
+const { remote, ipcRenderer } = require('electron');
+const { app, dialog } = remote;
 const XLSX = require('xlsx');
 const csv = require('csv-parser');
 const stripBomStream = require('strip-bom-stream');
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
 const _ = require('underscore');
 const {parse} = require('json2csv');
-const ProgressBar = require('electron-progressbar');
 const moment = require('moment');
 
 const config = require('../config');
@@ -57,6 +55,20 @@ var validationResults_typeErrors = new validationResults_typeError();
 
 var outputPath;
 
+ipcRenderer.on('update-processing-progress', (event, arg) => {
+	let payload = arg.payload;
+	console.log('File copy percentrage: ', payload.percentage);
+	SetProcessingProgress(payload.percentage)
+});
+
+let message2Worker = (command, payload) => {
+	ipcRenderer.send('start-worker-processing', {
+		command: command, payload: payload
+	});
+}
+
+
+
 (async () => {
 	debugger
 	await app.whenReady();
@@ -96,8 +108,7 @@ var outputPath;
 
 	$("#btnRename").click(async function () {
 		$('#btnRename').attr('disabled','disabled');
-		StartProcessing();
-		$('#successModal').modal('show');
+		await StartProcessing();
 	});
 
 	$("#btnSelectOutputDir").click(async function () {
@@ -352,7 +363,9 @@ function OpenFileDialog(){
 async function ProcessMetadata(){
 	if(metadataPath != null && fs.existsSync(metadataPath))
 	{
-		var progressBar = new ProgressBar({
+		//remote.getCurrentWindow().setProgressBar(0.3);
+
+		/*var progressBar = new ProgressBar({
 			title: 'Loading Metadata',
 			text: 'Loading and parsing metadata...',
 			detail: 'Please wait...'
@@ -365,8 +378,9 @@ async function ProcessMetadata(){
 			})
 			.on('aborted', function() {
 				console.info(`aborted...`);
-			});
+			});*/
 
+		await SetMetdataLoadProgress(2);
 		ResetErrors();
 		if (metadataPath !== undefined) {
 			await LoadMetadata();
@@ -380,8 +394,9 @@ async function ProcessMetadata(){
 			}
 			ShowValidation();
 		}
+		await SetMetdataLoadProgress(-1);
 
-		progressBar.setCompleted();
+		//progressBar.setCompleted();
 	}
 }
 
@@ -460,7 +475,8 @@ function trimStrings(key, value) {
 async function ValidateMetadataPre(){
 	//Check for duplicate column names
 	var duplicateHeaderCheck = [];
-	$.each(metadataColumnNames, function(i){
+	$.each(metadataColumnNames, async function(i){
+		await debugDelay();
 		if (duplicateHeaderCheck.indexOf(metadataColumnNames[i]) == -1)
 		{
 			duplicateHeaderCheck.push(metadataColumnNames[i]);
@@ -975,9 +991,10 @@ function ShowValidation(){
 }
 
 
-function StartProcessing() {
+async function StartProcessing() {
 
-	var progressBar = new ProgressBar({
+	//await SetProcessingProgress(2);
+	/*var progressBar = new ProgressBar({
 		indeterminate: false,
         title: 'Saving Files',
 		text: 'Renaming your files...',
@@ -995,23 +1012,27 @@ function StartProcessing() {
 		})
 		.on('progress', function(value) {
 			progressBar.detail = `Completed ${value} out of ${progressBar.getOptions().maxValue}...`;
-		});
+		});*/
 
+	await ShowProcessProgress();
 
 	//Create the output directory if required
 	MakeOutputDir();
 
 	//Copy the metadata file to new output location
 	CopyMetadata();
+	
+	message2Worker('helloWorker', { metadata: metadata, filenamesNew: filenamesNew, selectedRenamerConfig: selectedRenamerConfig, metadataDirectory: metadataDirectory, outputPath: outputPath, createCopies: createCopies});
 
 	//Copy/rename every file
+	/*var progressCount = 0
 	for(var i = 0; i < metadata.length; i++)
 	{
 		var currentFilename = metadata[i][selectedRenamerConfig.metadataCurrentFilenameColumn];
 		var newFilename = filenamesNew[i];
 
 		if (createCopies) {
-			fs.copyFileSync(path.join(metadataDirectory, currentFilename), path.join(outputPath, newFilename), (err) => {
+			fs.copyFile(path.join(metadataDirectory, currentFilename), path.join(outputPath, newFilename), (err) => {
 				if (err) throw err;
 				debugLog("Copied file:" + currentFilename + "->" + newFilename);
 			});
@@ -1022,12 +1043,15 @@ function StartProcessing() {
 			});
 		}
 
-		if(!progressBar.isCompleted()){
-			progressBar.value += 1;
-		}
-	}
+		await SetProcessingProgress(progressCount/metadata.length);
+		//if(!progressBar.isCompleted()){
+	//		progressBar.value += 1;
+//		}
+		progressCount++;
+	}*/
 
-	progressBar.setCompleted();
+	//progressBar.setCompleted();
+	//await SetProcessingProgress(-1);
 }
 
 function MakeOutputDir(){
@@ -1155,6 +1179,73 @@ function ScrollToResults()
 function ScrollToElement(elementId)
 {
 	document.getElementById(elementId).scrollIntoView({ behavior:'smooth'});
+}
+
+
+/* Set between 0 and 1 for percentage
+   Set to 2 to show infinite loading
+   Set to -1 to close
+   */
+async function SetMetdataLoadProgress(progress)
+{
+	if(progress > 0)
+	{
+		//$('#myModal').css("display", "block");
+		$('#progressLoadingMetadata').modal('show');
+	}
+	else
+	{
+		//$('#myModal').css("display", "none");
+		$('#progressLoadingMetadata').modal('hide');
+	}
+	remote.getCurrentWindow().setProgressBar(progress);
+}
+
+async function ShowProcessProgress()
+{
+	await SetProcessingProgress(2);
+}
+
+/* Set between 0 and 1 for percentage
+   Set to 2 to show infinite loading
+   Set to -1 to close
+   */
+async function SetProcessingProgress(progress)
+{
+	if(progress > 0 && progress != 1)
+	{
+		$('#progressProcessing').modal('show');
+
+		if(progress == 2)
+		{
+			$('#processingProgressBar').css("width", "1%");
+			$('#processingProgressBarPercentage').html("1%");
+		}
+		else
+		{
+			$('#processingProgressBar').css("width", progress * 100 + "%");
+			$('#processingProgressBarPercentage').html(Math.round(progress * 100) + "%");
+		}
+
+		remote.getCurrentWindow().setProgressBar(progress);
+	}
+	else
+	{
+		$('#progressProcessing').modal('hide');
+		remote.getCurrentWindow().setProgressBar(-1);
+
+		$('#successModal').modal('show');
+	}
+}
+
+async function debugDelay()
+{
+	var milliseconds = 0;
+	const date = Date.now();
+	let currentDate = null;
+	do {
+	  currentDate = Date.now();
+	} while (currentDate - date < milliseconds);
 }
 
 function debugLog(message, property, ignoreDebugSetting){
