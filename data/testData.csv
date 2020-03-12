@@ -1,3 +1,1 @@
-OriginalFilename,Date,Substrate,Duration,Mass,ActivityID,Evidence type,ObsType,Time,Group,Count,Repeat,Test
-IMG_001.JPG,20191101,cotton,data1-1,,ID1,data1-3,UV powder,1s,a,1,1,
-IMG_002.JPG,20191101,cotton,data2-1,10g,ID1,data2-3,UV powder,2s,b,1,2
+Date,Experiment,Replicate,Substrate,SubstrateType,ObservationType,Mass (g),TransferTime (s),PersistenceTime (min),Temperature (DegC),Humidity (%)

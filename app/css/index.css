@@ -85,6 +85,12 @@ label{
 	padding: 20px 0 20px 0;
 }
 
+	.noPrefix{
+		background: black;
+		color: white;
+		padding: 0px 3px 0 3px;
+	}
+
 #errorListPre{
 	display: none;
     background: #ff4242;

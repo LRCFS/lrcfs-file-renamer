@@ -296,18 +296,32 @@ function UpdateSelectedRenamer(renamerId) {
 	$("#renamerName").html(selectedRenamerConfig.name);
 	$("#renamerDesc").html(selectedRenamerConfig.description);
 	$("#renamerUrl").attr('href',selectedRenamerConfig.url);
-	$("#renamerFilenameCurrentColumnName").html(selectedRenamerConfig.filenameCurrentColumnName);
-	$("#renamerFilenameOldColumnName").html(selectedRenamerConfig.filenameOldColumnName);
-	$("#renamerFilenameNewColumnName").html(selectedRenamerConfig.filenameNewColumnName);
-	$("#renamerValueSeperator").html(selectedRenamerConfig.valueSeperator);
-	$("#renamerPropertySeperator").html(selectedRenamerConfig.propertySeperator);
+	$("#renamerMetadataCurrentFilenameColumn").html(selectedRenamerConfig.metadataCurrentFilenameColumn);
+	$("#renamerMetadataOldFilenameColumn").html(selectedRenamerConfig.metadataOldFilenameColumn);
+	$("#renamerMetadataNewFilenameColumn").html(selectedRenamerConfig.metadataNewFilenameColumn);
 	$("#renamerTrimHeadersAndData").html(selectedRenamerConfig.trimHeadersAndData);
 	$("#renamerMissingDataTag").html(selectedRenamerConfig.missingDataTag);
+
+	$("#renamerFilenamePropertySeperator").html(selectedRenamerConfig.filenamePropertySeperator);
+	$("#renamerFilenameValueSeperator").html(selectedRenamerConfig.filenameValueSeperator);
 
 	$("#renamerColumns").html("");
 	$.each(selectedRenamerConfig.filenameColumns, function (key, filenameColumn) {
 		var existingText = $("#renamerColumns").html();
-		$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + filenameColumn.renameTo + " (" + filenameColumn.type + ")<br />");
+		var renameTo = filenameColumn.renameTo;
+		if(renameTo == null || renameTo == "")
+		{
+			renameTo = "<span class='noPrefix'>NA</span>"
+		}
+		
+		if(filenameColumn.format != null && filenameColumn.format != "")
+		{
+			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + " in the format: " + filenameColumn.format + ")<br />");
+		}
+		else
+		{
+			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + ")<br />");
+		}
 	})
 
 	debugLog("'UpdateSelectedRenamer' - 'selectedRenamerConfig'...", selectedRenamerConfig);
@@ -454,7 +468,7 @@ async function ValidateMetadataPre(){
 	});
 
 	//Check for filename column
-	validationResults_currentFilenameColumnDoesNotExist = !CheckColumnExists(selectedRenamerConfig.filenameCurrentColumnName);
+	validationResults_currentFilenameColumnDoesNotExist = !CheckColumnExists(selectedRenamerConfig.metadataCurrentFilenameColumn);
 	debugLog("'ValidateMetadataPre' - 'validationResults_currentFilenameColumnDoesNotExist'...", validationResults_currentFilenameColumnDoesNotExist);
 
 	//Check for renamer columns
@@ -500,7 +514,7 @@ function ShowHideErrorsPre(){
 	errorsMissingFilenameColumn.html('');
 	if(validationResults_currentFilenameColumnDoesNotExist)
 	{
-		errorsMissingFilenameColumn.append("<li>" + selectedRenamerConfig.filenameCurrentColumnName + "</li>");
+		errorsMissingFilenameColumn.append("<li>" + selectedRenamerConfig.metadataCurrentFilenameColumn + "</li>");
 		$("#errorsMissingFilenameColumnHeading").show();
 		isValidPre = false;
 	}
@@ -535,7 +549,7 @@ function ShowHideErrorsPre(){
 async function StoreCurrentFilenames(){
 	filenamesOld = [];
 	$.each(metadata, function (key, metadataItem) {
-		filenamesOld.push(metadataItem[selectedRenamerConfig.filenameCurrentColumnName]);
+		filenamesOld.push(metadataItem[selectedRenamerConfig.metadataCurrentFilenameColumn]);
 	})
 	debugLog("'StoreCurrentFilenames' - Current filenames stored in 'filenamesOld'...", filenamesOld);
 }
@@ -554,16 +568,16 @@ async function GenerateNewMetadata(){
 	var newFilenameColumnNames = [lineNumberColumnName];
 
 	//Add on the column for the new filename
-	newFilenameColumnNames.push(selectedRenamerConfig.filenameNewColumnName);
+	newFilenameColumnNames.push(selectedRenamerConfig.metadataNewFilenameColumn);
 
 	//If we're going to store the old filename then add that column
 	if(StoreOldFilename())
 	{
-		newFilenameColumnNames.push(selectedRenamerConfig.filenameOldColumnName);
+		newFilenameColumnNames.push(selectedRenamerConfig.metadataOldFilenameColumn);
 	}
 
 	//Get all the old columns without the filename
-	var oldMetadataColumnNames = _.without(metadataColumnNames, selectedRenamerConfig.filenameCurrentColumnName);
+	var oldMetadataColumnNames = _.without(metadataColumnNames, selectedRenamerConfig.metadataCurrentFilenameColumn);
 	//Addd it to the new column names array
 	newMetadataColumnNames = newFilenameColumnNames.concat(oldMetadataColumnNames);
 
@@ -582,12 +596,12 @@ async function GenerateNewMetadata(){
 		newMetadataRow[lineNumberColumnName] = metadataRowNum + 2;
 
 		//Add on the filename column data
-		newMetadataRow[selectedRenamerConfig.filenameNewColumnName] = filenamesNew[metadataRowNum];
+		newMetadataRow[selectedRenamerConfig.metadataNewFilenameColumn] = filenamesNew[metadataRowNum];
 
 		//Add the old filename if we're saving it
 		if(StoreOldFilename())
 		{
-			newMetadataRow[selectedRenamerConfig.filenameOldColumnName] = filenamesOld[metadataRowNum];
+			newMetadataRow[selectedRenamerConfig.metadataOldFilenameColumn] = filenamesOld[metadataRowNum];
 		}
 
 		//Add the old data for each of the column names we found above (i.e. minus the filename column)
@@ -644,7 +658,7 @@ function ShowHideErrorsPost(){
 function ValidateCurrentFilenameExists() {
 	validationResults_currentFileDoesNotExist = [];
 	$.each(metadata, function (key, metadataItem) {
-		var currentFilePath = path.join(metadataDirectory, metadataItem[selectedRenamerConfig.filenameCurrentColumnName]);
+		var currentFilePath = path.join(metadataDirectory, metadataItem[selectedRenamerConfig.metadataCurrentFilenameColumn]);
 		debugLog("'ValidateCurrentFilenameExists' - Path to check 'currentFilePath'...", currentFilePath);
 		var fileExists = fs.existsSync(currentFilePath);
 		if (!fileExists) {
@@ -658,7 +672,7 @@ function ValidateNewFilenameExists() {
 	validationResults_newFilenameExists = [];
 	for(var i = 0; i < newMetadata.length; i++)
 	{
-		var newFilePath = path.join(outputPath, newMetadata[i][selectedRenamerConfig.filenameNewColumnName]);
+		var newFilePath = path.join(outputPath, newMetadata[i][selectedRenamerConfig.metadataNewFilenameColumn]);
 		debugLog("'ValidateNewFilenameExists' - Path to check 'newFilePath'...", newFilePath);
 		var fileExists = fs.existsSync(newFilePath);
 		if (fileExists) {
@@ -669,7 +683,7 @@ function ValidateNewFilenameExists() {
 }
 
 function ValidateSameCurrentFilename() {
-	validationResults_sameCurrentFilename = _.groupBy(metadata, selectedRenamerConfig.filenameCurrentColumnName);
+	validationResults_sameCurrentFilename = _.groupBy(metadata, selectedRenamerConfig.metadataCurrentFilenameColumn);
 
 	//Because we're only interested in old filenames that occur more than once, filter to only include those with more than one result
 	validationResults_sameCurrentFilename = _.filter(validationResults_sameCurrentFilename, function (item) { return item.length > 1; });
@@ -678,7 +692,7 @@ function ValidateSameCurrentFilename() {
 }
 
 function ValidateSameNewFilename() {
-	validationResults_sameNewFilename = _.groupBy(newMetadata, selectedRenamerConfig.filenameNewColumnName);
+	validationResults_sameNewFilename = _.groupBy(newMetadata, selectedRenamerConfig.metadataNewFilenameColumn);
 
 	//Because we're only interested in new filenames that occur more than once, filter to only include those with more than one result
 	validationResults_sameNewFilename = _.filter(validationResults_sameNewFilename, function (item) { return item.length > 1; });
@@ -756,9 +770,9 @@ function GetNewFilename(metdataItem){
 	$.each(selectedRenamerConfig.filenameColumns, function (oldPropertyName, newPropertyName) {
 		var propertyValue = metdataItem[oldPropertyName];
 		if (i != 0) {
-			newFilename += selectedRenamerConfig.propertySeperator;
+			newFilename += selectedRenamerConfig.filenamePropertySeperator;
 		}
-		newFilename += newPropertyName.renameTo + selectedRenamerConfig.valueSeperator + propertyValue;
+		newFilename += newPropertyName.renameTo + selectedRenamerConfig.filenameValueSeperator + propertyValue;
 		//Replace spaces if needed
 		newFilename = newFilename.replace(" ", selectedRenamerConfig.replaceSpacesInFilenameWith)
 		//Replace invalid filename characters
@@ -767,13 +781,13 @@ function GetNewFilename(metdataItem){
 	})
 
 	//Get extension from old file name and add it on the end
-	newFilename += path.extname(metdataItem[selectedRenamerConfig.filenameCurrentColumnName]);
+	newFilename += path.extname(metdataItem[selectedRenamerConfig.metadataCurrentFilenameColumn]);
 
 	return (newFilename);
 }
 
 function StoreOldFilename(){
-	return !selectedRenamerConfig.filenameOldColumnName == "";
+	return !selectedRenamerConfig.metadataOldFilenameColumn == "";
 }
 
 function SaveSelectedRenamer(value)
@@ -880,7 +894,7 @@ function ShowValidation(){
 	var errorList = $('#e1');
 	errorList.html('');
 	$.each(validationResults_currentFileDoesNotExist, function (key, item) {
-		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.filenameCurrentColumnName] + "</li>");
+		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.metadataCurrentFilenameColumn] + "</li>");
 		$('#errorFilesMissing').show();
 	})
 
@@ -888,7 +902,7 @@ function ShowValidation(){
 	var errorList = $('#e2');
 	errorList.html('');
 	$.each(validationResults_newFilenameExists, function (key, item) {
-		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.filenameNewColumnName] + "</li>");
+		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.metadataNewFilenameColumn] + "</li>");
 		$('#errorFilenameExists').show();
 	})
 
@@ -898,7 +912,7 @@ function ShowValidation(){
 	$.each(validationResults_sameCurrentFilename, function (key, item) {
 		var string = "";
 		$.each(item, function (key, subitem) {
-			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameCurrentColumnName] + "<br />";
+			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.metadataCurrentFilenameColumn] + "<br />";
 		})
 		errorList.append("<li>" + string + "</li>");
 		$('#errorSameCurrentFilename').show();
@@ -910,7 +924,7 @@ function ShowValidation(){
 	$.each(validationResults_sameNewFilename, function (key, item) {
 		var string = "";
 		$.each(item, function (key, subitem) {
-			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.filenameNewColumnName] + "<br />";
+			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.metadataNewFilenameColumn] + "<br />";
 		})
 		errorList.append("<li>" + string + "</li>");
 		$('#errorSameNewFilename').show();
@@ -988,7 +1002,7 @@ function StartProcessing() {
 	//Copy/rename every file
 	for(var i = 0; i < metadata.length; i++)
 	{
-		var currentFilename = metadata[i][selectedRenamerConfig.filenameCurrentColumnName];
+		var currentFilename = metadata[i][selectedRenamerConfig.metadataCurrentFilenameColumn];
 		var newFilename = filenamesNew[i];
 
 		if (createCopies) {
