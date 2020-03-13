@@ -55,19 +55,23 @@ var validationResults_typeErrors = new validationResults_typeError();
 
 var outputPath;
 
-ipcRenderer.on('update-processing-progress', (event, arg) => {
+ipcRenderer.on('w2r-UpdateProgressPercentage', (event, arg) => {
 	let payload = arg.payload;
-	console.log('File copy percentrage: ', payload.percentage);
 	SetProcessingProgress(payload.percentage)
 });
 
-let message2Worker = (command, payload) => {
-	ipcRenderer.send('start-worker-processing', {
+let SendStartProcessing = (command, payload) => {
+	ipcRenderer.send('r2w-StartWorkerProcessing', {
 		command: command, payload: payload
 	});
 }
 
-
+let SendCancelProcessing = (command, payload) => {
+	console.log("SendCancelProcessing");
+	ipcRenderer.send('r2w-CancelWorkerProcessing', {
+		command: command, payload: payload
+	});
+}
 
 (async () => {
 	debugger
@@ -120,6 +124,10 @@ let message2Worker = (command, payload) => {
 		}
 	});
 
+	$("#btnCancelProcessing").click(async function () {
+		CancelProcessing();
+	});
+
 	$("#linkScrollToRenamerInfo").click(function (e) {
 		e.preventDefault();
 		ScrollToRenamerInfo();
@@ -135,7 +143,6 @@ let message2Worker = (command, payload) => {
 		ScrollToErrorListPre();
 	})
 
-	//Bind to modal events to scoll to position
 	$('#errorModalPost').on('hidden.bs.modal', function (e) {
 		ScrollToErrorList();
 	})
@@ -153,13 +160,17 @@ let message2Worker = (command, payload) => {
 
 })();
 
+function CancelProcessing(){
+	SendCancelProcessing('stopWorker', { stop: true });
+}
+
 function UpdateDisplay(){
-	AllowProcessing();
 	ShowMetadataTable("htmlout", newMetadataColumnNames, newMetadata);
 	ShowOperationsPanel();
 	ShowRenamerInfoPanel();
 	ShowExampleDataDownload();
 	UpdateMetadataPath();
+	AllowProcessing();
 }
 
 function ResetErrors(){
@@ -613,7 +624,7 @@ async function GenerateNewMetadata(){
 	var metadataRowNum;
 	for(metadataRowNum = 0; metadataRowNum < metadata.length; metadataRowNum++)
 	{
-		var newMetadataRow = [];
+		var newMetadataRow = new Object();
 		newMetadataRow[lineNumberColumnName] = metadataRowNum + 2;
 
 		//Add on the filename column data
@@ -852,9 +863,9 @@ function AllowProcessing(forceStatus = null){
 	else
 	{
 		if(isValidPost && isValidPre){
-			ScrollToOperations();
 			$('#btnRename').removeAttr('disabled');
 			$('#btnRenameBottom').removeAttr('disabled');
+			ScrollToOperations();
 		}
 		else
 		{
@@ -993,119 +1004,18 @@ function ShowValidation(){
 
 async function StartProcessing() {
 
-	//await SetProcessingProgress(2);
-	/*var progressBar = new ProgressBar({
-		indeterminate: false,
-        title: 'Saving Files',
-		text: 'Renaming your files...',
-		detail: 'Please wait...',
-		maxValue: metadata.length
-	});
-
-	progressBar
-		.on('completed', function() {
-			console.info(`completed...`);
-			progressBar.detail = 'Task completed. Exiting...';
-		})
-		.on('aborted', function(value) {
-			console.info(`aborted... ${value}`);
-		})
-		.on('progress', function(value) {
-			progressBar.detail = `Completed ${value} out of ${progressBar.getOptions().maxValue}...`;
-		});*/
-
 	await ShowProcessProgress();
 
-	//Create the output directory if required
-	MakeOutputDir();
-
-	//Copy the metadata file to new output location
-	CopyMetadata();
-	
-	message2Worker('helloWorker', { metadata: metadata, filenamesNew: filenamesNew, selectedRenamerConfig: selectedRenamerConfig, metadataDirectory: metadataDirectory, outputPath: outputPath, createCopies: createCopies});
-
-	//Copy/rename every file
-	/*var progressCount = 0
-	for(var i = 0; i < metadata.length; i++)
-	{
-		var currentFilename = metadata[i][selectedRenamerConfig.metadataCurrentFilenameColumn];
-		var newFilename = filenamesNew[i];
-
-		if (createCopies) {
-			fs.copyFile(path.join(metadataDirectory, currentFilename), path.join(outputPath, newFilename), (err) => {
-				if (err) throw err;
-				debugLog("Copied file:" + currentFilename + "->" + newFilename);
-			});
-		} else {
-			fs.renameSync(path.join(metadataDirectory, currentFilename), path.join(outputPath, newFilename), (err) => {
-				if (err) throw err;
-				debugLog("Renamed file:" + currentFilename + "->" + newFilename);
-			});
-		}
-
-		await SetProcessingProgress(progressCount/metadata.length);
-		//if(!progressBar.isCompleted()){
-	//		progressBar.value += 1;
-//		}
-		progressCount++;
-	}*/
-
-	//progressBar.setCompleted();
-	//await SetProcessingProgress(-1);
-}
-
-function MakeOutputDir(){
-	if(!fs.existsSync(outputPath))
-	{
-		fs.mkdirSync(outputPath);
-	}
-}
-
-function CopyMetadata(){
-	var outputFile = path.join(outputPath,metadataFilename);
-
-	//Check if the metadata exists and delete it if it does
-	//This is probably a bad idea and should be fixed
-	if(fs.existsSync(outputFile))
-	{
-		fs.unlinkSync(outputFile, function(err){
-			if(err){
-				return console.log(err);
-			}
-			debugLog('Deleted file: ' + outputFile);
-	   });
-	}
-
-	//Remove linenumber column from column names list
-	var newMetadataColumnNamesToSave = _.without(newMetadataColumnNames, lineNumberColumnName);
-
-	//Add header row to csv
-	fs.appendFileSync(outputFile,newMetadataColumnNamesToSave + "\n", function (err) {
-		if (err) throw err;
-		debugLog('Saved header: ',newMetadataColumnNames);
-	});
-	
-	//Add each metadata row to csv
-	var columnCount = 1;
-	$.each(newMetadata, function(key, newMetadataItem){
-		var line = "";
-		var columnCount = 1; //Keep track of the column count and have a varialbe for the seperator so we don't add it on the last element
-		var columnSeperator = ",";
-
-		$.each(newMetadataColumnNamesToSave, function(id,columnName){
-			if(columnCount == newMetadataColumnNamesToSave.length) columnSeperator = "";
-			line += "\"" +newMetadataItem[columnName] + "\"" + columnSeperator;
-			columnCount++;
-		});
-		line += "\n";
-
-		//write line to file
-		fs.appendFileSync(outputFile,line, function (err) {
-			if (err) throw err;
-		});
-	});
-
-
+	SendStartProcessing('helloWorker', { metadata: metadata,
+		newMetadata: newMetadata,
+		filenamesNew: filenamesNew,
+		selectedRenamerConfig: selectedRenamerConfig,
+		metadataDirectory: metadataDirectory,
+		metadataFilename: metadataFilename,
+		newMetadataColumnNames: newMetadataColumnNames,
+		lineNumberColumnName: lineNumberColumnName,
+		outputPath: outputPath,
+		createCopies: createCopies});
 }
 
 function ShowMetadataTable(elementId, columnNames, data) {
@@ -1208,7 +1118,8 @@ async function ShowProcessProgress()
 
 /* Set between 0 and 1 for percentage
    Set to 2 to show infinite loading
-   Set to -1 to close
+   Set to 1 to close and success
+   Set to -1 to close and error
    */
 async function SetProcessingProgress(progress)
 {
@@ -1218,8 +1129,8 @@ async function SetProcessingProgress(progress)
 
 		if(progress == 2)
 		{
-			$('#processingProgressBar').css("width", "1%");
-			$('#processingProgressBarPercentage').html("1%");
+			$('#processingProgressBar').css("width", "0%");
+			$('#processingProgressBarPercentage').html("0%");
 		}
 		else
 		{
@@ -1234,7 +1145,10 @@ async function SetProcessingProgress(progress)
 		$('#progressProcessing').modal('hide');
 		remote.getCurrentWindow().setProgressBar(-1);
 
-		$('#successModal').modal('show');
+		if(progress == 1)
+			$('#successModal').modal('show');
+		else
+			$('#cancelModal').modal('show');
 	}
 }
 

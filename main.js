@@ -103,11 +103,15 @@ app.on('activate', async () => {
 });
 
 app.on('ready', async () => {
-	ipcMain.on('update-processing-progress', (event, arg) => {
-		sendWindowMessage(mainWindow, 'update-processing-progress', arg);
+	ipcMain.on('w2r-UpdateProgressPercentage', (event, arg) => {
+		sendWindowMessage(mainWindow, 'w2r-UpdateProgressPercentage', arg);
 	});
-	ipcMain.on('start-worker-processing', (event, arg) => {
-		sendWindowMessage(workerWindow, 'start-worker-processing', arg);
+	ipcMain.on('r2w-StartWorkerProcessing', (event, arg) => {
+		sendWindowMessage(workerWindow, 'r2w-StartWorkerProcessing', arg);
+	});
+	ipcMain.on('r2w-CancelWorkerProcessing', (event, arg) => {
+		console.log("r2w-CancelWorkerProcessing");
+		sendWindowMessage(workerWindow, 'r2w-CancelWorkerProcessing', arg);
 	});
 });
 
