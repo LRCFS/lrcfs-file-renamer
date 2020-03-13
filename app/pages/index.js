@@ -139,6 +139,10 @@ let SendCancelProcessing = (command, payload) => {
 	});
 
 	//Bind to modal events to scoll to position
+	$('#metadataFine').on('hidden.bs.modal', function (e) {
+		ScrollToOperations();
+	})
+
 	$('#errorModalPre').on('hidden.bs.modal', function (e) {
 		ScrollToErrorListPre();
 	})
@@ -865,7 +869,8 @@ function AllowProcessing(forceStatus = null){
 		if(isValidPost && isValidPre){
 			$('#btnRename').removeAttr('disabled');
 			$('#btnRenameBottom').removeAttr('disabled');
-			ScrollToOperations();
+			$('#metadataFine').modal('show');
+			
 		}
 		else
 		{

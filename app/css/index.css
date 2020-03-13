@@ -217,17 +217,24 @@ header h1 {
 	}
   }
   
-  
   /** MODAL STYLING **/
-  
+  .modal-success .modal-content{
+	background-color: #28a746;
+	color: #FFF;
+  }
+
+	.modal-success .close{
+		color: #FFF;
+	}
+
   .modal-error .modal-content{
 	background-color: #ff4242;
 	color: #FFF;
   }
 
-  .modal-error .close{
-	  color: #FFF;
-  }
+	.modal-error .close{
+		color: #FFF;
+	}
 
   .modal-content {
 	border-radius: 0px;
