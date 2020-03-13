@@ -56,7 +56,6 @@ label{
 	}
 
 	#exampleDataDownload{
-		padding-top: 20px;
 		display: none;
 	}
 
@@ -80,10 +79,24 @@ label{
 	}
 
 #renamerInfo{
-	display: none;
-	background: #FFF;
-	padding: 20px 0 20px 0;
+    display: none;
+    background: #4383e2;
+    padding: 20px 0 20px 0;
+    color: #FFF;
+    border: solid #FFF;
+    border-width: 0px 10px 10px 10px;
 }
+
+	#renamerInfo a:link,
+	#renamerInfo a:visited{
+		color: #FFF;
+		text-decoration: underline;
+	}
+	#renamerInfo a:hover,
+	#renamerInfo a:active{
+		color: #FFF;
+		text-decoration: none;
+	}
 
 	.noPrefix{
 		background: black;
@@ -127,6 +140,7 @@ label{
 
 #results{
 	display: none;
+	padding: 20px 0 0 0;
 }
 
 #bottomOperations{

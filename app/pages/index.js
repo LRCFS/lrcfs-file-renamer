@@ -900,11 +900,14 @@ function ShowRenamerInfoPanel(){
 
 function ShowExampleDataDownload()
 {
+
 	if($('#selectRenamer').prop('selectedIndex') != 0)
 	{
 		$('#exampleDataDownload').show();
+		$('#btnShowProjectSettings').show();
 	}else{
 		$('#exampleDataDownload').hide();
+		$('#btnShowProjectSettings').hide();
 	}
 }
 
@@ -914,8 +917,10 @@ function UpdateMetadataPath()
 	{
 		$('#selectedMetadataPath').show();
 		$('#selectedMetadataPath').val(metadataPath);
+		$('#btnRefershMetadata').removeAttr('disabled');
 	}else{
 		$('#selectedMetadataPath').hide();
+		$('#btnRefershMetadata').attr('disabled','disabled');
 	}
 	
 }
