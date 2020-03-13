@@ -117,9 +117,9 @@ app.on('ready', async () => {
 
 (async () => {
 	await app.whenReady();
-	Menu.setApplicationMenu(menu);
+	//Menu.setApplicationMenu(menu);
 	//Set menu to null for published application
-	//Menu.setApplicationMenu(null);
+	Menu.setApplicationMenu(null);
 	mainWindow = await createMainWindow();
 	workerWindow = await createWorkerWindow();
 })();
