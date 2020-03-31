@@ -50,6 +50,7 @@ class validationResults_typeError{
 	intErrors = [];
 	floatErrors = [];
 	textErrors = [];
+	textMaxLengthErrors = [];
 }
 var validationResults_typeErrors = new validationResults_typeError();
 
@@ -193,16 +194,9 @@ function ResetErrors(){
 async function DownloadExampleCsv()
 {
 	//Create headers from required filename columns
-	var csvHeaders = "";
-	var i = 0
+	var csvHeaders = selectedRenamerConfig.metadataNewFilenameColumn;
 	$.each(selectedRenamerConfig.filenameColumns, function (key, filenameColumn) {
-		if(i == 0){
-			csvHeaders = key;
-		}
-		else{
-			csvHeaders += "," + key;
-		}
-		i++;
+		csvHeaders += "," + key;
 	})
 	debugLog("Created CSV Header Row", csvHeaders, true);
 	
@@ -349,13 +343,17 @@ function UpdateSelectedRenamer(renamerId) {
 		{
 			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + " in the format: " + filenameColumn.format + ")<br />");
 		}
+		else if(filenameColumn.maxTextLength != null)
+		{
+			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + " - max length: " + filenameColumn.maxTextLength + ")<br />");
+		}
 		else
 		{
 			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + ")<br />");
 		}
 	})
 
-	debugLog("'UpdateSelectedRenamer' - 'selectedRenamerConfig'...", selectedRenamerConfig);
+	debugLog("'UpdateSelectedRenamer' - 'selectedRenamerConfig'...", selectedRenamerConfig,);
 }
 
 function OpenFileDialog(){
@@ -378,23 +376,6 @@ function OpenFileDialog(){
 async function ProcessMetadata(){
 	if(metadataPath != null && fs.existsSync(metadataPath))
 	{
-		//remote.getCurrentWindow().setProgressBar(0.3);
-
-		/*var progressBar = new ProgressBar({
-			title: 'Loading Metadata',
-			text: 'Loading and parsing metadata...',
-			detail: 'Please wait...'
-		}, app);
-
-		progressBar
-			.on('completed', function() {
-				console.info(`completed...`);
-				progressBar.detail = 'Load completed.';
-			})
-			.on('aborted', function() {
-				console.info(`aborted...`);
-			});*/
-
 		await SetMetdataLoadProgress(2);
 		ResetErrors();
 		if (metadataPath !== undefined) {
@@ -410,8 +391,6 @@ async function ProcessMetadata(){
 			ShowValidation();
 		}
 		await SetMetdataLoadProgress(-1);
-
-		//progressBar.setCompleted();
 	}
 }
 
@@ -679,7 +658,8 @@ function ShowHideErrorsPost(){
 		validationResults_typeErrors.dateErrors.length == 0 &&
 		validationResults_typeErrors.intErrors.length == 0 &&
 		validationResults_typeErrors.floatErrors.length == 0 &&
-		validationResults_typeErrors.textErrors.length == 0)
+		validationResults_typeErrors.textErrors.length == 0 &&
+		validationResults_typeErrors.textMaxLengthErrors.length == 0 )
 		{
 			isValidPost = true;
 			$('#errorLists').hide();
@@ -759,6 +739,7 @@ function ValidateTypes(){
 			{
 				var columnName = filenameColumnKey;
 				var columnFormat = filenameColumn.format;
+				var columnMaxTextLength = filenameColumn.maxTextLength;
 				var rowData = newMetadata[i];
 				switch(columnDataType) {
 					case "date":
@@ -789,6 +770,11 @@ function ValidateTypes(){
 						{
 							debugLog("Required text feild is missing", newMetadata[i]);
 							validationResults_typeErrors.textErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData})		
+						}
+						else if(columnMaxTextLength != null && columnData.length > columnMaxTextLength)
+						{
+							debugLog("Text feild exceeds maxium length of " + columnMaxTextLength + " characters", newMetadata[i]);
+							validationResults_typeErrors.textMaxLengthErrors.push({"columnName": columnName, "columnData": columnData, "columnMaxTextLength": columnMaxTextLength, "rowData": rowData})
 						}
 						break;
 				}
@@ -981,6 +967,15 @@ function ShowValidation(){
 		var string = "";
 		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' is required</li>");
 		$('#errorText').show();
+	})
+
+	$('#errorTextOverMaxLength').hide();
+	errorList = $('#eTextMaxLength');
+	errorList.html('');
+	$.each(validationResults_typeErrors.textMaxLengthErrors, function (key, item) {
+		var string = "";
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' value is longer than '" + item.columnMaxTextLength + "' characters</li>");
+		$('#errorTextOverMaxLength').show();
 	})
 
 	$('#errorDate').hide();

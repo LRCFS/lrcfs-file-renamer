@@ -10,17 +10,17 @@
 		"filenameValueSeperator": "",
 		"filenameColumns":
 		{
-			"Date": {"renameTo": "", "type": "date", "format": "YYYYMMDD"},
-			"Experiment":{"renameTo": "EX", "type": "int"},
-			"Replicate": {"renameTo": "RP", "type": "int"},
-			"Substrate":{"renameTo": "SB", "type": "text"},
-			"SubstrateType": {"renameTo": "ST", "type": "text"},
-			"ObservationType":  {"renameTo": "OT", "type": "text"},
-			"Mass (g)": {"renameTo": "MA", "type": "int"},
-			"TransferTime (s)": {"renameTo": "TT", "type": "int"},
-			"PersistenceTime (min)": {"renameTo": "PT", "type": "int"},
-			"Temperature (DegC)": {"renameTo": "TP", "type": "int"},
-			"Humidity (%)": {"renameTo": "HM", "type": "int"}
+			"Date":						{"renameTo": "",	"type": "date",	"allowNull": false,	"format": "YYYYMMDD"},
+			"Experiment":				{"renameTo": "EX",	"type": "int",	"allowNull": false},
+			"Replicate":				{"renameTo": "RP",	"type": "int",	"allowNull": false},
+			"Substrate":				{"renameTo": "SB",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"SubstrateType":			{"renameTo": "ST",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"ObservationType":			{"renameTo": "OT",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"Mass (g)":					{"renameTo": "MA",	"type": "int",	"allowNull": false},
+			"TransferTime (s)":			{"renameTo": "TT",	"type": "int",	"allowNull": false},
+			"PersistenceTime (min)":	{"renameTo": "PT",	"type": "int",	"allowNull": false},
+			"Temperature (DegC)":		{"renameTo": "TP",	"type": "int",	"allowNull": true},
+			"Humidity (%)":				{"renameTo": "HM",	"type": "int",	"allowNull": true}
 		},
 		"replaceSpacesInFilenameWith": " ",
 		"replaceInvalidCharactersInFilenameWith": "",
