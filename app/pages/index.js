@@ -46,6 +46,7 @@ var validationResults_sameCurrentFilename;
 var validationResults_sameNewFilename;
 
 class validationResults_typeError{
+	illegalNull = [];
 	dateErrors = [];
 	intErrors = [];
 	floatErrors = [];
@@ -195,7 +196,7 @@ async function DownloadExampleCsv()
 {
 	//Create headers from required filename columns
 	var csvHeaders = selectedRenamerConfig.metadataNewFilenameColumn;
-	$.each(selectedRenamerConfig.filenameColumns, function (key, filenameColumn) {
+	$.each(selectedRenamerConfig.metadataRequiredColumns, function (key, filenameColumn) {
 		csvHeaders += "," + key;
 	})
 	debugLog("Created CSV Header Row", csvHeaders, true);
@@ -325,13 +326,13 @@ function UpdateSelectedRenamer(renamerId) {
 	$("#renamerMetadataOldFilenameColumn").html(selectedRenamerConfig.metadataOldFilenameColumn);
 	$("#renamerMetadataNewFilenameColumn").html(selectedRenamerConfig.metadataNewFilenameColumn);
 	$("#renamerTrimHeadersAndData").html(selectedRenamerConfig.trimHeadersAndData);
-	$("#renamerMissingDataTag").html(selectedRenamerConfig.missingDataTag);
+	$("#renamerNullDataTag").html(selectedRenamerConfig.nullDataTag);
 
 	$("#renamerFilenamePropertySeperator").html(selectedRenamerConfig.filenamePropertySeperator);
 	$("#renamerFilenameValueSeperator").html(selectedRenamerConfig.filenameValueSeperator);
 
 	$("#renamerColumns").html("");
-	$.each(selectedRenamerConfig.filenameColumns, function (key, filenameColumn) {
+	$.each(selectedRenamerConfig.metadataRequiredColumns, function (key, filenameColumn) {
 		var existingText = $("#renamerColumns").html();
 		var renameTo = filenameColumn.renameTo;
 		if(renameTo == null || renameTo == "")
@@ -488,7 +489,7 @@ async function ValidateMetadataPre(){
 
 	//Check for renamer columns
 	validationResults_missingColumns = [];
-	$.each(selectedRenamerConfig.filenameColumns, function (key) {
+	$.each(selectedRenamerConfig.metadataRequiredColumns, function (key) {
 		if(!CheckColumnExists(key))
 		{
 			validationResults_missingColumns.push(key);
@@ -655,6 +656,7 @@ function ShowHideErrorsPost(){
 		validationResults_sameCurrentFilename.length == 0 &&
 		validationResults_sameNewFilename.length == 0 &&
 		
+		validationResults_typeErrors.illegalNull.length == 0 &&
 		validationResults_typeErrors.dateErrors.length == 0 &&
 		validationResults_typeErrors.intErrors.length == 0 &&
 		validationResults_typeErrors.floatErrors.length == 0 &&
@@ -723,7 +725,7 @@ function ValidateTypes(){
 	for(var i = 0; i < newMetadata.length; i++)
 	{
 		//Get all the renamer columns we're interested in
-		$.each(selectedRenamerConfig.filenameColumns, function (filenameColumnKey, filenameColumn) {
+		$.each(selectedRenamerConfig.metadataRequiredColumns, function (filenameColumnKey, filenameColumn) {
 
 			//Get the data from that column
 			var columnData = newMetadata[i][filenameColumnKey];
@@ -731,52 +733,59 @@ function ValidateTypes(){
 
 			debugLog("'columnData' 'columnDataType'", columnData + " - " + columnDataType);
 
-			if(columnData == selectedRenamerConfig.missingDataTag)
+			var rowData = newMetadata[i];
+			var columnName = filenameColumnKey;
+			var columnFormat = filenameColumn.format;
+			var columnMaxTextLength = filenameColumn.maxTextLength;
+			var columnAllowsNulls = filenameColumn.allowNull;
+			if(columnData == selectedRenamerConfig.nullDataTag && !filenameColumn.allowNull)
 			{
-				debugLog("Data is recognised as missing", newMetadata[i]);
+				debugLog("Data can not be NULL", newMetadata[i]);
+				validationResults_typeErrors.illegalNull.push({"columnName": columnName, "columnData": columnData, "rowData": rowData})
 			}
 			else
 			{
-				var columnName = filenameColumnKey;
-				var columnFormat = filenameColumn.format;
-				var columnMaxTextLength = filenameColumn.maxTextLength;
-				var rowData = newMetadata[i];
-				switch(columnDataType) {
-					case "date":
-						//Use "moment" to parse date with strict parsing set to true - https://momentjs.com/docs/
-						if(!columnData || moment(columnData, columnFormat, true).isValid() == false)
-						{
-							debugLog("Date is invalid", newMetadata[i]);
-							validationResults_typeErrors.dateErrors.push({"columnName": columnName, "columnData": columnData, "columnFormat": columnFormat, "rowData": rowData})		
-						}
-						break;
-					case "int":
-						if(!columnData || isNaN(Number(columnData)) && !columnData.includes('.'))
-						{
-							debugLog("Int is invalid", newMetadata[i]);
-							validationResults_typeErrors.intErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData})		
-						}
-						break;
-					case "float":
-						if(!columnData || isNaN(Number(columnData)))
-						{
-							debugLog("Float is invalid", newMetadata[i]);
-							validationResults_typeErrors.floatErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData})		
-						}
-						break;
-					default:
-						//assume "text"
-						if(!columnData)
-						{
-							debugLog("Required text feild is missing", newMetadata[i]);
-							validationResults_typeErrors.textErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData})		
-						}
-						else if(columnMaxTextLength != null && columnData.length > columnMaxTextLength)
-						{
-							debugLog("Text feild exceeds maxium length of " + columnMaxTextLength + " characters", newMetadata[i]);
-							validationResults_typeErrors.textMaxLengthErrors.push({"columnName": columnName, "columnData": columnData, "columnMaxTextLength": columnMaxTextLength, "rowData": rowData})
-						}
-						break;
+				//Check if the data is null and allowed to be null - if it is we're going to ignore it
+				if(!DataIsNullAndIsAllowedToBe(columnData, selectedRenamerConfig.nullDataTag, columnAllowsNulls))
+				{
+					//else lets check it fits our types
+					switch(columnDataType) {
+						case "date":
+							//Use "moment" to parse date with strict parsing set to true - https://momentjs.com/docs/
+							if(!columnData || moment(columnData, columnFormat, true).isValid() == false)
+							{
+								debugLog("Date is invalid", newMetadata[i]);
+								validationResults_typeErrors.dateErrors.push({"columnName": columnName, "columnData": columnData, "columnFormat": columnFormat, "rowData": rowData, "columnAllowsNulls": columnAllowsNulls})		
+							}
+							break;
+						case "int":
+							if(!columnData || isNaN(Number(columnData)) && !columnData.includes('.'))
+							{
+								debugLog("Int is invalid", newMetadata[i]);
+								validationResults_typeErrors.intErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData, "columnAllowsNulls": columnAllowsNulls})		
+							}
+							break;
+						case "float":
+							if(!columnData || isNaN(Number(columnData)))
+							{
+								debugLog("Float is invalid", newMetadata[i]);
+								validationResults_typeErrors.floatErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData, "columnAllowsNulls": columnAllowsNulls})	
+							}
+							break;
+						default:
+							//assume "text"
+							if(!columnData)
+							{
+								debugLog("Required text feild is missing", newMetadata[i]);
+								validationResults_typeErrors.textErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData, "columnAllowsNulls": columnAllowsNulls})	
+							}
+							else if(columnMaxTextLength != null && columnData.length > columnMaxTextLength)
+							{
+								debugLog("Text feild exceeds maxium length of " + columnMaxTextLength + " characters", newMetadata[i]);
+								validationResults_typeErrors.textMaxLengthErrors.push({"columnName": columnName, "columnData": columnData, "columnMaxTextLength": columnMaxTextLength, "rowData": rowData, "columnAllowsNulls": columnAllowsNulls})	
+							}
+							break;
+					}
 				}
 			}
 		});
@@ -785,27 +794,75 @@ function ValidateTypes(){
 	debugLog("validationResults_types", validationResults_typeErrors)
 }
 
+//Returns true if there's data OR if it's allowed to be NULL
+function DataIsNullAndIsAllowedToBe(data, nullDataTag, allowNull)
+{
+	if(data == nullDataTag && allowNull)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 function GetNewFilename(metdataItem){
 	var newFilename = "";
 
 	var i = 0;
-	$.each(selectedRenamerConfig.filenameColumns, function (oldPropertyName, newPropertyName) {
-		var propertyValue = metdataItem[oldPropertyName];
-		if (i != 0) {
-			newFilename += selectedRenamerConfig.filenamePropertySeperator;
+	$.each(selectedRenamerConfig.metadataRequiredColumns, function (requiredColumnName, requiredColumnAttributes) {
+		//Get the value we want to add
+		var propertyValue = metdataItem[requiredColumnName];
+		if(UseValueInFilename(propertyValue, selectedRenamerConfig.nullDataTag, requiredColumnAttributes))
+		{
+			//Add a seperator between the properties
+			if (i != 0) {
+				newFilename += selectedRenamerConfig.filenamePropertySeperator;
+			}
+			newFilename += requiredColumnAttributes.renameTo + selectedRenamerConfig.filenameValueSeperator + propertyValue;
+			//Replace spaces if needed
+			newFilename = newFilename.replace(" ", selectedRenamerConfig.replaceSpacesInFilenameWith)
+			//Replace invalid filename characters
+			newFilename = newFilename.replace(/[\<\>\:\"\/\\\|\?\*]/g, selectedRenamerConfig.replaceInvalidCharactersInFilenameWith)
+			i++
 		}
-		newFilename += newPropertyName.renameTo + selectedRenamerConfig.filenameValueSeperator + propertyValue;
-		//Replace spaces if needed
-		newFilename = newFilename.replace(" ", selectedRenamerConfig.replaceSpacesInFilenameWith)
-		//Replace invalid filename characters
-		newFilename = newFilename.replace(/[\<\>\:\"\/\\\|\?\*]/g, selectedRenamerConfig.replaceInvalidCharactersInFilenameWith)
-		i++
 	})
 
 	//Get extension from old file name and add it on the end
 	newFilename += path.extname(metdataItem[selectedRenamerConfig.metadataCurrentFilenameColumn]);
 
 	return (newFilename);
+}
+
+//Determines if a value should be used in genrating the filename
+function UseValueInFilename(requiredColumnValue, nullDataTag, requiredColumnAttributes)
+{
+	//Only add the property if it's "used in the filename"
+	if(requiredColumnAttributes.useInFilename)
+	{
+		//If we do want to use it, but the value is null...
+		if(requiredColumnValue == nullDataTag)
+		{
+			if(requiredColumnAttributes.useInFilenameIfNull == undefined ||  requiredColumnAttributes.useInFilenameIfNull)
+			{
+				//If we allow NULLs then return true
+				return true;
+			}
+			else
+			{
+				//else return false
+				return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
+	else
+	{
+		//We don't want to use it so return false
+		return false;
+	}
 }
 
 function StoreOldFilename(){
@@ -912,10 +969,11 @@ function UpdateMetadataPath()
 }
 
 function ShowValidation(){
+	var allowNullString = ". If null/empty/or no data recorded use '" + selectedRenamerConfig.nullDataTag + "'";
 	//add folder text to error messages
 	$('#errorFilesMissingFolder').html(metadataDirectory);
 	$('#errorOutputFolder').html(outputPath);
-	$('#errorEmptyData').html(selectedRenamerConfig.missingDataTag)
+	$('#errorEmptyData').html(selectedRenamerConfig.nullDataTag)
 
 	$('#errorFilesMissing').hide();
 	errorFilesMissing
@@ -964,8 +1022,12 @@ function ShowValidation(){
 	errorList = $('#eText');
 	errorList.html('');
 	$.each(validationResults_typeErrors.textErrors, function (key, item) {
-		var string = "";
-		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' is required</li>");
+		var allowNullStringAddon = "";
+		if(item.columnAllowsNulls)
+		{
+			allowNullStringAddon = allowNullString
+		}
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' is required" + allowNullStringAddon + "</li>");
 		$('#errorText').show();
 	})
 
@@ -973,17 +1035,38 @@ function ShowValidation(){
 	errorList = $('#eTextMaxLength');
 	errorList.html('');
 	$.each(validationResults_typeErrors.textMaxLengthErrors, function (key, item) {
-		var string = "";
-		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' value is longer than '" + item.columnMaxTextLength + "' characters</li>");
+		var allowNullStringAddon = "";
+		if(item.columnAllowsNulls)
+		{
+			allowNullStringAddon = allowNullString
+		}
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' value is longer than '" + item.columnMaxTextLength + "' characters" + allowNullStringAddon + "</li>");
 		$('#errorTextOverMaxLength').show();
+	})
+
+	$('#errorNull').hide();
+	errorList = $('#eNull');
+	errorList.html('');
+	$.each(validationResults_typeErrors.illegalNull, function (key, item) {
+		var allowNullStringAddon = "";
+		if(item.columnAllowsNulls)
+		{
+			allowNullStringAddon = allowNullString
+		}
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + " Required field. Can not be '" + selectedRenamerConfig.nullDataTag + "'" + allowNullStringAddon + "</li>");
+		$('#errorNull').show();
 	})
 
 	$('#errorDate').hide();
 	errorList = $('#eDate');
 	errorList.html('');
 	$.each(validationResults_typeErrors.dateErrors, function (key, item) {
-		var string = "";
-		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' does not match format '" + item.columnFormat + "'</li>");
+		var allowNullStringAddon = "";
+		if(item.columnAllowsNulls)
+		{
+			allowNullStringAddon = allowNullString
+		}
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' does not match format '" + item.columnFormat + "'" + allowNullStringAddon + "</li>");
 		$('#errorDate').show();
 	})
 
@@ -991,8 +1074,12 @@ function ShowValidation(){
 	errorList = $('#eInt');
 	errorList.html('');
 	$.each(validationResults_typeErrors.intErrors, function (key, item) {
-		var string = "";
-		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' is not a valid integer</li>");
+		var allowNullStringAddon = "";
+		if(item.columnAllowsNulls)
+		{
+			allowNullStringAddon = allowNullString
+		}
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' is not a valid integer" + allowNullStringAddon + "</li>");
 		$('#errorInt').show();
 	})
 
@@ -1000,8 +1087,12 @@ function ShowValidation(){
 	errorList = $('#eFloat');
 	errorList.html('');
 	$.each(validationResults_typeErrors.floatErrors, function (key, item) {
-		var string = "";
-		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' is not a valid float</li>");
+		var allowNullStringAddon = "";
+		if(item.columnAllowsNulls)
+		{
+			allowNullStringAddon = allowNullString
+		}
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' is not a valid float" + allowNullStringAddon + "</li>");
 		$('#errorFloat').show();
 	})
 }

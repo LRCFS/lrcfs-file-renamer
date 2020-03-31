@@ -259,7 +259,7 @@
 						<p><strong>New Filename Column:</strong> <span id="renamerMetadataNewFilenameColumn"></span></p>
 
 						<p><strong>Trim Headers &amp; Data:</strong> <span id="renamerTrimHeadersAndData"></span></p>
-						<p><strong>Missing Data Tag:</strong> <span id="renamerMissingDataTag"></span></p>
+						<p><strong>Null Data Tag:</strong> <span id="renamerNullDataTag"></span></p>
 					</div>
 					<div class="col">
 						<h4>New Filename Data</h4>
@@ -417,6 +417,15 @@
 					<p>The following rows have text that is too long.</p>
 					<p>Please ensure that the following rows contain text no longer than each column specifies.</p>
 					<ul id="eTextMaxLength"></ul>
+				</div>
+			</div>
+			<div class="row" id="errorNull">
+				<div class="col">
+					<h4>Empty/Null Data Errors</h4>
+					<hr />
+					<p>The following rows have data that cannot be empty/null.</p>
+					<p>Please ensure that the following rows/columns contain data in the correct format.</p>
+					<ul id="eNull"></ul>
 				</div>
 			</div>
 			<div class="row" id="errorDate">

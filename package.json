@@ -1,7 +1,7 @@
 {
 	"name": "lrcfs-file-renamer",
 	"productName": "LRCFS File Renamer",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Rename files based on metadata",
 	"license": "MIT",
 	"repository": "https://github.com/LRCFS/",

@@ -3,28 +3,28 @@
 		"name": "Transfer & Persistence",
 		"description": "We are creating and testing methods to detect how materials are transferred from places to people, or from people to people and how long materials can last in the environment once they have transferred. Methods have developed collaboratively by scientists at the LRCFS and over 50 academics from multiple disciplines and the judiciary.",
 		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/the-transfer-and-persistence-of-evidence.php",
+		"metadataRequiredColumns":
+		{
+			"Date":						{"useInFilename": true,	"renameTo": "",		"type": "date",	"allowNull": false,	"format": "YYYYMMDD"},
+			"Experiment":				{"useInFilename": true,	"renameTo": "EX",	"type": "int",	"allowNull": false},
+			"Replicate":				{"useInFilename": true,	"renameTo": "RP",	"type": "int",	"allowNull": false},
+			"Substrate":				{"useInFilename": true,	"renameTo": "SB",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"SubstrateType":			{"useInFilename": true,	"renameTo": "ST",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"ObservationType":			{"useInFilename": true,	"renameTo": "OT",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"Mass (g)":					{"useInFilename": true,	"renameTo": "MA",	"type": "int",	"allowNull": false},
+			"TransferTime (s)":			{"useInFilename": true,	"renameTo": "TT",	"type": "int",	"allowNull": false},
+			"PersistenceTime (min)":	{"useInFilename": true,	"renameTo": "PT",	"type": "int",	"allowNull": false},
+			"Temperature (DegC)":		{"useInFilename": true,	"renameTo": "TP",	"type": "int",	"allowNull": true, "useInFilenameIfNull": true},
+			"Humidity (%)":				{"useInFilename": true,	"renameTo": "HM",	"type": "int",	"allowNull": true, "useInFilenameIfNull": true}
+		},
+		"nullDataTag": "NA",
 		"metadataCurrentFilenameColumn": "Filename",
 		"metadataOldFilenameColumn": "OriginalFilename",
 		"metadataNewFilenameColumn": "Filename",
 		"filenamePropertySeperator": "-",
 		"filenameValueSeperator": "",
-		"filenameColumns":
-		{
-			"Date":						{"renameTo": "",	"type": "date",	"allowNull": false,	"format": "YYYYMMDD"},
-			"Experiment":				{"renameTo": "EX",	"type": "int",	"allowNull": false},
-			"Replicate":				{"renameTo": "RP",	"type": "int",	"allowNull": false},
-			"Substrate":				{"renameTo": "SB",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
-			"SubstrateType":			{"renameTo": "ST",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
-			"ObservationType":			{"renameTo": "OT",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
-			"Mass (g)":					{"renameTo": "MA",	"type": "int",	"allowNull": false},
-			"TransferTime (s)":			{"renameTo": "TT",	"type": "int",	"allowNull": false},
-			"PersistenceTime (min)":	{"renameTo": "PT",	"type": "int",	"allowNull": false},
-			"Temperature (DegC)":		{"renameTo": "TP",	"type": "int",	"allowNull": true},
-			"Humidity (%)":				{"renameTo": "HM",	"type": "int",	"allowNull": true}
-		},
 		"replaceSpacesInFilenameWith": " ",
 		"replaceInvalidCharactersInFilenameWith": "",
-		"trimHeadersAndData": true,
-		"missingDataTag": "NA"
+		"trimHeadersAndData": true
 	}
 ]
