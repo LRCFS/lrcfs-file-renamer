@@ -345,18 +345,23 @@ function UpdateSelectedRenamer(renamerId) {
 		{
 			renameTo = "<span class='noPrefix'>NA</span>"
 		}
+		var canBeNa = "/'" + selectedRenamerConfig.nullDataTag + "'";
+		if(filenameColumn.allowNull == null || filenameColumn.allowNull == false)
+		{
+			canBeNa = "";
+		}
 		
 		if(filenameColumn.format != null && filenameColumn.format != "")
 		{
-			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + " in the format: " + filenameColumn.format + ")<br />");
+			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + ": e.g. " + filenameColumn.format + canBeNa + ")<br />");
 		}
 		else if(filenameColumn.maxTextLength != null)
 		{
-			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + " - max length: " + filenameColumn.maxTextLength + ")<br />");
+			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + ": max " + filenameColumn.maxTextLength + canBeNa + ")<br />");
 		}
 		else
 		{
-			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + ")<br />");
+			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + canBeNa + ")<br />");
 		}
 	})
 
