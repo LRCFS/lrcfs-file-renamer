@@ -1,6 +1,6 @@
 'use strict';
-console.log('worker.js');
-var debug = false;
+console.log('Loaded: /app/pages/worker.js');
+var showDebug = false;
 
 const electron = require('electron');
 const ipcRenderer = electron.ipcRenderer;
@@ -159,7 +159,7 @@ function ProcessFiles(){
 
 
 function debugLog(message, property, ignoreDebugSetting){
-	if(debug == true || ignoreDebugSetting == true)
+	if(showDebug == true || ignoreDebugSetting == true)
 	{
 		console.log(message);
 		if(property != null)

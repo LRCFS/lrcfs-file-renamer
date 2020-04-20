@@ -1,5 +1,7 @@
-console.log("main.js")
 'use strict';
+console.log('Loaded: /main.js');
+var showDebug = false;
+
 const path = require('path');
 const {app, BrowserWindow, Menu, ipcMain} = require('electron');
 /// const {autoUpdater} = require('electron-updater');
@@ -32,6 +34,7 @@ app.setAppUserModelId('com.company.AppName');
 // Prevent window from being garbage collected
 let mainWindow, workerWindow;
 
+//Function to create and configure the main main
 const createMainWindow = async () => {
 	const win = new BrowserWindow({
 		title: app.getName(),
@@ -58,6 +61,7 @@ const createMainWindow = async () => {
 	return win;
 };
 
+//Function to definte and create the worker window (used for the renaming process)
 const createWorkerWindow = async () => {
 	// create hidden worker window
 	const win = new BrowserWindow({
@@ -79,30 +83,29 @@ const createWorkerWindow = async () => {
 	return win;
 };
 
-app.on('second-instance', () => {
-	if (mainWindow) {
-		if (mainWindow.isMinimized()) {
-			mainWindow.restore();
-		}
 
-		mainWindow.show();
+
+
+
+(async () => {
+	//Wait for app to be ready
+	await app.whenReady();
+
+	//Assign main menu
+	if(showDebug)
+	{
+		Menu.setApplicationMenu(menu)
 	}
-});
-
-app.on('window-all-closed', () => {
-	app.quit();
-});
-
-app.on('activate', async () => {
-	if (!mainWindow) {
-		mainWindow = await createMainWindow();
+	else
+	{
+		Menu.setApplicationMenu(null);
 	}
-	if (!workerWindow) {
-		workerWindow = await createWorkerWindow();
-	}
-});
+	
+	//Create windows
+	mainWindow = await createMainWindow();
+	workerWindow = await createWorkerWindow();
 
-app.on('ready', async () => {
+	//Register listeners for sending data between windows
 	ipcMain.on('w2r-UpdateProgressPercentage', (event, arg) => {
 		sendWindowMessage(mainWindow, 'w2r-UpdateProgressPercentage', arg);
 	});
@@ -113,19 +116,36 @@ app.on('ready', async () => {
 		console.log("r2w-CancelWorkerProcessing");
 		sendWindowMessage(workerWindow, 'r2w-CancelWorkerProcessing', arg);
 	});
-});
 
-(async () => {
-	await app.whenReady();
-	//Menu.setApplicationMenu(menu);
-	//Set menu to null for published application
-	Menu.setApplicationMenu(null);
-	mainWindow = await createMainWindow();
-	workerWindow = await createWorkerWindow();
 })();
 
+//If all windows are closed, then quite the application
+app.on('window-all-closed', () => {
+	app.quit();
+});
 
+//If you reactive the application then recreate if needed
+app.on('activate', async () => {
+	if (!mainWindow) {
+		mainWindow = await createMainWindow();
+	}
+	if (!workerWindow) {
+		workerWindow = await createWorkerWindow();
+	}
+});
 
+//If there's a second instance of the appliction then restore if minimized
+app.on('second-instance', () => {
+	if (mainWindow) {
+		if (mainWindow.isMinimized()) {
+			mainWindow.restore();
+		}
+
+		mainWindow.show();
+	}
+});
+
+//helper function used to send messages between windows
 function sendWindowMessage(targetWindow, message, payload) {
 	if(typeof targetWindow === 'undefined') {
 		console.log('Target window does not exist');
