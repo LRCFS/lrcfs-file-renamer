@@ -152,6 +152,12 @@ let SendCancelProcessing = (command, payload) => {
 	$('#errorModalPost').on('hidden.bs.modal', function (e) {
 		ScrollToErrorList();
 	})
+
+
+	//Bind show project settings to scroll to position after shown
+	$('#renamerInfoCollapsible').on('shown.bs.collapse', function (e) {
+		ScrollToRenamerInfo();
+	})
 	
 
 	//Load setup "data"
