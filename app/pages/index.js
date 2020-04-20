@@ -290,6 +290,7 @@ async function GetRenamers()
 	else{
 		renamersPath = externalRenamersPath;
 	}
+	renamers = await LoadRenamersJson(renamersPath);
 
 	var configRenamer = config.get('renamer');
 	let dropdown = $('#selectRenamer');
@@ -297,8 +298,6 @@ async function GetRenamers()
 	dropdown.empty();
 	dropdown.append('<option selected="true" disabled>Select project configuration...</option>');
 	dropdown.prop('selectedIndex', 0);
-
-	renamers = await LoadRenamersJson(renamersPath);
 
 	$.each(renamers, function (key, renamer) {
 		var dropdownOption = $('<option></option>').attr('value', key).text(renamer.name);
