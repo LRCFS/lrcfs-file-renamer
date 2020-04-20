@@ -13,12 +13,13 @@ const config = require('./app/config');
 const menu = require('./app/controllers/menu');
 
 unhandled();
-//debug();
+if(showDebug)
+	debug();
 contextMenu();
 
 
 // Note: Must match `build.appId` in package.json
-app.setAppUserModelId('com.company.AppName');
+app.setAppUserModelId('com.lrcfs.fileRenamer');
 
 // Uncomment this before publishing your first version.
 // It's commented out as it throws an error if there are no published versions.
@@ -54,6 +55,7 @@ const createMainWindow = async () => {
 		// Dereference the window
 		// For multiple windows store them in an array
 		mainWindow = undefined;
+		app.quit();
 	});
 
 	await win.loadFile(path.join(__dirname, '/app/pages/index.html'));
