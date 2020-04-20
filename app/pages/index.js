@@ -201,9 +201,9 @@ function ResetErrors(){
 async function DownloadExampleCsv()
 {
 	//Create headers from required filename columns
-	var csvHeaders = selectedRenamerConfig.metadataNewFilenameColumn;
-	$.each(selectedRenamerConfig.metadataRequiredColumns, function (key, filenameColumn) {
-		csvHeaders += "," + key;
+	var csvHeaders = '"' + selectedRenamerConfig.metadataNewFilenameColumn + '"';
+	$.each(selectedRenamerConfig.metadataRequiredColumns, function (metadataRequiredColumnName, metadataRequiredColumnProperties) {
+		csvHeaders += ',"' + metadataRequiredColumnName + '"';
 	})
 	debugLog("Created CSV Header Row", csvHeaders, true);
 	
@@ -295,7 +295,7 @@ async function GetRenamers()
 	let dropdown = $('#selectRenamer');
 
 	dropdown.empty();
-	dropdown.append('<option selected="true" disabled>Select renamer configuration...</option>');
+	dropdown.append('<option selected="true" disabled>Select project configuration...</option>');
 	dropdown.prop('selectedIndex', 0);
 
 	renamers = await LoadRenamersJson(renamersPath);
