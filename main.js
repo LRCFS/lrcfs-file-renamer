@@ -72,7 +72,8 @@ const createWorkerWindow = async () => {
 	});
 
 	win.on('ready-to-show', () => {
-		//win.show();
+		if(showDebug)
+			win.show();
 	});
 
 	win.on('closed', () => {

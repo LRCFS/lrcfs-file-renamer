@@ -10,7 +10,7 @@ Any changes by the user are saved to:
 */
 
 'use strict';
-console.log("config.js");
+console.log("Loaded: /config.js");
 
 const Store = require('electron-store');
 

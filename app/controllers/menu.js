@@ -1,5 +1,6 @@
 'use strict';
-console.log("menu.js")
+console.log("Loaded: /app/controllers/menu.js")
+
 const path = require('path');
 const {app, Menu, shell} = require('electron');
 const {
