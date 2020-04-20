@@ -145,7 +145,7 @@ function ProcessFiles(){
         progressCount++;
         SendProgressPercentage('helloMain', { percentage: progressCount/metadata.length});
 
-        if (i < metadata.length && !stopProcessing)
+        if (i < metadata.length - 1 && !stopProcessing)
         {
             i++;
             setImmediate(step);
