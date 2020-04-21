@@ -38,6 +38,7 @@ var isValidPre;
 var validationResults_duplicateColumnName;
 var validationResults_currentFilenameColumnDoesNotExist;
 var validationResults_missingColumns;
+var validationResults_headerColumsnNotFromattedCorrectly;
 
 var isValidPost;
 var validationResults_currentFileDoesNotExist;
@@ -189,6 +190,7 @@ function ResetErrors(){
 	validationResults_duplicateColumnName = [];
 	validationResults_currentFilenameColumnDoesNotExist = false;
 	validationResults_missingColumns = [];
+	validationResults_headerColumsnNotFromattedCorrectly = [];
 
 	validationResults_currentFileDoesNotExist = [];
 	validationResults_newFilenameExists = [];
@@ -478,10 +480,19 @@ function trimStrings(key, value) {
   }
 
 async function ValidateMetadataPre(){
-	//Check for duplicate column names
+	validationResults_headerColumsnNotFromattedCorrectly = [];
+
 	var duplicateHeaderCheck = [];
 	$.each(metadataColumnNames, async function(i){
-		await debugDelay();
+
+		//Check headers don't contain single quotes
+		if(!CheckColumnFormattedCorrectly(metadataColumnNames[i]))
+		{
+			validationResults_headerColumsnNotFromattedCorrectly.push(metadataColumnNames[i]);
+		}
+		debugLog("'ValidateMetadataPre' - 'validationResults_headerColumsnNotFromattedCorrectly'...", validationResults_headerColumsnNotFromattedCorrectly);
+
+		//Check to find any duplicate headers
 		if (duplicateHeaderCheck.indexOf(metadataColumnNames[i]) == -1)
 		{
 			duplicateHeaderCheck.push(metadataColumnNames[i]);
@@ -492,6 +503,8 @@ async function ValidateMetadataPre(){
 			debugLog("Duplicate column name", metadataColumnNames[i], true);
 		}
 	});
+
+
 
 	//Check for filename column
 	validationResults_currentFilenameColumnDoesNotExist = !CheckColumnExists(selectedRenamerConfig.metadataCurrentFilenameColumn);
@@ -508,6 +521,18 @@ async function ValidateMetadataPre(){
 	debugLog("'ValidateMetadataPre' - 'validationResults_missingColumns'...", validationResults_missingColumns);
 
 	ShowHideErrorsPre();
+}
+
+function CheckColumnFormattedCorrectly(columnName){
+
+	if(columnName.startsWith("'") && columnName.startsWith("'"))
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 function CheckColumnExists(columnName){
@@ -560,6 +585,20 @@ function ShowHideErrorsPre(){
 	}
 	else{
 		$("#errorsMissingColumnsHeading").hide();
+	}
+
+	var errorsMalformedColumns = $("#errorsMalformedColumns");
+	errorsMalformedColumns.html('');
+	if(validationResults_headerColumsnNotFromattedCorrectly.length > 0)
+	{
+		$.each(validationResults_headerColumsnNotFromattedCorrectly, async function (key, value) {
+			errorsMalformedColumns.append("<li>" + value + "</li>");
+		})
+		$("#errorsMalformedColumnsHeading").show();
+		isValidPre = false;
+	}
+	else{
+		$("#errorsMalformedColumnsHeading").hide();
 	}
 
 	if(!isValidPre)
@@ -660,6 +699,7 @@ function ValidateMetadataPost() {
 function ShowHideErrorsPost(){
 	if(validationResults_currentFilenameColumnDoesNotExist == false &&
 		validationResults_missingColumns.length == 0 &&
+		validationResults_headerColumsnNotFromattedCorrectly.length == 0 &&
 
 		validationResults_currentFileDoesNotExist.length == 0 &&
 		validationResults_newFilenameExists.length == 0 &&

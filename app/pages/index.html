@@ -335,18 +335,24 @@
 					<hr/>
 					<p><strong>Please note that header names are case sensative.</strong><p></p>
 					<div id="errorsDuplicateColumnHeading">
-						<p>Your selected metadata includes duplicate column names/headings.</p>
-						<p><strong>Please remove/rename/replace all duplicate column headings as no two columns can have the same heading:</strong></p>
+						<p><strong>Your selected metadata includes duplicate column names/headings.</strong></p>
+						<p>Please remove/rename/replace all duplicate column headings as no two columns can have the same heading:</p>
 						<ul id="errorsDuplicateColumn"></ul>
 					</div>
+					<div id="errorsMalformedColumnsHeading">
+						<p><strong>Your headers contain single quotes around your headings. Please use double quotes to enclose all data if requied.</strong></p>
+						<p>Please check that your following metadata headers do not use single quotes or use double quotes instead:</p>
+						<p><small>Note: Not being able to correctly recognise your headers may results in more errors below. Please resolve this first before reloading your data to check for further errors.</small></p>
+						<ul id="errorsMalformedColumns"></ul>
+					</div>
 					<div id="errorsMissingFilenameColumnHeading">
-						<p>Your selected Project requires a heading that specifies your filenames in your metadata, but it appears to be missing.</p>
-						<p><strong>Please check your metadata contains the following header that specifies your filenames:</strong></p>
+						<p><strong>Your selected Project requires a heading that specifies your filenames in your metadata, but it appears to be missing.</strong></p>
+						<p>Please check your metadata contains the following header that specifies your filenames:</p>
 						<ul id="errorsMissingFilenameColumn"></ul>
 					</div>
 					<div id="errorsMissingColumnsHeading">
-						<p>Your selected Project has some required headers for renaming your files, but the following headers are missing from your metadata.</p>
-						<p><strong>Please check that your metadata contains the following headers:</strong></p>
+						<p><strong>Your selected Project has some required headers for renaming your files, but the following headers are missing from your metadata.</strong></p>
+						<p>Please check that your metadata contains the following headers:</p>
 						<ul id="errorsMissingColumns"></ul>
 					</div>
 					<hr />
