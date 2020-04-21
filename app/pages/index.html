@@ -131,7 +131,10 @@
 				</div>
 				<div class="modal-body">
 					<h6>Your files have been renamed</h6>
-					<p>Please check your metadata directory for your renamed files.</p>
+					<p>
+						Please find a copy of your data in:<br />
+						<strong><a href="#" id="outputDir"></a></strong>
+					</p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
@@ -200,7 +203,7 @@
 						<div class="card-body">
 							<h5 class="card-title">Customise LRCFS Renamer</h5>
 							<p class="card-text">You can create your own renamer configuration files that let you customise what metadata you expect and how you want your files to be renamed.</p>
-							<a class="btn btn-primary" href="https://github.com/LRCFS/lrcfs-msb2019-photogrammetry" role="button" target="_blank"><span class="fa fa-dashboard fa-lg" aria-hidden="true"></span> Visit GitHub to find out more</a>
+							<a class="btn btn-primary" href="https://github.com/LRCFS/lrcfs-msb2019-photogrammetry" role="button" target="_blank"><span class="fa fa-dashboard fa-lg" aria-hidden="true"></span> Visit GitHub to find out more<br />(LINK NOT WORKING YET)</a>
 						</div>
 					</div>				
 				</div>
@@ -227,7 +230,7 @@
 					<div id="exampleDataDownload">
 						<br />
 						<button id="btnShowProjectSettings" class="btn btn-info btn-block" type="button" data-toggle="collapse" data-target="#renamerInfoCollapsible" aria-expanded="false" aria-controls="renamerInfoCollapsible">
-							Show Project Settings
+							Show Project Settings / Required Metadata
 						</button>
 						<br />
 						<h5>Example Metadata</h5>
@@ -286,7 +289,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col">
-					<h2>2. Load your Metadata</h2>
+					<h2>2. Load Your Metadata</h2>
 					<p>
 						Now that we know what project you're working on, and if you're happy with the <a data-toggle="collapse" href="#renamerInfoCollapsible" role="button" aria-expanded="false" aria-controls="collapseExample">project settings outlined above</a>, we can load your metadata:
 					</p>
@@ -305,8 +308,8 @@
 				<div class="col">
 					<div class="row">
 						<div class="col">
-							<h2>3. Rename your Files</h2>
-							<p>If you're happy with your data being renamed as outline in the <a id="linkScrollToResults" href="#">Results panel</a> below, click "Start Processing" to begin renaming your files.</p>
+							<h2>3. Validate and Rename Your Files</h2>
+							<p>If you're happy with your data being renamed as outline in the <a id="linkScrollToResults" href="#">Results panel</a> below, click "Start Processing" to begin the validation of your metadata and rename your files.</p>
 							
 							<!--<input id="chkCreateCopies" type="checkbox" checked data-toggle="toggle" data-on="Create Copies" data-off="Rename Originals" data-onstyle="success" data-offstyle="danger" data-width="180" data-height="39">-->
 							<button id="btnRename" class="btn btn-success btn-block" disabled>Start Processing</button>

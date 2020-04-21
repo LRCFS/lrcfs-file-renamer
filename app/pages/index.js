@@ -4,7 +4,7 @@ var showDebug = false;
 
 var lineNumberColumnName = 'Line&nbsp;No.&nbsp;';
 
-const { remote, ipcRenderer } = require('electron');
+const { remote, ipcRenderer, shell } = require('electron');
 const { app, dialog } = remote;
 const XLSX = require('xlsx');
 const csv = require('csv-parser');
@@ -79,6 +79,8 @@ let SendCancelProcessing = (command, payload) => {
 (async () => {
 	debugger
 	await app.whenReady();
+
+	await debugDelay();
 
 	$('#txtOutputDir').val(defaultOutputPath);
 
@@ -1150,6 +1152,12 @@ function ShowValidation(){
 
 async function StartProcessing() {
 
+	$('#outputDir').html(outputPath);
+	$("#outputDir").click(function (e) {
+		e.preventDefault();
+		shell.showItemInFolder(outputPath);
+	});
+	
 	await ShowProcessProgress();
 
 	SendStartProcessing('helloWorker', { metadata: metadata,
@@ -1298,9 +1306,8 @@ async function SetProcessingProgress(progress)
 	}
 }
 
-async function debugDelay()
+async function debugDelay(milliseconds = 500)
 {
-	var milliseconds = 0;
 	const date = Date.now();
 	let currentDate = null;
 	do {
