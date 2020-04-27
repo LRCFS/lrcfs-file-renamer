@@ -3,6 +3,8 @@ console.log('Loaded: /app/pages/index.js');
 var showDebug = false;
 
 var lineNumberColumnName = 'Line&nbsp;No.&nbsp;';
+var absMinValue = -2147483648; //Limits of MySQL database (signed int)
+var absMaxValue = 2147483647;
 
 const { remote, ipcRenderer, shell } = require('electron');
 const { app, dialog } = remote;
@@ -23,8 +25,8 @@ var createCopies;
 
 var defaultOutputPath = "./output";
 var metadataPath = "";
-var metadataDirectory;
-var metadataFilename;
+var metadataDirectory; //The directory that the metadata is in
+var metadataFilename; //The name of the metadata file
 var metadataColumnNames;
 var metadata;
 
@@ -42,6 +44,7 @@ var validationResults_headerColumsnNotFromattedCorrectly;
 
 var isValidPost;
 var validationResults_currentFileDoesNotExist;
+var validationResults_extraFileInDirectory;
 var validationResults_newFilenameExists;
 var validationResults_sameCurrentFilename;
 var validationResults_sameNewFilename;
@@ -195,6 +198,7 @@ function ResetErrors(){
 	validationResults_headerColumsnNotFromattedCorrectly = [];
 
 	validationResults_currentFileDoesNotExist = [];
+	validationResults_extraFileInDirectory = [];
 	validationResults_newFilenameExists = [];
 	validationResults_sameCurrentFilename = [];
 	validationResults_sameNewFilename = [];
@@ -335,7 +339,7 @@ function UpdateSelectedRenamer(renamerId) {
 	$("#renamerMetadataOldFilenameColumn").html(selectedRenamerConfig.metadataOldFilenameColumn);
 	$("#renamerMetadataNewFilenameColumn").html(selectedRenamerConfig.metadataNewFilenameColumn);
 	$("#renamerTrimHeadersAndData").html(selectedRenamerConfig.trimHeadersAndData);
-	$("#renamerNullDataTag").html(selectedRenamerConfig.nullDataTag);
+	$("#renamerNullDataTag").html(selectedRenamerConfig.nullDataTagDisplay);
 
 	$("#renamerFilenamePropertySeperator").html(selectedRenamerConfig.filenamePropertySeperator);
 	$("#renamerFilenameValueSeperator").html(selectedRenamerConfig.filenameValueSeperator);
@@ -348,15 +352,15 @@ function UpdateSelectedRenamer(renamerId) {
 		{
 			renameTo = "<span class='noPrefix'>NA</span>"
 		}
-		var canBeNa = "/'" + selectedRenamerConfig.nullDataTag + "'";
+		var canBeNa = "/'" + selectedRenamerConfig.nullDataTagDisplay + "'";
 		if(filenameColumn.allowNull == null || filenameColumn.allowNull == false)
 		{
 			canBeNa = "";
 		}
 		
-		if(filenameColumn.format != null && filenameColumn.format != "")
+		if(filenameColumn.dateFormatJs != null && filenameColumn.dateFormatJs != "")
 		{
-			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + ": e.g. " + filenameColumn.format + canBeNa + ")<br />");
+			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + ": e.g. " + filenameColumn.dateFormatJs + canBeNa + ")<br />");
 		}
 		else if(filenameColumn.maxTextLength != null)
 		{
@@ -689,7 +693,10 @@ async function GenerateNewMetadata(){
 }
 
 function ValidateMetadataPost() {
-	ValidateCurrentFilenameExists();
+	var allFilesInMetadataFolder = fs.readdirSync(metadataDirectory);	
+
+	ValidateCurrentFilenameExists(allFilesInMetadataFolder);
+	ValidateErrorExtraFiles(allFilesInMetadataFolder);
 	ValidateNewFilenameExists();
 	ValidateSameCurrentFilename();
 	ValidateSameNewFilename();
@@ -704,6 +711,7 @@ function ShowHideErrorsPost(){
 		validationResults_headerColumsnNotFromattedCorrectly.length == 0 &&
 
 		validationResults_currentFileDoesNotExist.length == 0 &&
+		validationResults_extraFileInDirectory.length == 0 &&
 		validationResults_newFilenameExists.length == 0 &&
 		validationResults_sameCurrentFilename.length == 0 &&
 		validationResults_sameNewFilename.length == 0 &&
@@ -725,8 +733,9 @@ function ShowHideErrorsPost(){
 		}
 }
 
-function ValidateCurrentFilenameExists() {
+function ValidateCurrentFilenameExists(allFilesInMetadataFolder) {
 	validationResults_currentFileDoesNotExist = [];
+
 	$.each(metadata, function (key, metadataItem) {
 		var currentFilePath = path.join(metadataDirectory, metadataItem[selectedRenamerConfig.metadataCurrentFilenameColumn]);
 		debugLog("'ValidateCurrentFilenameExists' - Path to check 'currentFilePath'...", currentFilePath);
@@ -734,8 +743,29 @@ function ValidateCurrentFilenameExists() {
 		if (!fileExists) {
 			validationResults_currentFileDoesNotExist.push(metadataItem);
 		}
+		else{
+			var filename = path.basename(currentFilePath);
+			if (allFilesInMetadataFolder.indexOf(filename) == -1) {
+				validationResults_currentFileDoesNotExist.push(metadataItem);
+			}
+		}
 	})
 	debugLog("'ValidateCurrentFilenameExists' - 'validationResults_currentFileDoesNotExist'...'", validationResults_currentFileDoesNotExist);
+}
+
+//Verify that every file we can find is included in the metadata
+function ValidateErrorExtraFiles(allFilesInMetadataFolder)
+{
+	validationResults_extraFileInDirectory = [];
+
+	$.each(allFilesInMetadataFolder, function (index, filename) {
+		if (filenamesOld.indexOf(filename) == -1 && filename != metadataFilename) {
+			debugLog("'ValidateErrorExtraFiles' - Extra file found in metadata directory...", filename);
+			validationResults_extraFileInDirectory.push(filename);
+		}
+	})
+
+
 }
 
 function ValidateNewFilenameExists() {
@@ -787,10 +817,22 @@ function ValidateTypes(){
 
 			var rowData = newMetadata[i];
 			var columnName = filenameColumnKey;
-			var columnFormat = filenameColumn.format;
+			var columnDateFormat = filenameColumn.dateFormatJs;
 			var columnMaxTextLength = filenameColumn.maxTextLength;
 			var columnAllowsNulls = filenameColumn.allowNull;
-			if(columnData == selectedRenamerConfig.nullDataTag && !filenameColumn.allowNull)
+			var columnMinValue = filenameColumn.minValue;
+			var columnMaxValue = filenameColumn.maxValue;
+			if(columnMinValue == null)
+				columnMinValue = absMinValue;
+			if(columnMaxValue == null)
+				columnMaxValue = absMaxValue;
+
+			//Check if the column data is the nullDataTag and if it's not allowed to be null
+			//OR
+			//if the column is empty, the nullDataTag isn't "empty" and it can't be null
+			if((columnData.match(selectedRenamerConfig.nullDataTagRegex) && !columnAllowsNulls) ||
+				(columnData == "" && selectedRenamerConfig.nullDataTagRegex != "" && !columnAllowsNulls)
+			)
 			{
 				debugLog("Data can not be NULL", newMetadata[i]);
 				validationResults_typeErrors.illegalNull.push({"columnName": columnName, "columnData": columnData, "rowData": rowData})
@@ -798,23 +840,23 @@ function ValidateTypes(){
 			else
 			{
 				//Check if the data is null and allowed to be null - if it is we're going to ignore it
-				if(!DataIsNullAndIsAllowedToBe(columnData, selectedRenamerConfig.nullDataTag, columnAllowsNulls))
+				if(!DataIsNullAndIsAllowedToBe(columnData, selectedRenamerConfig.nullDataTagRegex, columnAllowsNulls))
 				{
 					//else lets check it fits our types
 					switch(columnDataType) {
 						case "date":
 							//Use "moment" to parse date with strict parsing set to true - https://momentjs.com/docs/
-							if(!columnData || moment(columnData, columnFormat, true).isValid() == false)
+							if(!columnData || moment(columnData, columnDateFormat, true).isValid() == false)
 							{
 								debugLog("Date is invalid", newMetadata[i]);
-								validationResults_typeErrors.dateErrors.push({"columnName": columnName, "columnData": columnData, "columnFormat": columnFormat, "rowData": rowData, "columnAllowsNulls": columnAllowsNulls})		
+								validationResults_typeErrors.dateErrors.push({"columnName": columnName, "columnData": columnData, "columnDateFormat": columnDateFormat, "rowData": rowData, "columnAllowsNulls": columnAllowsNulls})		
 							}
 							break;
 						case "int":
-							if(!columnData || isNaN(Number(columnData)) && !columnData.includes('.'))
+							if(!columnData || isNaN(Number(columnData)) || columnData.includes('.') || columnData < columnMinValue || columnData > columnMaxValue)
 							{
 								debugLog("Int is invalid", newMetadata[i]);
-								validationResults_typeErrors.intErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData, "columnAllowsNulls": columnAllowsNulls})		
+								validationResults_typeErrors.intErrors.push({"columnName": columnName, "columnData": columnData, "rowData": rowData, "columnAllowsNulls": columnAllowsNulls, "columnMinValue": columnMinValue, "columnMaxValue": columnMaxValue})		
 							}
 							break;
 						case "float":
@@ -847,9 +889,9 @@ function ValidateTypes(){
 }
 
 //Returns true if there's data OR if it's allowed to be NULL
-function DataIsNullAndIsAllowedToBe(data, nullDataTag, allowNull)
+function DataIsNullAndIsAllowedToBe(data, nullDataTagRegex, allowNull)
 {
-	if(data == nullDataTag && allowNull)
+	if(data.match(nullDataTagRegex) && allowNull)
 	{
 		return true;
 	}
@@ -864,7 +906,7 @@ function GetNewFilename(metdataItem){
 	$.each(selectedRenamerConfig.metadataRequiredColumns, function (requiredColumnName, requiredColumnAttributes) {
 		//Get the value we want to add
 		var propertyValue = metdataItem[requiredColumnName];
-		if(UseValueInFilename(propertyValue, selectedRenamerConfig.nullDataTag, requiredColumnAttributes))
+		if(UseValueInFilename(propertyValue, selectedRenamerConfig.nullDataTagRegex, requiredColumnAttributes))
 		{
 			//Add a seperator between the properties
 			if (i != 0) {
@@ -886,13 +928,13 @@ function GetNewFilename(metdataItem){
 }
 
 //Determines if a value should be used in genrating the filename
-function UseValueInFilename(requiredColumnValue, nullDataTag, requiredColumnAttributes)
+function UseValueInFilename(requiredColumnValue, nullDataTagRegex, requiredColumnAttributes)
 {
 	//Only add the property if it's "used in the filename"
 	if(requiredColumnAttributes.useInFilename)
 	{
 		//If we do want to use it, but the value is null...
-		if(requiredColumnValue == nullDataTag)
+		if(requiredColumnValue.match(nullDataTagRegex))
 		{
 			if(requiredColumnAttributes.useInFilenameIfNull == undefined ||  requiredColumnAttributes.useInFilenameIfNull)
 			{
@@ -1021,20 +1063,28 @@ function UpdateMetadataPath()
 }
 
 function ShowValidation(){
-	var allowNullString = ". If null/empty/or no data recorded use '" + selectedRenamerConfig.nullDataTag + "'";
+	var allowNullString = ". If missing/empty/or no data recorded use '" + selectedRenamerConfig.nullDataTagDisplay + "'";
 	//add folder text to error messages
 	$('#errorFilesMissingFolder').html(metadataDirectory);
+	$('#errorExtraFilesFolder').html(metadataDirectory);
 	$('#errorOutputFolder').html(outputPath);
-	$('#errorEmptyData').html(selectedRenamerConfig.nullDataTag)
 
 	$('#errorFilesMissing').hide();
-	errorFilesMissing
 	var errorList = $('#e1');
 	errorList.html('');
 	$.each(validationResults_currentFileDoesNotExist, function (key, item) {
 		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.metadataCurrentFilenameColumn] + "</li>");
 		$('#errorFilesMissing').show();
 	})
+
+	$('#errorExtraFiles').hide();
+	var errorList = $('#errorExtraFilesList');
+	errorList.html('');
+	$.each(validationResults_extraFileInDirectory, function (key, item) {
+		errorList.append("<li>" + item + "</li>");
+		$('#errorExtraFiles').show();
+	})
+
 
 	$('#errorFilenameExists').hide();
 	var errorList = $('#e2');
@@ -1092,7 +1142,7 @@ function ShowValidation(){
 		{
 			allowNullStringAddon = allowNullString
 		}
-		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' value is longer than '" + item.columnMaxTextLength + "' characters" + allowNullStringAddon + "</li>");
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' value is longer than " + item.columnMaxTextLength + " characters" + allowNullStringAddon + "</li>");
 		$('#errorTextOverMaxLength').show();
 	})
 
@@ -1105,7 +1155,7 @@ function ShowValidation(){
 		{
 			allowNullStringAddon = allowNullString
 		}
-		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + " Required field. Can not be '" + selectedRenamerConfig.nullDataTag + "'" + allowNullStringAddon + "</li>");
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> '" + item.columnName + "' is a required field. Can not be missing/empty or '" + selectedRenamerConfig.nullDataTagDisplay + "'</li>");
 		$('#errorNull').show();
 	})
 
@@ -1118,7 +1168,8 @@ function ShowValidation(){
 		{
 			allowNullStringAddon = allowNullString
 		}
-		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' does not match format '" + item.columnFormat + "'" + allowNullStringAddon + "</li>");
+		var exampleDate = moment().format(item.columnDateFormat);
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' does not match format '" + item.columnDateFormat + "' (e.g. " + exampleDate + ")" + allowNullStringAddon + "</li>");
 		$('#errorDate').show();
 	})
 
@@ -1131,7 +1182,7 @@ function ShowValidation(){
 		{
 			allowNullStringAddon = allowNullString
 		}
-		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' is not a valid integer" + allowNullStringAddon + "</li>");
+		errorList.append("<li><strong>Line " + item.rowData[lineNumberColumnName] + ":</strong> " + item.columnName + ": '" + item.columnData + "' is not a valid whole number or is outwith range " + item.columnMinValue + " to " + item.columnMaxValue + allowNullStringAddon + "</li>");
 		$('#errorInt').show();
 	})
 

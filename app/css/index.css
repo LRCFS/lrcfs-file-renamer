@@ -122,6 +122,17 @@ label{
     padding: 40px 0 1px 0;
 }
 
+	#errorLists a:link,
+	#errorLists a:visited{
+		text-decoration: underline;
+		color: #FFF;
+	}
+	#errorLists a:hover,
+	#errorLists a:active{
+		text-decoration: none;
+		color: #FFF;
+	}
+
 	#errorLists hr{
 		border-top: 1px solid rgba(255,255,255,.5)
 	}
@@ -130,7 +141,8 @@ label{
 		margin-bottom: 40px;
 	}
 
-	#errorFilesMissingFolder{
+	#errorFilesMissingFolder,
+	#errorExtraFilesFolder{
 		font-weight: bold;
 	}
 
