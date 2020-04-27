@@ -294,6 +294,9 @@
 						Now that we know what project you're working on, and if you're happy with the <a data-toggle="collapse" href="#renamerInfoCollapsible" role="button" aria-expanded="false" aria-controls="collapseExample">project settings outlined above</a>, we can load your metadata:
 					</p>
 					<p>
+						<span class="note">Note: Before loading your metadata please ensure that your metadata and it's corresponding files are in the same directory.</span>
+					</p>
+					<p>
 						<button id="btnFileSelect" class="btn btn-primary btn-block">Select Metadata File</button>
 						<input type="text" class="form-control" id="selectedMetadataPath" placeholder="Selected metadata.csv..." disabled></input>
 					</p>
@@ -384,7 +387,7 @@
 				<div class="col">
 					<h4>New Filename Exists</h4>
 					<hr />
-					<p>The following rows will generate new filenames that already exist in the output folder.</p>
+					<p>The following lines in your metadata will generate new filenames that already exist in the output folder.</p>
 					<p>
 						Please move the existing files or change the output directory:<br />
 						<span id="errorOutputFolder"></span>
@@ -396,7 +399,7 @@
 				<div class="col">
 					<h4>Same Current Filename</h4>
 					<hr />
-					<p>The following rows of your metadata contain duplicate filenames. Duplicate filenames means that we can't assocaite one record of your metadata with that file and as such it can not be renamed.</p>
+					<p>The following lines in your metadata contain duplicate filenames. Duplicate filenames means that we can't assocaite one record of your metadata with that file and as such it can not be renamed.</p>
 					<p>Please ensure that your metadata rows correctly reference the appropriate files and correct any errors.</p>
 					<ul id="e3"></ul>
 				</div>
@@ -405,7 +408,7 @@
 				<div class="col">
 					<h4>Same New Filename</h4>
 					<hr />
-					<p>The following rows will generate new files that have the same name. Where different files represent different peices of data your metadata should individual distinguish them.</p>
+					<p>The following lines in your metadata will generate new files that have the same name. Where different files represent different peices of data your metadata should individual distinguish them.</p>
 					<p>Please ensure that metadata is correct and uniquely identifies each image.</p>
 					<ul id="e4"></ul>
 				</div>
@@ -414,7 +417,7 @@
 				<div class="col">
 					<h4>Missing Data</h4>
 					<hr />
-					<p>The following rows have text that is missing.</p>
+					<p>The following lines in your metadata have text that is missing.</p>
 					<p>Please ensure that the following rows contain values or specifically use '<span id="errorEmptyData"></span>'.</p>
 					<ul id="eText"></ul>
 				</div>
@@ -423,7 +426,7 @@
 				<div class="col">
 					<h4>Text too long</h4>
 					<hr />
-					<p>The following rows have text that is too long.</p>
+					<p>The following lines in your metadata have text that is too long.</p>
 					<p>Please ensure that the following rows contain text no longer than each column specifies.</p>
 					<ul id="eTextMaxLength"></ul>
 				</div>
@@ -432,7 +435,7 @@
 				<div class="col">
 					<h4>Empty/Null Data Errors</h4>
 					<hr />
-					<p>The following rows have data that cannot be empty/null.</p>
+					<p>The following lines in your metadata are missing data that is required.</p>
 					<p>Please ensure that the following rows/columns contain data in the correct format.</p>
 					<ul id="eNull"></ul>
 				</div>
