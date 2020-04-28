@@ -426,22 +426,18 @@ async function LoadMetadata() {
 	
 	var fileExtension = path.extname(metadataPath);
 
-	if (fileExtension == ".csv") {
-		await LoadMetadataCsv();
-	} else {
-		//LoadMetadataExcel();
-	}
+	await LoadMetadataCsv();
 }
 
 async function LoadMetadataCsv() {
 	var lineNumber = 2;
-	metadataColumnNames = [];
-	metadata = [];
 	return new Promise((loadedData) => {
 		fs.createReadStream(metadataPath, { encoding: 'utf8' })
 		.pipe(stripBomStream())
 		.pipe(csv())
 		.on('headers', (headers) => {
+			metadataColumnNames = [];
+			metadata = [];
 			metadataColumnNames = headers;
 		  })
 		.on('data', (row) => {
@@ -460,6 +456,11 @@ async function LoadMetadataCsv() {
 			{
 				row[lineNumberColumnName] = lineNumber;
 				metadata.push(row);
+				lineNumber++;
+			}
+			else
+			{
+				//Add a line number anyway to make sure the increment matches the line in the CSV
 				lineNumber++;
 			}
 		})
@@ -664,7 +665,7 @@ async function GenerateNewMetadata(){
 	for(metadataRowNum = 0; metadataRowNum < metadata.length; metadataRowNum++)
 	{
 		var newMetadataRow = new Object();
-		newMetadataRow[lineNumberColumnName] = metadataRowNum + 2;
+		newMetadataRow[lineNumberColumnName] = metadata[metadataRowNum][lineNumberColumnName];
 
 		//Add on the filename column data
 		newMetadataRow[selectedRenamerConfig.metadataNewFilenameColumn] = filenamesNew[metadataRowNum];
@@ -930,33 +931,37 @@ function GetNewFilename(metdataItem){
 //Determines if a value should be used in genrating the filename
 function UseValueInFilename(requiredColumnValue, nullDataTagRegex, requiredColumnAttributes)
 {
-	//Only add the property if it's "used in the filename"
-	if(requiredColumnAttributes.useInFilename)
+	if(requiredColumnValue != null)
 	{
-		//If we do want to use it, but the value is null...
-		if(requiredColumnValue.match(nullDataTagRegex))
+		//Only add the property if it's "used in the filename"
+		if(requiredColumnAttributes.useInFilename)
 		{
-			if(requiredColumnAttributes.useInFilenameIfNull == undefined ||  requiredColumnAttributes.useInFilenameIfNull)
+			//If we do want to use it, but the value is null...
+			if(requiredColumnValue.match(nullDataTagRegex))
 			{
-				//If we allow NULLs then return true
-				return true;
+				if(requiredColumnAttributes.useInFilenameIfNull == undefined ||  requiredColumnAttributes.useInFilenameIfNull)
+				{
+					//If we allow NULLs then return true
+					return true;
+				}
+				else
+				{
+					//else return false
+					return false;
+				}
 			}
 			else
 			{
-				//else return false
-				return false;
+				return true;
 			}
 		}
 		else
 		{
-			return true;
+			//We don't want to use it so return false
+			return false;
 		}
 	}
-	else
-	{
-		//We don't want to use it so return false
-		return false;
-	}
+	return false;
 }
 
 function StoreOldFilename(){
@@ -1007,7 +1012,6 @@ function AllowProcessing(forceStatus = null){
 			$('#btnRename').removeAttr('disabled');
 			$('#btnRenameBottom').removeAttr('disabled');
 			$('#metadataFine').modal('show');
-			
 		}
 		else
 		{

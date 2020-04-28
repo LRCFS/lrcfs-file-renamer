@@ -1,0 +1,4 @@
+Filename,Date,Experiment,Replicate,Substrate,SubstrateType,ObservationType,Mass (g),TransferTime (s),PersistenceTime (min),Temperature (DegC),Humidity (%)
+normal-data.jpg,20200101,5,5,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,50,30,15,25,20
+broken
+allowed-na.jpg,20200101,2,2,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,50,30,15,NA,NA
