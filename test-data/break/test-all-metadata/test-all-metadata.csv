@@ -10,13 +10,13 @@ broken-date-format.jpg,2020-01-01,1,4,SubstateWorking,SubstrateTypeWorking,Obser
 broken-date-string.jpg,1st Jan 2020,1,5,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
 broken-date-range.jpg,20201301,1,6,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
 broken-date-anything.jpg,BLAH!,1,7,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
-broken-experiment-min.jpg,20200101,-1,8,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
-broken-experiment-max.jpg,20200101,10001,9,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
+broken-experiment-min.jpg,20200101,0,8,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
+broken-experiment-max.jpg,20200101,101,9,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
 broken-experiment-decimal.jpg,20200101,1.5,10,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
 broken-experiment-mixed.jpg,20200101,Exp1,11,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
 broken-experiment-string.jpg,20200101,one,12,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
-broken-replicate-min.jpg,20200101,1,-1,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
-broken-replicate-max.jpg,20200101,1,10001,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
+broken-replicate-min.jpg,20200101,0,-1,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
+broken-replicate-max.jpg,20200101,1,101,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
 broken-replicate-decimal.jpg,20200101,1,1.5,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
 broken-replicate-mixed.jpg,20200101,1,Rep1,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
 broken-replicate-string.jpg,20200101,1,one,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1,1,1
@@ -24,16 +24,16 @@ broken-substate-maxLength.jpg,20200101,1,18,123456789012345678901234567890123456
 broken-substrateType-maxLength.jpg,20200101,1,19,SubstateWorking,12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901,ObservationTypeWorking,1,1,1,1,1
 broken-observationType-maxLength.jpg,20200101,1,20,SubstateWorking,SubstrateTypeWorking,12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901,1,1,1,1,1
 broken-mass-min.jpg,20200101,1,21,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,-1,1,1,1,1
-broken-mass-max.jpg,20200101,1,22,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1000001,1,1,1,1
+broken-mass-max.jpg,20200101,1,22,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,10000,1,1,1,1
 broken-mass-decimal.jpg,20200101,1,23,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1.5,1,1,1,1
 broken-mass-string.jpg,20200101,1,24,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,one,1,1,1,1
 broken-transferTime-min.jpg,20200101,1,25,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,-1,1,1,1
-broken-transferTime-max.jpg,20200101,1,26,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1000001,1,1,1
+broken-transferTime-max.jpg,20200101,1,26,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,10000,1,1,1
 broken-transferTime-decimal.jpg,20200101,1,27,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1.5,1,1,1
 broken-transferTime-symbol.jpg,20200101,1,28,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1s,1,1,1
 broken-transferTime-string.jpg,20200101,1,29,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,one,1,1,1
 broken-persistenceTime-min.jpg,20200101,1,30,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,-1,1,1
-broken-persistenceTime-max.jpg,20200101,1,31,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1000001,1,1
+broken-persistenceTime-max.jpg,20200101,1,31,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,100000,1,1
 broken-persistenceTime-decimal.jpg,20200101,1,32,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1.5,1,1
 broken-persistenceTime-symbol.jpg,20200101,1,33,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,1m,1,1
 broken-persistenceTime-string.jpg,20200101,1,34,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,1,1,one,1,1

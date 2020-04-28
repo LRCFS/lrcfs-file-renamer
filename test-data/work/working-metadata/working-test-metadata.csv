@@ -1,0 +1,7 @@
+"Filename",Date ,Experiment,Replicate,Substrate,SubstrateType,ObservationType,Mass (g),TransferTime (s),PersistenceTime (min),Temperature (DegC),Humidity (%),ExtraMetadataHere
+normal-data.jpg,20200101,5,5,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,50,30,15,25,20,Extra1
+allowed-na.jpg,20200101,2,2,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,50,30,15,NA,NA,Extra2
+allowed-na-lowercase.jpg,20200101,2,3,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,50,30,15,na,na,Extra3
+
+min-limits.jpg,20200101,1,1,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,0,0,0,-50,0,Extra4
+max-limits.jpg,20200101,100,100,SubstateWorking,SubstrateTypeWorking,ObservationTypeWorking,9999,9999,9999,300,100,Extra5
