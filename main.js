@@ -1,6 +1,6 @@
 'use strict';
 console.log('Loaded: /main.js');
-var showDebug = true;
+var showDebug = false;
 
 const path = require('path');
 const {app, shell, BrowserWindow, Menu, ipcMain} = require('electron');
