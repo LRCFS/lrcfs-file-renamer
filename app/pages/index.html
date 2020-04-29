@@ -228,14 +228,10 @@
 					<h5>Select Project</h5>
 					<select id="selectRenamer" name="selectRenamer" class="mdb-select md-form"></select><br />
 					<div id="exampleDataDownload">
-						<br />
+						<br /><br />
 						<button id="btnShowProjectSettings" class="btn btn-info btn-block" type="button" data-toggle="collapse" data-target="#renamerInfoCollapsible" aria-expanded="false" aria-controls="renamerInfoCollapsible">
-							Show Project Settings / Required Metadata
-						</button>
-						<br />
-						<h5>Example Metadata</h5>
-						<p>If you've not yet started collecting your metadata you can create an blank file for your selected project to make sure it will work correctly.</p>
-						<button id="btnDownloadExampleCsv" class="btn btn-info btn-block">Create Blank Metadata File</button>
+							Show/Hide Metadata Requirements
+						</button>						
 					</div>
 				</div>
 			</div>
@@ -247,39 +243,52 @@
 		<div id="renamerInfo">
 			<div class="container">
 				<div class="row">
-					<div class="col">
-						<h4>Selected Project</h4>
+					<div class="col-4">
+						<h4>Metadata Requirements</h4>
 						<hr/>
-						<p><strong>Title:</strong> <span id="renamerName"></span></p>
+						<p><strong>Project Name:</strong> <span id="renamerName"></span></p>
 						<p><strong>Webiste:</strong> <a id="renamerUrl" target="_blank">Visit website</a></p>
 						<p><strong>Description:</strong> <span id="renamerDesc"></span></p>
 					</div>
-					<div class="col">
-						<h4>Renamer Properties</h4>
+					<div class="col-4">
+						<h4>Renaming Properties</h4>
 						<hr/>
-						<p><strong>Current Filename Column:</strong> <span id="renamerMetadataCurrentFilenameColumn"></span></p>
-						<p><strong>Old Filename Column:</strong> <span id="renamerMetadataOldFilenameColumn"></span></p>
-						<p><strong>New Filename Column:</strong> <span id="renamerMetadataNewFilenameColumn"></span></p>
-
-						<p><strong>Trim Headers &amp; Data:</strong> <span id="renamerTrimHeadersAndData"></span></p>
-						<p><strong>Null Data Tag:</strong> <span id="renamerNullDataTag"></span></p>
+						<p><strong><acronym title="The column in your metadata which will be used to match with your files">Filename Column</acronym>:</strong> <span id="renamerMetadataCurrentFilenameColumn"></span></p>
+						<p><strong><acronym title="The column name that will be used to store the old name of your file in your metadata">Old Filename Column</acronym>:</strong> <span id="renamerMetadataOldFilenameColumn"></span></p>
+						<p><strong><acronym title="The column that your new filenames will be stored in">New Filename Column</acronym>:</strong> <span id="renamerMetadataNewFilenameColumn"></span></p>
+						<p><strong><acronym title="If TRUE your metadata will have 'spaces' and 'tabs' removed from the start and end of any data">Trim Headers &amp; Data</acronym>:</strong> <span id="renamerTrimHeadersAndData"></span></p>
+						<p><strong><acronym title="The value that you can use to represent 'no data recorded' in your metadata">Null Data Tag</acronym>:</strong> <span id="renamerNullDataTag"></span></p>
+						<span id="renamerFilenamePropertySeperator"></span>
+						<span id="renamerFilenameValueSeperator"></span>
 					</div>
-					<div class="col">
-						<h4>New Filename Data</h4>
+					<div class="col-4">
+						<h4>Required Metadata Columns</h4>
 						<hr/>
-						<p><strong>Property Seperator:</strong> <span id="renamerFilenamePropertySeperator"></span></p>
-						<p><strong>Value Seperator:</strong> <span id="renamerFilenameValueSeperator"></span></p>
 						<span id="renamerColumns"></span>
 					</div>
 				</div>
 				<div class="row">
+					<div class="col-8">
+						<hr/>
+						<h4>Example Renamed File</h4>
+						<p>The required metadata columns will be used to generate new filenames in the following format:</p>
+						<span id="exampleFilename"></span>
+					</div>
+					<div class="col-4">
+						<hr/>
+						<h4>Example Metadata</h4>
+						<p>If you've not yet started collecting your metadata you can create an blank file for your selected project to make sure it will work correctly.</p>
+						<button id="btnDownloadExampleCsv" class="btn btn-info btn-block">Create Blank Metadata File</button>
+					</div>
+				</div>
+				<!--<div class="row">
 					<div class="col">
 						<br />
 						<button class="btn btn-info float-right" type="button" data-toggle="collapse" data-target="#renamerInfoCollapsible" aria-expanded="false" aria-controls="renamerInfoCollapsible">
 							Close Project Settings
 						</button>
 					</div>
-				</div>
+				</div>-->
 			</div>
 		</div>
 	</div>
@@ -291,7 +300,7 @@
 				<div class="col">
 					<h2>2. Load Your Metadata</h2>
 					<p>
-						Now that we know what project you're working on, and if you're happy with the <a data-toggle="collapse" href="#renamerInfoCollapsible" role="button" aria-expanded="false" aria-controls="collapseExample">project settings outlined above</a>, we can load your metadata:
+						Now that we know what project you're working on, and if you're happy with the <a href="#" id="showMetadataRequirements">metadata requirements outlined above</a>, we can load your metadata:
 					</p>
 					<p>
 						<span class="note">Note: Before loading your metadata please ensure that your metadata and it's corresponding files are in the same directory.</span>

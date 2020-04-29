@@ -36,6 +36,13 @@ label{
 	float: left;
 }
 
+abbr, acronym
+{
+	text-decoration: none;
+	border-bottom: .1em dotted;
+	cursor: help;
+}
+
 #pageHeader{
 	background: #4365E2;
 	padding: 20px 0 20px 0;

@@ -108,7 +108,16 @@ let SendCancelProcessing = (command, payload) => {
 		UpdateSelectedRenamer($("#selectRenamer").val());
 		await ProcessMetadata();
 		UpdateDisplay();
-		ScrollToGettingStarted();
+		//ScrollToGettingStarted(); // Instead of going straight to getting started lets show the renamer config
+		$('#renamerInfoCollapsible').collapse('show');
+		ScrollToRenamerInfo();
+	});
+
+
+	$("#showMetadataRequirements").click(function (e) {
+		e.preventDefault();
+		$('#renamerInfoCollapsible').collapse('show');
+		ScrollToRenamerInfo();
 	});
 
 	$("#chkCreateCopies").change(async function () {
@@ -339,38 +348,77 @@ function UpdateSelectedRenamer(renamerId) {
 	$("#renamerMetadataOldFilenameColumn").html(selectedRenamerConfig.metadataOldFilenameColumn);
 	$("#renamerMetadataNewFilenameColumn").html(selectedRenamerConfig.metadataNewFilenameColumn);
 	$("#renamerTrimHeadersAndData").html(selectedRenamerConfig.trimHeadersAndData);
-	$("#renamerNullDataTag").html(selectedRenamerConfig.nullDataTagDisplay);
+	$("#renamerNullDataTag").html("'" + selectedRenamerConfig.nullDataTagDisplay + "'");
 
-	$("#renamerFilenamePropertySeperator").html(selectedRenamerConfig.filenamePropertySeperator);
-	$("#renamerFilenameValueSeperator").html(selectedRenamerConfig.filenameValueSeperator);
+	if(selectedRenamerConfig.filenamePropertySeperator != "")
+	{
+		$("#renamerFilenamePropertySeperator").html("<p><strong><acronym title='The character that will be placed between each property (e.g. EXP1"+selectedRenamerConfig.filenamePropertySeperator+"REP1.ext) in the renamed files'>Property Seperator</acronym>:</strong> " + selectedRenamerConfig.filenamePropertySeperator + "</p>");
+	}
 
-	$("#renamerColumns").html("");
-	$.each(selectedRenamerConfig.metadataRequiredColumns, function (key, filenameColumn) {
+	if(selectedRenamerConfig.filenameValueSeperator != "")
+	{
+		$("#renamerFilenameValueSeperator").html("<p><strong><acronym title='The character that will be placed between each property and it's value (e.g. EXP"+selectedRenamerConfig.filenameValueSeperator+"1.ext) in the renamed files'>Value Seperator</acronym>:</strong> " + selectedRenamerConfig.filenameValueSeperator + "</p>");
+	}
+
+	$("#renamerColumns").html("<strong>\"" + selectedRenamerConfig.metadataCurrentFilenameColumn + "\"</strong><br />");
+
+	var exampleFilename = "";
+	$.each(selectedRenamerConfig.metadataRequiredColumns, function (requiredColumnName, requiredColumnAttributes) {
+		if(exampleFilename != "")
+		{
+			exampleFilename = exampleFilename + selectedRenamerConfig.filenamePropertySeperator;
+		}
 		var existingText = $("#renamerColumns").html();
-		var renameTo = filenameColumn.renameTo;
+		var renameTo = requiredColumnAttributes.renameTo;
 		if(renameTo == null || renameTo == "")
 		{
-			renameTo = "<span class='noPrefix'>NA</span>"
+			renameTo = ""
 		}
 		var canBeNa = "/'" + selectedRenamerConfig.nullDataTagDisplay + "'";
-		if(filenameColumn.allowNull == null || filenameColumn.allowNull == false)
+		if(requiredColumnAttributes.allowNull == null || requiredColumnAttributes.allowNull == false)
 		{
 			canBeNa = "";
 		}
 		
-		if(filenameColumn.dateFormatJs != null && filenameColumn.dateFormatJs != "")
+		if(requiredColumnAttributes.dateFormatJs != null && requiredColumnAttributes.dateFormatJs != "")
 		{
-			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + ": e.g. " + filenameColumn.dateFormatJs + canBeNa + ")<br />");
+			$("#renamerColumns").html(existingText + "<strong>\"" + requiredColumnName + "\"</strong>  (" + requiredColumnAttributes.type + ": e.g. " + requiredColumnAttributes.dateFormatJs + canBeNa + ")<br />");
+			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeperator + requiredColumnAttributes.dateFormatJs + "</acronym>";
 		}
-		else if(filenameColumn.maxTextLength != null)
+		else if(requiredColumnAttributes.minValue != null || requiredColumnAttributes.maxValue != null)
 		{
-			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + ": max " + filenameColumn.maxTextLength + canBeNa + ")<br />");
+			var minValue = absMinValue;
+			if(requiredColumnAttributes.minValue != null)
+			{
+				minValue = requiredColumnAttributes.minValue;
+			}
+			var maxValue = absMaxValue;
+			if(requiredColumnAttributes.maxValue != null)
+			{
+				maxValue = requiredColumnAttributes.maxValue;
+			}
+
+			$("#renamerColumns").html(existingText + "<strong>\"" + requiredColumnName + "\"</strong> (" + requiredColumnAttributes.type + ": " + minValue + " to " + maxValue + canBeNa + ")<br />");
+
+			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeperator + maxValue + "</acronym>";
+		}
+		else if(requiredColumnAttributes.maxTextLength != null)
+		{
+			$("#renamerColumns").html(existingText + "<strong>\"" + requiredColumnName + "\"</strong> (" + requiredColumnAttributes.type + ": max " + requiredColumnAttributes.maxTextLength + canBeNa + ")<br />");
+
+			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeperator + "text</acronym>";
 		}
 		else
 		{
-			$("#renamerColumns").html(existingText + "<strong>" + key + "</strong>: " + renameTo + " (" + filenameColumn.type + canBeNa + ")<br />");
+			$("#renamerColumns").html(existingText + "<strong>\"" + requiredColumnName + "\"</strong> (" + requiredColumnAttributes.type + canBeNa + ")<br />");
+
+			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeperator + "value</acronym>";
 		}
 	})
+
+
+
+	$("#exampleFilename").html(exampleFilename + ".ext");
 
 	debugLog("'UpdateSelectedRenamer' - 'selectedRenamerConfig'...", selectedRenamerConfig,);
 }
