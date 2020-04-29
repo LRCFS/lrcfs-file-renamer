@@ -360,6 +360,17 @@ function UpdateSelectedRenamer(renamerId) {
 		$("#renamerFilenameValueSeperator").html("<p><strong><acronym title='The character that will be placed between each property and it's value (e.g. EXP"+selectedRenamerConfig.filenameValueSeperator+"1.ext) in the renamed files'>Value Seperator</acronym>:</strong> " + selectedRenamerConfig.filenameValueSeperator + "</p>");
 	}
 
+	if(selectedRenamerConfig.submissionUrl != null && selectedRenamerConfig.submissionUrl != "")
+	{
+		$("#makeSubmissionPanel").show();
+		$("#makeSubmissionInfo").html(selectedRenamerConfig.submissionInfo);
+		$("#makeSubmissionLink").prop('href', selectedRenamerConfig.submissionUrl);
+	}
+	else
+	{
+		$("#makeSubmissionPanel").hide();
+	}
+
 	$("#renamerColumns").html("<strong>\"" + selectedRenamerConfig.metadataCurrentFilenameColumn + "\"</strong><br />");
 
 	var exampleFilename = "";

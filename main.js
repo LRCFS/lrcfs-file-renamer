@@ -1,9 +1,9 @@
 'use strict';
 console.log('Loaded: /main.js');
-var showDebug = false;
+var showDebug = true;
 
 const path = require('path');
-const {app, BrowserWindow, Menu, ipcMain} = require('electron');
+const {app, shell, BrowserWindow, Menu, ipcMain} = require('electron');
 /// const {autoUpdater} = require('electron-updater');
 const {is} = require('electron-util');
 const unhandled = require('electron-unhandled');
@@ -107,6 +107,12 @@ const createWorkerWindow = async () => {
 	//Create windows
 	mainWindow = await createMainWindow();
 	workerWindow = await createWorkerWindow();
+
+	// Add an event listening to open new windows in the default system browser
+	mainWindow.webContents.on("new-window", function(event, url) {
+		event.preventDefault();
+		shell.openExternal(url);
+	});
 
 	//Register listeners for sending data between windows
 	ipcMain.on('w2r-UpdateProgressPercentage', (event, arg) => {
