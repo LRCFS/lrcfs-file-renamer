@@ -28,6 +28,22 @@
 		"filenameValueSeperator": "",
 		"replaceSpacesInFilenameWith": " ",
 		"replaceInvalidCharactersInFilenameWith": "",
-		"trimHeadersAndData": true
+		"trimHeadersAndData": true,
+		"ignoreFoldersInInputDirectory": true,
+		"ignoreOutputFolderInInputDirectory": true,
+		"filesAndFoldersToIgnoreInInputDirectory": [
+			"^\\.DS_Store$",
+			"^[Tt]emp$",
+			"^thumbs\\.db$",
+			"^\\.gitignore$",
+			"^\\.gitattributes$",
+			"^\\.git$",
+			"^\\.\\_",
+			"^\\.Trashes$",
+			"^\\.Spotlight-V100$",
+			"^\\.fseventsd$",
+			"\\.url$",
+			"\\.lnk$"
+		]
 	}
 ]

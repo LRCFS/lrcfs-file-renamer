@@ -753,10 +753,55 @@ async function GenerateNewMetadata(){
 }
 
 function ValidateMetadataPost() {
-	var allFilesInMetadataFolder = fs.readdirSync(metadataDirectory);	
+	var filesInMetadataFolder = [];
+	var foldersInMetadataFolder = [];
+	var otherFileInMetadataFolder = [];
 
-	ValidateCurrentFilenameExists(allFilesInMetadataFolder);
-	ValidateErrorExtraFiles(allFilesInMetadataFolder);
+	
+
+	//Get all the files/folders/etc in the metadata directory
+	var allFilesAndFoldersInMetadataFolder = fs.readdirSync(metadataDirectory, {withFileTypes:true});
+
+	//Lets get all the things we want to ignore
+	var allFilesAndFoldersToIgnoreInInputDirectory = Array.from(selectedRenamerConfig.filesAndFoldersToIgnoreInInputDirectory); //important to copy array because if we change output directory we want to be able to reset the list of folders to ignore
+	if(selectedRenamerConfig.ignoreOutputFolderInInputDirectory)
+	{
+		//Lets get the outputPath that's been specified
+		//To ensure it's in the output directory (if applicable)...
+		//We're going to replace the metadataDirectory in the outputPath with "" so that its removed (if it can)
+		//then we'll clean up any starting/trailing slashes so that it's easy to look for
+		var outputDir = outputPath.replace(metadataDirectory, "").replace(/(^[\\]+)|(^[\/]+)|([\\]+$)|([\/]+$)/, "");
+
+		//Add to the lists of folders to check for
+		allFilesAndFoldersToIgnoreInInputDirectory.push("^" + outputDir + "$");
+	}
+
+	//Remove the files from the list that we want to ignore
+	_.each(allFilesAndFoldersToIgnoreInInputDirectory, function(fileToIgnore){
+		allFilesAndFoldersInMetadataFolder = $.grep(allFilesAndFoldersInMetadataFolder, function(value) {
+			return !value.name.match(fileToIgnore);
+		});
+	});
+	
+
+	var allFilesAndFoldersToCheckInMetadataFolder = [];
+	_.each(allFilesAndFoldersInMetadataFolder, function(fileOrFolder){
+		if(fileOrFolder.isDirectory())
+		{
+			if(selectedRenamerConfig.ignoreFoldersInInputDirectory == false)
+			{
+				allFilesAndFoldersToCheckInMetadataFolder.push(fileOrFolder.name);
+			}
+		}
+		else
+		{
+			allFilesAndFoldersToCheckInMetadataFolder.push(fileOrFolder.name);
+		}
+
+	});
+
+	ValidateCurrentFilenameExists(allFilesAndFoldersToCheckInMetadataFolder);
+	ValidateErrorExtraFiles(allFilesAndFoldersToCheckInMetadataFolder);
 	ValidateNewFilenameExists();
 	ValidateSameCurrentFilename();
 	ValidateSameNewFilename();
