@@ -34,11 +34,12 @@
 		"filesAndFoldersToIgnoreInInputDirectory": [
 			"^\\.DS_Store$",
 			"^[Tt]emp$",
-			"^thumbs\\.db$",
+			"^[Tt]humbs\\.db$",
 			"^\\.gitignore$",
 			"^\\.gitattributes$",
 			"^\\.git$",
 			"^\\.\\_",
+			"^\\~\\$",
 			"^\\.Trashes$",
 			"^\\.Spotlight-V100$",
 			"^\\.fseventsd$",
