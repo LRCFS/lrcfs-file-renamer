@@ -24,7 +24,7 @@
 		"metadataCurrentFilenameColumn": "Filename",
 		"metadataOldFilenameColumn": "OriginalFilename",
 		"metadataNewFilenameColumn": "Filename",
-		"filenamePropertySeperator": "-",
+		"filenamePropertySeperator": "_",
 		"filenameValueSeperator": "",
 		"replaceSpacesInFilenameWith": " ",
 		"replaceInvalidCharactersInFilenameWith": "",
