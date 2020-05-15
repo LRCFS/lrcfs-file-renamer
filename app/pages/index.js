@@ -887,9 +887,9 @@ function ValidateFilenameCapitalisation()
 	//We're going to loop all "files that does not exist" in reverse so we can remove from the list
 	for(var i = validationResults_currentFileDoesNotExist.length -1; i >= 0 ; i--){
 		//For each file that doesn't exist lets check all the "extra files"
+		var metadataFilename = validationResults_currentFileDoesNotExist[i][selectedRenamerConfig.metadataCurrentFilenameColumn];
 		for(var x = validationResults_extraFileInDirectory.length -1; x >= 0 ; x--){
 			//If the "file that does not exist" matches (with a case insentivie search) a file in the "extra files" - then we assume it's not named correctly
-			var metadataFilename = validationResults_currentFileDoesNotExist[i][selectedRenamerConfig.metadataCurrentFilenameColumn];
 			var filesystemFilename = validationResults_extraFileInDirectory[x]
 			if (metadataFilename.length == filesystemFilename.length && ciEquals(metadataFilename, filesystemFilename))
 			{
