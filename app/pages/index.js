@@ -43,6 +43,7 @@ var validationResults_missingColumns;
 var validationResults_headerColumsnNotFromattedCorrectly;
 
 var isValidPost;
+var validationResults_filenameCapitalisationErrors;
 var validationResults_currentFileDoesNotExist;
 var validationResults_extraFileInDirectory;
 var validationResults_newFilenameExists;
@@ -206,6 +207,7 @@ function ResetErrors(){
 	validationResults_missingColumns = [];
 	validationResults_headerColumsnNotFromattedCorrectly = [];
 
+	validationResults_filenameCapitalisationErrors = []
 	validationResults_currentFileDoesNotExist = [];
 	validationResults_extraFileInDirectory = [];
 	validationResults_newFilenameExists = [];
@@ -802,6 +804,7 @@ function ValidateMetadataPost() {
 
 	ValidateCurrentFilenameExists(allFilesAndFoldersToCheckInMetadataFolder);
 	ValidateErrorExtraFiles(allFilesAndFoldersToCheckInMetadataFolder);
+	ValidateFilenameCapitalisation();
 	ValidateNewFilenameExists();
 	ValidateSameCurrentFilename();
 	ValidateSameNewFilename();
@@ -815,6 +818,7 @@ function ShowHideErrorsPost(){
 		validationResults_missingColumns.length == 0 &&
 		validationResults_headerColumsnNotFromattedCorrectly.length == 0 &&
 
+		validationResults_filenameCapitalisationErrors.length == 0 &&
 		validationResults_currentFileDoesNotExist.length == 0 &&
 		validationResults_extraFileInDirectory.length == 0 &&
 		validationResults_newFilenameExists.length == 0 &&
@@ -869,8 +873,68 @@ function ValidateErrorExtraFiles(allFilesInMetadataFolder)
 			validationResults_extraFileInDirectory.push(filename);
 		}
 	})
+}
 
+function ValidateFilenameCapitalisation()
+{
+	debugLog("ValidateFilenameCapitalisation - Start");
+	debugLog("validationResults_currentFileDoesNotExist - before...", validationResults_currentFileDoesNotExist)
+	debugLog("validationResults_extraFileInDirectory - before...", validationResults_extraFileInDirectory)
 
+	//Reset all previous errors
+	validationResults_filenameCapitalisationErrors = []
+
+	//We're going to loop all "files that does not exist" in reverse so we can remove from the list
+	for(var i = validationResults_currentFileDoesNotExist.length -1; i >= 0 ; i--){
+		//For each file that doesn't exist lets check all the "extra files"
+		for(var x = validationResults_extraFileInDirectory.length -1; x >= 0 ; x--){
+			//If the "file that does not exist" matches (with a case insentivie search) a file in the "extra files" - then we assume it's not named correctly
+			var metadataFilename = validationResults_currentFileDoesNotExist[i][selectedRenamerConfig.metadataCurrentFilenameColumn];
+			var filesystemFilename = validationResults_extraFileInDirectory[x]
+			if (metadataFilename.length == filesystemFilename.length && ciEquals(metadataFilename, filesystemFilename))
+			{
+				//Do some cool highlighting for any characters that don't match exactly
+				var metadataFilenameHighlighted = "";
+				var filesystemFilenameHighlighted = "";
+				for(var charIndex = 0; charIndex < metadataFilename.length; charIndex++){
+					if(metadataFilename[charIndex] == filesystemFilename[charIndex])
+					{
+						metadataFilenameHighlighted += metadataFilename[charIndex];
+						filesystemFilenameHighlighted += filesystemFilename[charIndex];
+					}
+					else
+					{
+						//Because we know they SHOULD match (from our use of ciEquals) anything that doesn't match exactly can be highlighted
+						metadataFilenameHighlighted += "<strong>" + metadataFilename[charIndex] + "</strong>";
+						filesystemFilenameHighlighted += "<strong>" + filesystemFilename[charIndex] + "</strong>";
+					}
+				}
+
+				//Lets add the data to an array so we can report it
+				validationResults_filenameCapitalisationErrors.push({
+																		"metadataLineNumber": validationResults_currentFileDoesNotExist[i][lineNumberColumnName],
+																		"metadataFilename": metadataFilenameHighlighted,
+																		"filesystemFilename": filesystemFilenameHighlighted
+																	});
+				//Then remove the data from the other error arrays so we don't double report it
+				validationResults_currentFileDoesNotExist.splice(i, 1);
+				validationResults_extraFileInDirectory.splice(x, 1);
+			}
+		}
+	}
+
+	debugLog("validationResults_filenameCapitalisationErrors", validationResults_filenameCapitalisationErrors);
+	debugLog("validationResults_currentFileDoesNotExist - after...", validationResults_currentFileDoesNotExist)
+	debugLog("validationResults_extraFileInDirectory - after...", validationResults_extraFileInDirectory)
+
+	debugLog("ValidateFilenameCapitalisation - End");
+}
+
+//Does a case insensitive comparison that should also take into consideration accents etc
+function ciEquals(a, b) {
+    return typeof a === 'string' && typeof b === 'string'
+        ? a.localeCompare(b, undefined, { sensitivity: 'base' }) === 0
+        : a === b;
 }
 
 function ValidateNewFilenameExists() {
@@ -1177,11 +1241,19 @@ function ShowValidation(){
 	$('#errorExtraFilesFolder').html(metadataDirectory);
 	$('#errorOutputFolder').html(outputPath);
 
+	$('#errorFileCapitalisation').hide();
+	var errorList = $('#eCaps');
+	errorList.html('');
+	$.each(validationResults_filenameCapitalisationErrors, function (key, item) {
+		errorList.append("<li><strong>Line " + item["metadataLineNumber"] + ":</strong> <code>'<acronym title='On line "+item["metadataLineNumber"]+" of your metadata'>" + item["metadataFilename"] + "</acronym>'</code> appears to match <code>'<acronym title='Located on your computer in: "+metadataDirectory+"'>" + item["filesystemFilename"] + "</acronym>'</code> </li>");
+		$('#errorFileCapitalisation').show();
+	})
+
 	$('#errorFilesMissing').hide();
 	var errorList = $('#e1');
 	errorList.html('');
 	$.each(validationResults_currentFileDoesNotExist, function (key, item) {
-		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.metadataCurrentFilenameColumn] + "</li>");
+		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> <code>'" + item[selectedRenamerConfig.metadataCurrentFilenameColumn] + "'</code></li>");
 		$('#errorFilesMissing').show();
 	})
 
@@ -1189,7 +1261,7 @@ function ShowValidation(){
 	var errorList = $('#errorExtraFilesList');
 	errorList.html('');
 	$.each(validationResults_extraFileInDirectory, function (key, item) {
-		errorList.append("<li>" + item + "</li>");
+		errorList.append("<li><code>'" + item + "'</code></li>");
 		$('#errorExtraFiles').show();
 	})
 
@@ -1198,7 +1270,7 @@ function ShowValidation(){
 	var errorList = $('#e2');
 	errorList.html('');
 	$.each(validationResults_newFilenameExists, function (key, item) {
-		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> " + item[selectedRenamerConfig.metadataNewFilenameColumn] + "</li>");
+		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> <code>'" + item[selectedRenamerConfig.metadataNewFilenameColumn] + "'</code></li>");
 		$('#errorFilenameExists').show();
 	})
 
@@ -1208,7 +1280,7 @@ function ShowValidation(){
 	$.each(validationResults_sameCurrentFilename, function (key, item) {
 		var string = "";
 		$.each(item, function (key, subitem) {
-			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.metadataCurrentFilenameColumn] + "<br />";
+			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> <code>'" + subitem[selectedRenamerConfig.metadataCurrentFilenameColumn] + "'</code><br />";
 		})
 		errorList.append("<li>" + string + "</li>");
 		$('#errorSameCurrentFilename').show();
@@ -1220,7 +1292,7 @@ function ShowValidation(){
 	$.each(validationResults_sameNewFilename, function (key, item) {
 		var string = "";
 		$.each(item, function (key, subitem) {
-			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> " + subitem[selectedRenamerConfig.metadataNewFilenameColumn] + "<br />";
+			string += "<strong>Line " + subitem[lineNumberColumnName] + ":</strong> <code>'" + subitem[selectedRenamerConfig.metadataNewFilenameColumn] + "'</code><br />";
 		})
 		errorList.append("<li>" + string + "</li>");
 		$('#errorSameNewFilename').show();

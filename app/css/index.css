@@ -129,6 +129,15 @@ abbr, acronym
     padding: 40px 0 1px 0;
 }
 
+	code{
+		color: inherit !important;
+	}
+
+		code strong{
+			background: #FFF;
+			color: #F00;
+		}
+
 	#errorLists a:link,
 	#errorLists a:visited{
 		text-decoration: underline;
