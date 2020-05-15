@@ -454,6 +454,9 @@ function OpenFileDialog(){
 }
 
 async function ProcessMetadata(){
+
+	var start = Date.now();
+
 	if(metadataPath != null && fs.existsSync(metadataPath))
 	{
 		await SetMetdataLoadProgress(2);
@@ -472,9 +475,12 @@ async function ProcessMetadata(){
 		}
 		await SetMetdataLoadProgress(-1);
 	}
+
+	ShowTimings("ProcessMetadata", start, Date.now());
 }
 
 async function LoadMetadata() {
+	var start = Date.now();
 	metadataDirectory = path.dirname(metadataPath);
 	var selectedOutDir = $("#txtOutputDir").val();
 	if(selectedOutDir == defaultOutputPath)
@@ -488,6 +494,7 @@ async function LoadMetadata() {
 	var fileExtension = path.extname(metadataPath);
 
 	await LoadMetadataCsv();
+	ShowTimings("LoadMetadata", start, Date.now());
 }
 
 async function LoadMetadataCsv() {
@@ -548,6 +555,7 @@ function trimStrings(key, value) {
   }
 
 async function ValidateMetadataPre(){
+	var start = Date.now();
 	validationResults_headerColumsnNotFromattedCorrectly = [];
 
 	var duplicateHeaderCheck = [];
@@ -589,6 +597,7 @@ async function ValidateMetadataPre(){
 	debugLog("'ValidateMetadataPre' - 'validationResults_missingColumns'...", validationResults_missingColumns);
 
 	ShowHideErrorsPre();
+	ShowTimings("ValidatgeMetadataPre", start, Date.now());
 }
 
 function CheckColumnFormattedCorrectly(columnName){
@@ -680,22 +689,27 @@ function ShowHideErrorsPre(){
 }
 
 async function StoreCurrentFilenames(){
+	var start = Date.now();
 	filenamesOld = [];
 	$.each(metadata, function (key, metadataItem) {
 		filenamesOld.push(metadataItem[selectedRenamerConfig.metadataCurrentFilenameColumn]);
 	})
 	debugLog("'StoreCurrentFilenames' - Current filenames stored in 'filenamesOld'...", filenamesOld);
+	ShowTimings("StoreCurrentFilenames", start, Date.now());
 }
 
 async function GenerateNewFilenames() {
+	var start = Date.now();
 	filenamesNew = [];
 	$.each(metadata, function (key, metadataItem) {
 		filenamesNew.push(GetNewFilename(metadataItem));
 	})
 	debugLog("'GenerateNewFilenames' - New filenames generates and stored in 'filenamesNew'...", filenamesNew);
+	ShowTimings("GenerateNewFilenames", start, Date.now());
 }
 
 async function GenerateNewMetadata(){
+	var start = Date.now();
 	//Generate new metadata colun names
 	//###################################
 	var newFilenameColumnNames = [lineNumberColumnName];
@@ -752,15 +766,11 @@ async function GenerateNewMetadata(){
 	}
 
 	debugLog("'GenerateNewMetadata' - New metadata ready for saving 'newMetadata'...", newMetadata);
+	ShowTimings("GenerateNewMetadata", start, Date.now());
 }
 
 function ValidateMetadataPost() {
-	var filesInMetadataFolder = [];
-	var foldersInMetadataFolder = [];
-	var otherFileInMetadataFolder = [];
-
-	
-
+	var start = Date.now();
 	//Get all the files/folders/etc in the metadata directory
 	var allFilesAndFoldersInMetadataFolder = fs.readdirSync(metadataDirectory, {withFileTypes:true});
 
@@ -799,18 +809,55 @@ function ValidateMetadataPost() {
 		{
 			allFilesAndFoldersToCheckInMetadataFolder.push(fileOrFolder.name);
 		}
-
 	});
 
-	ValidateCurrentFilenameExists(allFilesAndFoldersToCheckInMetadataFolder);
-	ValidateErrorExtraFiles(allFilesAndFoldersToCheckInMetadataFolder);
-	ValidateFilenameCapitalisation();
+	debugLog("allFilesAndFoldersToCheckInMetadataFolder", allFilesAndFoldersToCheckInMetadataFolder);
+
+	var start;
+	var end;
+	start = Date.now();
+	ValidateCurrentFilenameExists();
+	end = Date.now();
+	ShowTimings("ValidateCurrentFilenameExists", start, end);
+
+	start = Date.now();
 	ValidateNewFilenameExists();
+	end = Date.now();
+	ShowTimings("ValidateNewFilenameExists", start, end);
+
+	start = Date.now();
+	ValidateErrorExtraFiles(allFilesAndFoldersToCheckInMetadataFolder);
+	end = Date.now();
+	ShowTimings("ValidateErrorExtraFiles", start, end);
+
+	start = Date.now();
+	ValidateFilenameCapitalisation();
+	end = Date.now();
+	ShowTimings("ValidateFilenameCapitalisation", start, end);
+
+	start = Date.now();
 	ValidateSameCurrentFilename();
+	end = Date.now();
+	ShowTimings("ValidateSameCurrentFilename", start, end);
+
+	start = Date.now();
 	ValidateSameNewFilename();
+	end = Date.now();
+	ShowTimings("ValidateSameNewFilename", start, end);
+
+	start = Date.now();
 	ValidateTypes();
+	end = Date.now();
+	ShowTimings("ValidateTypes", start, end);
 
 	ShowHideErrorsPost();
+	ShowTimings("ValidateMetadataPost", start, Date.now());
+}
+
+function ShowTimings(functionName, start, end)
+{
+	var millis = end - start;
+	console.log(`${functionName} took: ${millis / 1000} seconds`);
 }
 
 function ShowHideErrorsPost(){
@@ -842,32 +889,47 @@ function ShowHideErrorsPost(){
 		}
 }
 
-function ValidateCurrentFilenameExists(allFilesInMetadataFolder) {
+function ValidateCurrentFilenameExists() {
 	validationResults_currentFileDoesNotExist = [];
 
-	$.each(metadata, function (key, metadataItem) {
-		var currentFilePath = path.join(metadataDirectory, metadataItem[selectedRenamerConfig.metadataCurrentFilenameColumn]);
-		debugLog("'ValidateCurrentFilenameExists' - Path to check 'currentFilePath'...", currentFilePath);
-		var fileExists = fs.existsSync(currentFilePath);
-		if (!fileExists) {
+	var everythingInMetadataFolder = fs.readdirSync(metadataDirectory);
+
+	$.each(metadata, function (index, metadataItem) {
+		//Look in filesystem for files listed in metadata
+		var filename =  metadataItem[selectedRenamerConfig.metadataCurrentFilenameColumn];
+		if (everythingInMetadataFolder.indexOf(filename) == -1) {
 			validationResults_currentFileDoesNotExist.push(metadataItem);
 		}
-		else{
-			var filename = path.basename(currentFilePath);
-			if (allFilesInMetadataFolder.indexOf(filename) == -1) {
-				validationResults_currentFileDoesNotExist.push(metadataItem);
-			}
-		}
-	})
+	});
+	
 	debugLog("'ValidateCurrentFilenameExists' - 'validationResults_currentFileDoesNotExist'...'", validationResults_currentFileDoesNotExist);
 }
 
+function ValidateNewFilenameExists() {
+	validationResults_newFilenameExists = [];
+
+	if(fs.existsSync(outputPath))
+	{
+		var everythingInOutputFolder = fs.readdirSync(outputPath);
+		debugLog("everythingInOutputFolder", everythingInOutputFolder);
+
+		$.each(newMetadata, function (index, newMetadataItem)
+		{
+			var newFilename = newMetadataItem[selectedRenamerConfig.metadataNewFilenameColumn];
+			if (everythingInOutputFolder.indexOf(newFilename) != -1) {
+				validationResults_newFilenameExists.push(newMetadataItem);
+			}
+		});
+		debugLog("'ValidateNewFilenameExists' - 'validationResults_newFilenameExists'...'", validationResults_newFilenameExists);
+	}
+}
+
 //Verify that every file we can find is included in the metadata
-function ValidateErrorExtraFiles(allFilesInMetadataFolder)
+function ValidateErrorExtraFiles(allFilesToCheckInMetadataFolder)
 {
 	validationResults_extraFileInDirectory = [];
 
-	$.each(allFilesInMetadataFolder, function (index, filename) {
+	$.each(allFilesToCheckInMetadataFolder, function (index, filename) {
 		if (filenamesOld.indexOf(filename) == -1 && filename != metadataFilename) {
 			debugLog("'ValidateErrorExtraFiles' - Extra file found in metadata directory...", filename);
 			validationResults_extraFileInDirectory.push(filename);
@@ -937,20 +999,6 @@ function ciEquals(a, b) {
         : a === b;
 }
 
-function ValidateNewFilenameExists() {
-	validationResults_newFilenameExists = [];
-	for(var i = 0; i < newMetadata.length; i++)
-	{
-		var newFilePath = path.join(outputPath, newMetadata[i][selectedRenamerConfig.metadataNewFilenameColumn]);
-		debugLog("'ValidateNewFilenameExists' - Path to check 'newFilePath'...", newFilePath);
-		var fileExists = fs.existsSync(newFilePath);
-		if (fileExists) {
-			validationResults_newFilenameExists.push(newMetadata[i]);
-		}
-	}
-	debugLog("'ValidateNewFilenameExists' - 'validationResults_newFilenameExists'...'", validationResults_newFilenameExists);
-}
-
 function ValidateSameCurrentFilename() {
 	validationResults_sameCurrentFilename = _.groupBy(metadata, selectedRenamerConfig.metadataCurrentFilenameColumn);
 
@@ -982,7 +1030,7 @@ function ValidateTypes(){
 			var columnData = newMetadata[i][filenameColumnKey];
 			var columnDataType = filenameColumn.type;
 
-			debugLog("'columnData' 'columnDataType'", columnData + " - " + columnDataType);
+			//debugLog("'columnData' 'columnDataType'", columnData + " - " + columnDataType);
 
 			var rowData = newMetadata[i];
 			var columnName = filenameColumnKey;
