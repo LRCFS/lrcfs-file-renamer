@@ -11,6 +11,8 @@ By having a folder that contains all the appropriate files (such as images from 
 
 Once the data has been validate all the files can then be copied and renamed automatically, along with an updated metadata CSV file that contains both the original filename and new filename.
 
+ ![](https://i.imgur.com/ZCpNG3y.png)
+
 ## Example
 Imagine the following file structure:
 ```
@@ -47,7 +49,8 @@ Where the newly created metadata file  (`output\image-data.csv`) now contains th
 # What makes a valid metadata file?
 The LRCFS File Renamer can't take any metadata file and rename your files. It needs to know what columns to use, what order to put them in and how it should use them to rename your file.
 
-As such, the LRCFS File Renamer relies on a `renamers.json` file that describes what metadata to expect and how it is then used to both validate and rename the files.
+As such, the LRCFS File Renamer relies on a `renamers.json` file that describes what metadata to expect and how it is then used to both validate and rename the files. Within the application you can see how the renamer associated with the project informs the user about the fields required in their metadata:
+![](https://i.imgur.com/X2eV25S.png)
 
 The `renamers.json` file can contain many different expected formats for the metadata but it currently only supports one expected format for our Transfer & Persistence project. If you'd like to use this application to rename your files to different formats make sure to read [Creating a custom renamer config](https://github.com/LRCFS/lrcfs-file-renamer#creating-a-custom-renamer-config) below.
 
@@ -134,7 +137,9 @@ Currently, only one renamer definition exists for our Transfer & Persistence pro
 
 To create a new renamer configuration simply modify or add your config to the array of configurations defined in this file and place this file alongside the LRCFS-File-Renamer-v##.exe.
 
-The application will automatically pick up this modified renamers.json file and you will be able to use it as required.
+The application will automatically pick up this modified `renamers.json` file and you will be able to use it as required.
+
+In it's simplest form the `renamers.json` specifies the required columns, their expected type/format as well the order and display of these values in your new filenames.
 
 **Renamers.json definition**
 
@@ -207,6 +212,8 @@ Example `metadataRequiredColumns`:
     "Humidity (%)":				{"useInFilename": true,	"renameTo": "HM",	"type": "int",	"allowNull": true, "minValue": 0, "maxValue": 100,  "useInFilenameIfNull": true}
 }
 ```
+
+Please see the full [renamers.json](https://github.com/LRCFS/lrcfs-file-renamer/blob/master/app/renamers.json) for a complete example of how a renamers configuration is formed.
 
 # Development and Customisation
 This application has been built with [Electron](https://electronjs.org) to enable a cross platform to be created.
