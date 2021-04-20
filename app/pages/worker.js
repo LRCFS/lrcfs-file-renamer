@@ -104,12 +104,12 @@ function CopyMetadata(){
     var columnCount = 1;
 	$.each(newMetadata, function(key, newMetadataItem){
 		var line = "";
-		var columnCount = 1; //Keep track of the column count and have a varialbe for the seperator so we don't add it on the last element
-		var columnSeperator = ",";
+		var columnCount = 1; //Keep track of the column count and have a varialbe for the separator so we don't add it on the last element
+		var columnSeparator = ",";
 
 		$.each(newMetadataColumnNamesToSave, function(id,columnName){
-			if(columnCount == newMetadataColumnNamesToSave.length) columnSeperator = "";
-			line += "\"" +newMetadataItem[columnName] + "\"" + columnSeperator;
+			if(columnCount == newMetadataColumnNamesToSave.length) columnSeparator = "";
+			line += "\"" +newMetadataItem[columnName] + "\"" + columnSeparator;
 			columnCount++;
 		});
         line += "\n";

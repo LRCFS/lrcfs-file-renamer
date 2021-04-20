@@ -352,14 +352,14 @@ function UpdateSelectedRenamer(renamerId) {
 	$("#renamerTrimHeadersAndData").html(selectedRenamerConfig.trimHeadersAndData);
 	$("#renamerNullDataTag").html("'" + selectedRenamerConfig.nullDataTagDisplay + "'");
 
-	if(selectedRenamerConfig.filenamePropertySeperator != "")
+	if(selectedRenamerConfig.filenamePropertySeparator != "")
 	{
-		$("#renamerFilenamePropertySeperator").html("<p><strong><acronym title='The character that will be placed between each property (e.g. EXP1"+selectedRenamerConfig.filenamePropertySeperator+"REP1.ext) in the renamed files'>Property Seperator</acronym>:</strong> " + selectedRenamerConfig.filenamePropertySeperator + "</p>");
+		$("#renamerFilenamePropertySeparator").html("<p><strong><acronym title='The character that will be placed between each property (e.g. EXP1"+selectedRenamerConfig.filenamePropertySeparator+"REP1.ext) in the renamed files'>Property Separator</acronym>:</strong> " + selectedRenamerConfig.filenamePropertySeparator + "</p>");
 	}
 
-	if(selectedRenamerConfig.filenameValueSeperator != "")
+	if(selectedRenamerConfig.filenameValueSeparator != "")
 	{
-		$("#renamerFilenameValueSeperator").html("<p><strong><acronym title='The character that will be placed between each property and it's value (e.g. EXP"+selectedRenamerConfig.filenameValueSeperator+"1.ext) in the renamed files'>Value Seperator</acronym>:</strong> " + selectedRenamerConfig.filenameValueSeperator + "</p>");
+		$("#renamerFilenameValueSeparator").html("<p><strong><acronym title='The character that will be placed between each property and it's value (e.g. EXP"+selectedRenamerConfig.filenameValueSeparator+"1.ext) in the renamed files'>Value Separator</acronym>:</strong> " + selectedRenamerConfig.filenameValueSeparator + "</p>");
 	}
 
 	if(selectedRenamerConfig.submissionUrl != null && selectedRenamerConfig.submissionUrl != "")
@@ -379,7 +379,7 @@ function UpdateSelectedRenamer(renamerId) {
 	$.each(selectedRenamerConfig.metadataRequiredColumns, function (requiredColumnName, requiredColumnAttributes) {
 		if(exampleFilename != "")
 		{
-			exampleFilename = exampleFilename + selectedRenamerConfig.filenamePropertySeperator;
+			exampleFilename = exampleFilename + selectedRenamerConfig.filenamePropertySeparator;
 		}
 		var existingText = $("#renamerColumns").html();
 		var renameTo = requiredColumnAttributes.renameTo;
@@ -396,7 +396,7 @@ function UpdateSelectedRenamer(renamerId) {
 		if(requiredColumnAttributes.dateFormatJs != null && requiredColumnAttributes.dateFormatJs != "")
 		{
 			$("#renamerColumns").html(existingText + "<strong>\"" + requiredColumnName + "\"</strong>  (" + requiredColumnAttributes.type + ": e.g. " + requiredColumnAttributes.dateFormatJs + canBeNa + ")<br />");
-			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeperator + requiredColumnAttributes.dateFormatJs + "</acronym>";
+			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeparator + requiredColumnAttributes.dateFormatJs + "</acronym>";
 		}
 		else if(requiredColumnAttributes.minValue != null || requiredColumnAttributes.maxValue != null)
 		{
@@ -413,19 +413,19 @@ function UpdateSelectedRenamer(renamerId) {
 
 			$("#renamerColumns").html(existingText + "<strong>\"" + requiredColumnName + "\"</strong> (" + requiredColumnAttributes.type + ": " + minValue + " to " + maxValue + canBeNa + ")<br />");
 
-			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeperator + maxValue + "</acronym>";
+			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeparator + maxValue + "</acronym>";
 		}
 		else if(requiredColumnAttributes.maxTextLength != null)
 		{
 			$("#renamerColumns").html(existingText + "<strong>\"" + requiredColumnName + "\"</strong> (" + requiredColumnAttributes.type + ": max " + requiredColumnAttributes.maxTextLength + canBeNa + ")<br />");
 
-			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeperator + "text</acronym>";
+			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeparator + "text</acronym>";
 		}
 		else
 		{
 			$("#renamerColumns").html(existingText + "<strong>\"" + requiredColumnName + "\"</strong> (" + requiredColumnAttributes.type + canBeNa + ")<br />");
 
-			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeperator + "value</acronym>";
+			exampleFilename = exampleFilename + "<acronym title='" + requiredColumnName + "'>" + renameTo + selectedRenamerConfig.filenameValueSeparator + "value</acronym>";
 		}
 	})
 
@@ -1125,11 +1125,11 @@ function GetNewFilename(metdataItem){
 		var propertyValue = metdataItem[requiredColumnName];
 		if(UseValueInFilename(propertyValue, selectedRenamerConfig.nullDataTagRegex, requiredColumnAttributes))
 		{
-			//Add a seperator between the properties
+			//Add a separator between the properties
 			if (i != 0) {
-				newFilename += selectedRenamerConfig.filenamePropertySeperator;
+				newFilename += selectedRenamerConfig.filenamePropertySeparator;
 			}
-			newFilename += requiredColumnAttributes.renameTo + selectedRenamerConfig.filenameValueSeperator + propertyValue;
+			newFilename += requiredColumnAttributes.renameTo + selectedRenamerConfig.filenameValueSeparator + propertyValue;
 			//Replace spaces if needed
 			newFilename = newFilename.replace(" ", selectedRenamerConfig.replaceSpacesInFilenameWith)
 			//Replace invalid filename characters

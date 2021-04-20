@@ -198,10 +198,10 @@
 					<p class="lead">Welcome to the Leverhulme Research Centre for Forensic Science File Renamer.</p>
 					<hr>
 					<p>
-						This application has been developed to help you automatically rename files for your project based on your metadata.
+						This application has been developed to help you automatically rename files based on your metadata.
 					</p>
 					<p>
-						With this application you can automatically rename hundreds of files from: <br />
+						Based on a single metadata .csv file this application will automatically rename hundreds of files from: <br />
 						<strong>DCS_0002.jpg</strong> to <strong>20201231-Exp1-Rep2-UVLIGHT.jpg</strong>
 					</p>
 					<p>
@@ -213,9 +213,15 @@
 						<div class="card-body">
 							<h5 class="card-title">Customise LRCFS Renamer</h5>
 							<p class="card-text">You can create your own renamer configuration files that let you customise what metadata you expect and how you want your files to be renamed.</p>
-							<a class="btn btn-primary" href="https://github.com/LRCFS/lrcfs-electron-file-renamer" role="button" target="_blank"><span class="fa fa-dashboard fa-lg" aria-hidden="true"></span> Visit GitHub to find out more<br />(LINK NOT WORKING YET)</a>
+							<a class="btn btn-primary" href="https://github.com/LRCFS/lrcfs-file-renamer#creating-a-custom-renamer-config" role="button" target="_blank"><span class="fa fa-dashboard fa-lg" aria-hidden="true"></span> Visit GitHub to find out more</a>
 						</div>
-					</div>				
+					</div>
+					<div class="card text-center mt-2">
+						<div class="card-body">
+							<h5 class="card-title">What is Metadata</h5>
+							<p class="card-text">Metadata is <a href="https://en.wikipedia.org/wiki/Metadata">data about data</a>.<br />In the case of the LRCFS File Renamer, the metadata for your files should contain information for each file you want to rename.</p>
+						</div>
+					</div>							
 				</div>
 			</div>
 		</div>
@@ -268,8 +274,8 @@
 						<p><strong><acronym title="The column that your new filenames will be stored in">New Filename Column</acronym>:</strong> <span id="renamerMetadataNewFilenameColumn"></span></p>
 						<p><strong><acronym title="If TRUE your metadata will have 'spaces' and 'tabs' removed from the start and end of any data">Trim Headers &amp; Data</acronym>:</strong> <span id="renamerTrimHeadersAndData"></span></p>
 						<p><strong><acronym title="The value that you can use to represent 'no data recorded' in your metadata">Null Data Tag</acronym>:</strong> <span id="renamerNullDataTag"></span></p>
-						<span id="renamerFilenamePropertySeperator"></span>
-						<span id="renamerFilenameValueSeperator"></span>
+						<span id="renamerFilenamePropertySeparator"></span>
+						<span id="renamerFilenameValueSeparator"></span>
 					</div>
 					<div class="col-4">
 						<h4>Required Metadata Columns</h4>
@@ -316,7 +322,7 @@
 						<span class="note">Note: Before loading your metadata please ensure that your metadata and it's corresponding files are in the same directory.</span>
 					</p>
 					<p>
-						<button id="btnFileSelect" class="btn btn-primary btn-block">Select Metadata File</button>
+						<button id="btnFileSelect" class="btn btn-primary btn-block">Select Metadata File (.csv)</button>
 						<input type="text" class="form-control" id="selectedMetadataPath" placeholder="Selected metadata.csv..." disabled></input>
 					</p>
 					<h5>Refresh your Metadata</h5>
@@ -358,14 +364,14 @@
 				<div class="col">
 					<h4>There are problems with the headings in your metadata</h4>
 					<hr/>
-					<p><strong>Please note that header names are case sensative.</strong><p></p>
+					<p><strong>Please note that header names are case sensitive.</strong><p></p>
 					<div id="errorsDuplicateColumnHeading">
 						<p><strong>Your selected metadata includes duplicate column names/headings.</strong></p>
 						<p>Please remove/rename/replace all duplicate column headings as no two columns can have the same heading:</p>
 						<ul id="errorsDuplicateColumn"></ul>
 					</div>
 					<div id="errorsMalformedColumnsHeading">
-						<p><strong>Your headers contain single quotes around your headings. Please use double quotes to enclose all data if requied.</strong></p>
+						<p><strong>Your headers contain single quotes around your headings. Please use double quotes to enclose all data if required.</strong></p>
 						<p>Please check that your following metadata headers do not use single quotes or use double quotes instead:</p>
 						<p><small>Note: Not being able to correctly recognise your headers may results in more errors below. Please resolve this first before reloading your data to check for further errors.</small></p>
 						<ul id="errorsMalformedColumns"></ul>
@@ -395,7 +401,7 @@
 					<h4>Filename Capitalisation/Accent Errors</h4>
 					<hr />
 					<p>The following files listed in your metadata appear to closely match files on your system.</p>
-					<p>Filenames, including extension, are <strong>case sensative</strong> and must match exactly. Use this guide to <a href="https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/" target="_blank">view filenames (including extensions)</a> on your computer.</p>
+					<p>Filenames, including extension, are <strong>case sensitive</strong> and must match exactly. Use this guide to <a href="https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/" target="_blank">view filenames (including extensions)</a> on your computer.</p>
 					<p><strong>Please ensure the following files are renamed to match exactly:</strong></p>
 					<ul id="eCaps"></ul>
 				</div>
@@ -405,7 +411,7 @@
 					<h4>Files Missing</h4>
 					<hr />
 					<p>The following files are missing and can not be found in the same folder as your metadata.</p>
-					<p><strong>Note: </strong>Filenames, including extensions, are <strong>case sensative</strong> and must match exactly. Use this guide to <a href="https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/" target="_blank">view filenames (including extensions)</a> on your computer.</p>
+					<p><strong>Note: </strong>Filenames, including extensions, are <strong>case sensitive</strong> and must match exactly. Use this guide to <a href="https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/" target="_blank">view filenames (including extensions)</a> on your computer.</p>
 					<p>
 						Please check these files exist in:<br />
 						<span id="errorFilesMissingFolder"></span>
@@ -418,8 +424,8 @@
 					<h4>Extra Files</h4>
 					<hr />
 					<p>The following files/folders have been found in your metadata directory that are not referenced by your metadata.</p>
-					<p>Please store only the files assocaited with your metadata in the same folder as your metadata.</p>
-					<p><strong>Note: </strong>Filenames, including extensions, are <strong>case sensative</strong> and must match exactly. Use this guide to <a href="https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/" target="_blank">view filenames (including extensions)</a> on your computer.</p>
+					<p>Please store only the files associated with your metadata in the same folder as your metadata.</p>
+					<p><strong>Note: </strong>Filenames, including extensions, are <strong>case sensitive</strong> and must match exactly. Use this guide to <a href="https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/" target="_blank">view filenames (including extensions)</a> on your computer.</p>
 					<p>
 						Please remove the following files/folders form your metadata directory OR update your metadata to correctly reference these files:<br />
 						<span id="errorExtraFilesFolder"></span>
@@ -443,7 +449,7 @@
 				<div class="col">
 					<h4>Same Current Filename</h4>
 					<hr />
-					<p>The following lines in your metadata contain duplicate filenames. Duplicate filenames means that we can't assocaite one record of your metadata with that file and as such it can not be renamed.</p>
+					<p>The following lines in your metadata contain duplicate filenames. Duplicate filenames means that we can't associate one record of your metadata with that file and as such it can not be renamed.</p>
 					<p>Please ensure that each line of your metadata correctly references a unique filename and correct any errors.</p>
 					<ul id="e3"></ul>
 				</div>
