@@ -47,6 +47,7 @@ var validationResults_filenameCapitalisationErrors;
 var validationResults_currentFileDoesNotExist;
 var validationResults_extraFileInDirectory;
 var validationResults_newFilenameExists;
+var validationResults_metadataOutputExists;
 var validationResults_sameCurrentFilename;
 var validationResults_sameNewFilename;
 
@@ -211,6 +212,7 @@ function ResetErrors(){
 	validationResults_currentFileDoesNotExist = [];
 	validationResults_extraFileInDirectory = [];
 	validationResults_newFilenameExists = [];
+	validationResults_metadataOutputExists = [];
 	validationResults_sameCurrentFilename = [];
 	validationResults_sameNewFilename = [];
 
@@ -869,6 +871,7 @@ function ShowHideErrorsPost(){
 		validationResults_currentFileDoesNotExist.length == 0 &&
 		validationResults_extraFileInDirectory.length == 0 &&
 		validationResults_newFilenameExists.length == 0 &&
+		validationResults_metadataOutputExists.length == 0 &&
 		validationResults_sameCurrentFilename.length == 0 &&
 		validationResults_sameNewFilename.length == 0 &&
 		
@@ -913,6 +916,7 @@ function ValidateNewFilenameExists() {
 		var everythingInOutputFolder = fs.readdirSync(outputPath);
 		debugLog("everythingInOutputFolder", everythingInOutputFolder);
 
+		//Check the new files in the metadata won't conflict
 		$.each(newMetadata, function (index, newMetadataItem)
 		{
 			var newFilename = newMetadataItem[selectedRenamerConfig.metadataNewFilenameColumn];
@@ -920,7 +924,16 @@ function ValidateNewFilenameExists() {
 				validationResults_newFilenameExists.push(newMetadataItem);
 			}
 		});
+
 		debugLog("'ValidateNewFilenameExists' - 'validationResults_newFilenameExists'...'", validationResults_newFilenameExists);
+
+		//Check the metadata file itself won't conflict
+		if(everythingInOutputFolder.indexOf(metadataFilename) != -1)
+		{
+			validationResults_metadataOutputExists.push(path.join(outputPath, metadataFilename));
+		}
+
+		debugLog("'ValidateNewFilenameExists' - 'validationResults_metadataOutputExists'...'", validationResults_metadataOutputExists);
 	}
 }
 
@@ -1320,6 +1333,14 @@ function ShowValidation(){
 	$.each(validationResults_newFilenameExists, function (key, item) {
 		errorList.append("<li><strong>Line " + item[lineNumberColumnName] + ":</strong> <code>'" + item[selectedRenamerConfig.metadataNewFilenameColumn] + "'</code></li>");
 		$('#errorFilenameExists').show();
+	})
+
+	$('#errorMetadataOutputExists').hide();
+	var errorList = $('#eMetadataOutputExists');
+	errorList.html('');
+	$.each(validationResults_metadataOutputExists, function (key, item) {
+		errorList.append("<li><code>'" + item + "'</code> already exists.</li>");
+		$('#errorMetadataOutputExists').show();
 	})
 
 	$('#errorSameCurrentFilename').hide();

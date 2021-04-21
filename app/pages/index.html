@@ -439,10 +439,21 @@
 					<hr />
 					<p>The following lines in your metadata will generate new filenames that already exist in the output folder.</p>
 					<p>
-						<strong>FIX:</strong> Please move the existing files or change the output directory to a different location:<br />
+						<strong>FIX:</strong> Please move the existing files <strong>OR</strong> change the output directory to a different location:<br />
 						<span id="errorOutputFolder"></span>
 					</p>
 					<ul id="e2"></ul>
+				</div>
+			</div>
+			<div class="row" id="errorMetadataOutputExists">
+				<div class="col">
+					<h4>Metadata output file already exists</h4>
+					<hr />
+					<p>A file with the same name as your metadata already exists in the output folder.</p>
+					<p>
+						<strong>FIX:</strong> Ensure that you are saving your outputs to a folder that does not already contain a file with the same name as your current loaded metadata <strong>OR</strong> rename your metadata file and reload it.<br />
+					</p>
+					<ul id="eMetadataOutputExists"></ul>
 				</div>
 			</div>
 			<div class="row" id="errorSameCurrentFilename">
