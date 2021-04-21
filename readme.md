@@ -136,6 +136,13 @@ When the LRCFS File Renamer renames your files it will put them in the output di
 
 This is typically only an error you will see if you try and run the process twice.
 
+### **Metadata output file already exists**
+When the LRCFS File Renamer renames your files it will put them in the output directory specified. This error means that your specified output directory already exists in the output folder.
+
+Instead of overwriting your file the LRCFS File Renamer requires that you either save your output to a directory that does not have a file already in it with the same name as your metadata.
+
+Either change the output directory or remove the existing file.
+
 ### **Same Current Filename**
 The LRCFS File Renamer assume that there is only one row per file in the metadata, as such, you cannot have two lines in your metadata csv file that reference the same filename. Either remove the duplicate row/rows from your metadata or correct the filename reference to a original file.
 
