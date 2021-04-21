@@ -1,60 +1,91 @@
 # LRCFS File Renamer
 
-The LRCFS File Renamer has been created as a way of managing part of the process of file management, to ensure all files conform to a strict naming schema and that metadata is in the correct format.
+The LRCFS File Renamer has been created as a way of managing part of the process of file management, to ensure all files conform to a strict naming schema and that metadata is in an expected format.
 
-By having a folder that contains all the appropriate files (such as images from a camera) and a metadata CSV that contains one record for each file, this application can quickly validate that:
+By creating a folder that contains all the appropriate files (such as images from a camera) and a metadata CSV that contains information about each file (one record for each file) this application can quickly validate that:
 
-1. All columns in the metadata exist
+1. All required columns, based on a specific project, in the metadata exist
 2. All files in the folder are referenced in the metadata (highlighting any missing files)
 3. All files in the meta data are referenced only once (highlighting any duplicate rows)
 4. All metadata column data adhere to their data types and validate correctly (i.e. check that dates are in a specified format, numbers are within a given range and that text is no longer than a maximum length)
 
-Once the data has been validate all the files can then be copied and renamed automatically, along with an updated metadata CSV file that contains both the original filename and new filename.
+Once the data has been validate all the files can then be copied and renamed automatically, along with creating an updated metadata CSV file that contains both the original filename and new filename. **None of the original files are changed**.
 
  ![](https://i.imgur.com/ZCpNG3y.png)
 
-## Example
-Imagine the following file structure:
+## Example usage
+You are working on a data collection project where you are required to take one image each day for the LRCFS [Transfer & Persistence project](https://www.dundee.ac.uk/leverhulme/projects/details/transfer-and-persistence.php)
+
+1. First download the latest version of the LRCFS File Renamer from our releases page: https://github.com/LRCFS/lrcfs-file-renamer/releases (macOS v10.10+, Windows v7+)
+
+2. If you haven't already, optionally create a empty metadata file in the correct format for your project by opening the LRCFS File Renamer, selecting the appropriate project and under the **"Show/Hide Metadata Requirements"** option select **"Create Blank Metadata File"**
+   
+3. Create a folder that **just contains your images and your metadata**, e.g.:
 ```
 c:\project\image_001.jpg
 c:\project\image_002.jpg
 c:\project\image-data.csv
 ```
-Where the metadata file (`image-data.csv`) contains the following CSV data:
-|Filename|DateTaken|ParticleCount|
-|-|-|-|
-|image_001.jpg|20210101|5|
-|image_002.jpg|20210102|6|
+> NOTE: The LRCFS File Renamer will tell you if there are any unexpected files or folders but it best to ensure that only the metadata file itself and all images referenced by the metadata are in the folder. Any additional files should be removed. Also make sure there are not hidden files in the folder as well ([Viewing hidden files on Mac](https://www.macworld.co.uk/how-to/show-hidden-files-mac-3520878/) | [Viewing hidden files on Windows](https://www.howtogeek.com/howto/windows-vista/show-hidden-files-and-folders-in-windows-vista/))
 
-With one click you can validate that all your files and metadata are valid, and with a second click you rename your files and update your metadata to the following:
+The `image-data.csv` is the metadata file that contains all the information we want to use to validate and rename our files in a [CSV format](https://en.wikipedia.org/wiki/Comma-separated_values). For the Transfer & Persistence project this requires metadata that has the following columns, but the content would change based on the exact data collection parameters you were using for each image taken. These requirements can be seen in the LRCFS File Renamer under the **"Show/Hide Metadata Requirements"** section after you have a selected a project.
+
+|Filename|Date|Experiment|Replicate|Substrate|SubstrateType|ObservationType|Mass (g)|TransferTime (s)|PersistenceTime (min)|Temperature (DegC)|Humidity (%)|
+|-|-|-|-|-|-|-|-|-|-|-|-|
+|image_001.jpg|20200101|1|1|Sub|SubT|ObT|50|30|15|NA|NA|
+|image_002.jpg|20200102|2|1|Sub|SubT|ObT|50|30|15|NA|NA|
+
+4. Once you are happy that all your files and metadata are complete, open the LRCFS File Renamer.
+
+5. Select the appropriate project that is relevant for your data collection (in our case this is going to be `Transfer & Persistence`)
+   
+6. Next, load your metadata by pressing the **"Select Metadata File (.csv)"** button.
+   
+7. Select your metadata file (in our case `image-data.csv`) and click open.
+   
+8. The LRCFS File Renamer will automatically validate your files and metadata as well as [show you any errors and how to fix them](#SolvingPossibleErrors).
+
+9. If you make any changes to the files or metadata in an attempt to resolve these errors, press **"Refresh"** to reload and check if they have been fixed correctly.
+
+> NOTE: This is might be as far as you want to take the process. It can be helpful to use the LRCFS File Renamer purely to validate files and their metadata
+
+10. Optionally change the **"output"** directory by selecting **"Change Output Directory"**. By default an output directory will be created in the same folder you loaded your metadata from.
+
+11. Once all errors have been resolved, press "Process" to start renaming all your files.
+
+The output from the renamer, by default, will be placed in a newly created `output` folder.
 ```
-c:\project\output\20210101_PCount-5.jpg
-c:\project\output\20210101_PCount-6.jpg
+c:\project\output\20200101_EX1_RP1_SBSub_STSubT_OTObT_MA50_TT30_PT15_TPNA_HMNA.jpg
+c:\project\output\20200102_EX2_RP1_SBSub_STSubT_OTObT_MA50_TT30_PT15_TPNA_HMNA.jpg
 c:\project\output\image-data.csv
 ```
 Where the newly created metadata file  (`output\image-data.csv`) now contains the following CSV data:
-|Filename|DateTaken|ParticleCount|OriginalFilename|
-|-|-|-|-|
-|20210101_PCount-5.jpg|20210101|5|image_001.jpg|
-|20210102_PCount-6.jpg|20210102|6|image_002.jpg|
+|Filename|OriginalFilename|Date|Experiment|Replicate|Substrate|SubstrateType|ObservationType|Mass (g)|TransferTime (s)|PersistenceTime (min)|Temperature (DegC)|Humidity (%)|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|20200101_EX1_RP1_SBSub_STSubT_OTObT_MA50_TT30_PT15_TPNA_HMNA.jpg|image_001.jpg|20200101|1|1|Sub|SubT|ObT|50|30|15|NA|NA|
+|20200102_EX2_RP1_SBSub_STSubT_OTObT_MA50_TT30_PT15_TPNA_HMNA.jpg|image_002.jpg|20200102|2|1|Sub|SubT|ObT|50|30|15|NA|NA|
 
-# Usage
-1. First download the appropriate version from our releases page: https://github.com/LRCFS/lrcfs-file-renamer/releases  (**macOS** v10.10+, **Windows** v7+)
-2. Ensure that files and metadata are sitting side-by-side in the same folder (with no extra folders or files)
-3. Start the renamer and select the renamer configuration (currently we only have one renamer configuration created for our [Transfer & Persistence project](https://www.dundee.ac.uk/leverhulme/projects/details/transfer-and-persistence.php), but you can create custom ones for your own project using the information provided below.)
-4. Select your metadata CSV file. This file can be called anything but must exist alongside your files you want validated/renamed.
-5. Check that your data validates correctly or fix any errors (you'll need to refresh the validation using the "Refresh" button if you change any files or your metadata)
-6. Optionally "Start Processing" your data to copy all your data and rename your files into the "output" directory.
+12. Once processed, because the Transfer & Persistence project is collecting data from external participants, you will be presented with the option to **"Submit Your Data Online"**. Our online submission platform for this specific project expects data in a strict format which the LRCFS File Renamer ensures that your data is in. As such, you can now quickly and easily submit your **output data** to our data collection portal.
+
+# Quick reminder/example
+1. Start the LRCFS File Renamer and generate a "Blank Metadata File" for your project.
+2. Generate your data and create a folder with just your files and associated metadata (no extra files or folders)
+3. Start the LRCFS File Renamer and select the correct project.
+4. Select your metadata CSV file.
+5. Check that your data validates correctly or fix any errors ("refresh" after any changes to your files or metadata)
+6. Select "Start Processing"
+7. Check the output directory for your updated files and metadata.
+8. Submit your data to the project.
 
 # What makes a valid metadata file?
 The LRCFS File Renamer can't take any metadata file and rename your files. It needs to know what columns to use, what order to put them in and how it should use them to rename your file.
 
-As such, the LRCFS File Renamer relies on a `renamers.json` file that describes what metadata to expect and how it is then used to both validate and rename the files. Within the application you can see how the renamer associated with the project informs the user about the fields required in their metadata:
+As such, the LRCFS File Renamer relies on a `renamers.json` file that describes what metadata to expect and how it is then used to both validate and rename the files. Within the application you can see how the renamer associated with the project informs the user about the fields required in their metadata. This example below is for the Transfer & Persistence project:
 ![](https://i.imgur.com/X2eV25S.png)
 
 The `renamers.json` file can contain many different expected formats for the metadata but it currently only supports one expected format for our Transfer & Persistence project. If you'd like to use this application to rename your files to different formats make sure to read [Creating a custom renamer config](https://github.com/LRCFS/lrcfs-file-renamer#creating-a-custom-renamer-config) below.
 
-# Solving possible errors
+# Solving possible errors<a name="SolvingPossibleErrors"></a>
 
 The LRCFS File Renamer is as much a metadata/file validator as it is a renamer for your files.
 
@@ -62,72 +93,73 @@ While using the LRCFS File Renamer you will likely see errors if your data colle
 
 Possible errors and details for how to fix them have been outlined below.
 
+> NOTE: A quick for for many of these issues is to use the **"Create Blank Metadata File"** option within the LRCFS File Renamer **"Show/Hide Metadata Requirements"** section. This automatically creates a file that conforms to these standard requirement.
+
 ## **There are problems with the headings in your metadata**
 Headings are the column names in your metadata. It's important to note that the checks are case sensitive, so any difference in capitalisation of the column headers can result in errors. Please ensure they match the renamer configuration you have selected.
 
-### Duplicate Column Headings
-Your selected metadata includes duplicate column names/headings.
-Please remove/rename/replace all duplicate column headings listed as no two columns can have the same heading.				
-### Malformed Columns Headings
+### **Malformed Columns Headings**
 Your headers contain single quotes around your headings. Please use double quotes to enclose all data if required.
 Please check that your following metadata headers do not use single quotes or use double quotes instead:</p>
-Note: Not being able to correctly recognise your headers may results in more errors. Please resolve this first before reloading your data to check for further errors.
-
-### Missing Filename Column Heading
+> NOTE: Not being able to correctly recognise your headers may results in more errors. Please resolve this first before reloading your data to check for further errors.
+### **Duplicate Column Headings**
+Your selected metadata includes duplicate column names/headings.
+Please remove/rename/replace all duplicate column headings listed as no two columns can have the same heading.				
+### **Missing Filename Column Heading**
 Your selected Project requires a heading that specifies your filenames in your metadata, but it appears to be missing. Add a filename column with the corresponding name required by the renamer configuration (typically "Filename")
 
-### Missing Columns Heading
+### **Missing Columns Heading**
 Your selected Project has some required headers for renaming your files, but the following headers are missing from your metadata. Please check that your metadata contains the listed headers
 
 
 ## **There are problems with your metadata**
 
-### Filename Capitalisation/Accent Errors
+### **Filename Capitalisation/Accent Errors**
 The LRCFS File Renamer will do its best to try and notify you if file names do not exactly match how you reference them in your meta metadata.
 
 If you receive the following error ensure that all the files listed in your metadata exactly match the naming (including capitalisation) of the file on your computer.
 
 
-### Files Missing
+### **Files Missing**
 The listed files are missing and can not be found in the same folder as your metadata.
 
-Note: Filenames, including extensions, are **case sensitive** and must match exactly. Use this guide to [view filenames (including extensions)](https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/) on your computer and ensure that all the files listed in your metadata are in the same folder as your metadata CSV file.
+> NOTE: Filenames, including extensions, are **case sensitive** and must match exactly. Use this guide to [view filenames (including extensions)](https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/) on your computer and ensure that all the files listed in your metadata are in the same folder as your metadata CSV file.
 
-### Extra Files
+### **Extra Files**
 The listed files/folders have been found alongside your metadata that are not referenced by your metadata.
 You must ensure that only files associated with the metadata are stored alongside it so that the LRCFS File Renamer can correctly validate all files are accounted for.
 
 You should either remove the listed files from the directory OR include references in your metadata if they are valid files that have simply been forgotten.
 
-### New Filename Exists
+### **New Filename Exists**
 When the LRCFS File Renamer renames your files it will put them in the output directory specified. Before this, it will check if files with those names already exist so that you don't overwrite anything.
 
 This is typically only an error you will see if you try and run the process twice.
 
-### Same Current Filename
+### **Same Current Filename**
 The LRCFS File Renamer assume that there is only one row per file in the metadata, as such, you cannot have two lines in your metadata csv file that reference the same filename. Either remove the duplicate row/rows from your metadata or correct the filename reference to a original file.
 
-### Same New Filename
+### **Same New Filename**
 The LRCFS File Renamer creates filenames based on the metadata supplied. If two rows in the metadata have the same values this can result in two filenames that would be the same. Ensure that all the required columns for the listed files differ so that unique filenames will be generated.
 
 This can often be caused by incorrectly duplicating the Experiment or Replicate number.
 
-### Missing Data
+### **Missing Data**
 Some columns in the metadata are required, some are not. For any line in your metadata listed here ensure that the required columns have data specified.
 
-### Text too long
+### **Text too long**
 Text felids can have a maximum length defined in the metadata requirements. The listed lines in your metadata have text that is too long for one of these columns.
 
-### Empty/Null Data Errors
+### **Empty/Null Data Errors**
 The specified lines in your metadata are missing data that is required by the metadata requirements.
 
-### Date Errors
+### **Date Errors**
 The specified lines have date columns that are not specified in the correct format. Ensure that they match the format specified in the metadata requirements.
 
-### Integer Number Errors
+### **Integer Number Errors**
 The specified lines have integer (whole number) columns that have errors. Ensure that the listed lines contain whole numbers in the specified columns and are within the allowable range as defined in the metadata requirements.
 
-### Float Number Errors
+### **Float Number Errors**
 The specified lines have float (numbers with decimals places) columns that have errors. Ensure that the specified lines contain only decimal numbers and are within the allowable range as defined in the metadata requirements.
 
 # Creating a custom renamer config
