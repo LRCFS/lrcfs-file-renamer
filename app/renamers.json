@@ -46,7 +46,8 @@
 			"\\.url$",
 			"\\.lnk$",
 			"\\.Rhistory$",
-			"\\.localized$"
+			"\\.localized$",
+			"desktop\\.ini$"
 		]
 	}
 ]
