@@ -175,7 +175,9 @@ let SendCancelProcessing = (command, payload) => {
 	$('#renamerInfoCollapsible').on('shown.bs.collapse', function (e) {
 		ScrollToRenamerInfo();
 	})
-	
+
+	$(".helpShowFileExtensions").attr("href",config.get("helpLinks")[process.platform].fileExtensions)
+	$(".helpShowHiddenFiles").attr("href",config.get("helpLinks")[process.platform].showHiddenFiles)
 
 	//Load setup "data"
 	await GetRenamers();
