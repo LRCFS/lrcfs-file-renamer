@@ -9,7 +9,7 @@ By creating a folder that contains all the appropriate files (such as images fro
 3. All files in the meta data are referenced only once (highlighting any duplicate rows)
 4. All metadata column data adhere to their data types and validate correctly (i.e. check that dates are in a specified format, numbers are within a given range and that text is no longer than a maximum length)
 
-Once the data has been validate all the files can then be copied and renamed automatically, along with creating an updated metadata CSV file that contains both the original filename and new filename. **None of the original files are changed**.
+Once the data has been validated all the files can then be copied and renamed automatically, along with creating an updated metadata CSV file that contains both the original filename and new filename. **None of the original files are changed**.
 
  ![](https://i.imgur.com/ZCpNG3y.png)
 
@@ -139,7 +139,7 @@ This is typically only an error you will see if you try and run the process twic
 ### **Metadata output file already exists**
 When the LRCFS File Renamer renames your files it will put them in the output directory specified. This error means that your specified output directory already exists in the output folder.
 
-Instead of overwriting your file the LRCFS File Renamer requires that you either save your output to a directory that does not have a file already in it with the same name as your metadata.
+Instead of overwriting your file the LRCFS File Renamer requires that you save your output to a directory that does not have a file already in it with the same name as your metadata.
 
 Either change the output directory or remove the existing file.
 
