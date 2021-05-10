@@ -252,7 +252,7 @@
 					<select id="selectRenamer" name="selectRenamer" class="mdb-select md-form"></select><br />
 					<div id="exampleDataDownload">
 						<br /><br />
-						<button id="btnShowProjectSettings" class="btn btn-info btn-block" type="button" data-toggle="collapse" data-target="#renamerInfoCollapsible" aria-expanded="false" aria-controls="renamerInfoCollapsible">
+						<button id="btnShowProjectSettings" class="btn btn-info btn-block showMetadataRequirements" type="button" data-toggle="collapse" data-target="#renamerInfoCollapsible" aria-expanded="false" aria-controls="renamerInfoCollapsible">
 							Show/Hide Metadata Requirements
 						</button>						
 					</div>
@@ -323,7 +323,7 @@
 				<div class="col">
 					<h2>2. Load Your Metadata</h2>
 					<p>
-						Now that we know what project you're working on, and if you're happy with the <a href="#" id="showMetadataRequirements">metadata requirements outlined above</a>, we can load your metadata:
+						Now that we know what project you're working on, and if you're happy with the <a href="#" class="showMetadataRequirements">metadata requirements outlined above</a>, we can load your metadata:
 					</p>
 					<p>
 						<span class="note"><strong>Note: Before loading your metadata please ensure that your metadata and it's corresponding files are in the same directory, without any extra files.</strong></span>
@@ -490,7 +490,7 @@
 					<hr />
 					<p>The following lines in your metadata have text that is missing.</p>
 					<p>Please ensure that the following lines in your metadata specify values in their required columns.</p>
-					<p><strong>FIX:</strong> Check the <a href="#" id="showMetadataRequirements">metadata requirements outlined above</a>. For any "text" based column, that does not allow an empty value, you must specify data for the following rows:</p>
+					<p><strong>FIX:</strong> Check the <a href="#" class="showMetadataRequirements">metadata requirements outlined above</a>. For any "text" based column, that does not allow an empty value, you must specify data for the following rows:</p>
 					<ul id="eText"></ul>
 				</div>
 			</div>
@@ -510,7 +510,7 @@
 					<hr />
 					<p>The following lines in your metadata are missing data that is required.</p>
 					<p>Please ensure that the following lines/columns contain data in the correct format.</p>
-					<p><strong>FIX:</strong> Check the <a href="#" id="showMetadataRequirements">metadata requirements outlined above</a>. For any column that does not allow an empty value you must supply that data for the following rows:</p>
+					<p><strong>FIX:</strong> Check the <a href="#" class="showMetadataRequirements">metadata requirements outlined above</a>. For any column that does not allow an empty value you must supply that data for the following rows:</p>
 					<ul id="eNull"></ul>
 				</div>
 			</div>
@@ -520,7 +520,7 @@
 					<hr />
 					<p>The following lines have date columns that are not specified in the correct format.</p>
 					<p>Please ensure that the following lines contain dates in the correct format (taking note of removing spaces, dashes etc)</p>
-					<p><strong>FIX:</strong> Check the <a href="#" id="showMetadataRequirements">metadata requirements outlined above</a>. Ensure that any data column matches the format specified and update your metadata for the following rows:</p>
+					<p><strong>FIX:</strong> Check the <a href="#" class="showMetadataRequirements">metadata requirements outlined above</a>. Ensure that any data column matches the format specified and update your metadata for the following rows:</p>
 					<ul id="eDate"></ul>
 				</div>
 			</div>
@@ -530,7 +530,7 @@
 					<hr />
 					<p>The following lines have integer (whole number) columns that have errors.</p>
 					<p>Please ensure that the following lines contain whole numbers in the specified column and are within the allowable range.</p>
-					<p><strong>FIX:</strong> Check the <a href="#" id="showMetadataRequirements">metadata requirements outlined above</a>. Ensure that any "int" columns have number values between the minimum and maximum value for the following rows:</p>
+					<p><strong>FIX:</strong> Check the <a href="#" class="showMetadataRequirements">metadata requirements outlined above</a>. Ensure that any "int" columns have number values between the minimum and maximum value for the following rows:</p>
 					<ul id="eInt"></ul>
 				</div>
 			</div>
@@ -540,7 +540,7 @@
 					<hr />
 					<p>The following lines have float (numbers with decimals places) columns that have errors.</p>
 					<p>Please ensure that the following lines contain only decimal numbers and are within the allowable range.</p>
-					<p><strong>FIX:</strong> Check the <a href="#" id="showMetadataRequirements">metadata requirements outlined above</a>. Ensure that any "float" columns have decimal values between the minimum and maximum value for the following rows:</p>
+					<p><strong>FIX:</strong> Check the <a href="#" class="showMetadataRequirements">metadata requirements outlined above</a>. Ensure that any "float" columns have decimal values between the minimum and maximum value for the following rows:</p>
 					<ul id="eFloat"></ul>
 				</div>
 			</div>

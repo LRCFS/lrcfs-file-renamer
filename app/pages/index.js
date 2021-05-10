@@ -116,7 +116,7 @@ let SendCancelProcessing = (command, payload) => {
 	});
 
 
-	$("#showMetadataRequirements").click(function (e) {
+	$(".showMetadataRequirements").click(function (e) {
 		e.preventDefault();
 		$('#renamerInfoCollapsible').collapse('show');
 		ScrollToRenamerInfo();
