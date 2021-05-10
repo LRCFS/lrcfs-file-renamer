@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4745515.svg)](https://doi.org/10.5281/zenodo.4745515)
+
 # LRCFS File Renamer
 
 The LRCFS File Renamer has been created as a way of managing part of the process of file management, to ensure all files conform to a strict naming schema and that metadata is in an expected format.
