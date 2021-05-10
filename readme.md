@@ -138,13 +138,15 @@ If you receive the following error ensure that all the files listed in your meta
 ### **Files Missing**
 The listed files are missing and can not be found in the same folder as your metadata.
 
-> NOTE: Filenames, including extensions, are **case sensitive** and must match exactly. Use this guide to [view filenames (including extensions)](https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/) on your computer and ensure that all the files listed in your metadata are in the same folder as your metadata CSV file.
+> NOTE: Filenames, including extensions, are **case sensitive** and must match exactly. Use this guide to [view filenames (including extensions) on windows](https://www.howtogeek.com/205086/beginner-how-to-make-windows-show-file-extensions/) or [view filenames (including extension) on mac](https://support.apple.com/en-gb/guide/mac-help/mchlp2304/mac) and ensure that all the files listed in your metadata are in the same folder as your metadata CSV file.
 
 ### **Extra Files**
 The listed files/folders have been found alongside your metadata that are not referenced by your metadata.
 You must ensure that only files associated with the metadata are stored alongside it so that the LRCFS File Renamer can correctly validate all files are accounted for.
 
 You should either remove the listed files from the directory OR include references in your metadata if they are valid files that have simply been forgotten.
+
+It can also be helpful to [view hidden files on Windows](https://www.howtogeek.com/howto/windows-vista/show-hidden-files-and-folders-in-windows-vista/) or [view hidden files on Mac](https://www.macworld.co.uk/how-to/show-hidden-files-mac-3520878/) and remove them if necessary.
 
 ### **New Filename Exists**
 When the LRCFS File Renamer renames your files it will put them in the output directory specified. Before this, it will check if files with those names already exist so that you don't overwrite anything.
