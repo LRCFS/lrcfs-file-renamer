@@ -261,6 +261,7 @@ Example `metadataRequiredColumns`:
     "Substrate":				{"useInFilename": true,	"renameTo": "SB",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
     "SubstrateType":			{"useInFilename": true,	"renameTo": "ST",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
     "ObservationType":			{"useInFilename": true,	"renameTo": "OT",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+    "EvidenceType":				{"useInFilename": true,	"renameTo": "ET",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
     "Mass (g)":					{"useInFilename": true,	"renameTo": "MA",	"type": "int",	"allowNull": false, "minValue": 0, "maxValue": 9999},
     "TransferTime (s)":			{"useInFilename": true,	"renameTo": "TT",	"type": "int",	"allowNull": false, "minValue": 0, "maxValue": 9999},
     "PersistenceTime (min)":	{"useInFilename": true,	"renameTo": "PT",	"type": "int",	"allowNull": false, "minValue": 0, "maxValue": 99999},
