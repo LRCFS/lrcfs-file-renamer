@@ -11,7 +11,7 @@ By creating a folder that contains all the appropriate files (such as images fro
 
 Once the data has been validated all the files can then be copied and renamed automatically, along with creating an updated metadata CSV file that contains both the original filename and new filename. **None of the original files are changed**.
 
- ![](https://i.imgur.com/ZCpNG3y.png)
+ ![](https://i.imgur.com/tWiJyKJ.png)
 
 ## Example usage
 You are working on a data collection project where you are required to take one image each day for the LRCFS [Transfer & Persistence project](https://www.dundee.ac.uk/leverhulme/projects/details/transfer-and-persistence.php)
