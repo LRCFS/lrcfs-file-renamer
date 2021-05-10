@@ -11,7 +11,7 @@ Get the latest release of the LRCFS File Renamer:
 |Windows v7+|macOS v10.10+|
 |`LRCFS.File.Renamer-#.#.#-Windows.exe`|`LRCFS.File.Renamer-#.#.#-Mac.dmg`|
 
-Also included is an example data file: `LRCFS.File.Renamer-Example.Data.zip`
+Also included is an example data file (`LRCFS.File.Renamer-Example.Data.zip`) which can be extracted and tested to confirm the application works correctly on your computer.
 
 # Overview
 
