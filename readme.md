@@ -2,13 +2,26 @@
 
 # LRCFS File Renamer
 
+Get the latest release of the LRCFS File Renamer:
+
+**Download: https://github.com/LRCFS/lrcfs-file-renamer/releases/latest**
+
+|Windows|MacOS|
+|-|-|
+|Windows v7+|macOS v10.10+|
+|`LRCFS.File.Renamer-#.#.#-Windows.exe`|`LRCFS.File.Renamer-#.#.#-Mac.dmg`|
+
+Also included is an example data file: `LRCFS.File.Renamer-Example.Data.zip`
+
+# Overview
+
 The LRCFS File Renamer has been created as a way of managing part of the process of file management, to ensure all files conform to a strict naming schema and that metadata is in an expected format.
 
 By creating a folder that contains all the appropriate files (such as images from a camera) and a metadata CSV that contains information about each file (one record for each file) this application can quickly validate that:
 
 1. All required columns, based on a specific project, in the metadata exist
 2. All files in the folder are referenced in the metadata (highlighting any missing files)
-3. All files in the meta data are referenced only once (highlighting any duplicate rows)
+3. All files in the metadata are referenced only once (highlighting any duplicate rows)
 4. All metadata column data adhere to their data types and validate correctly (i.e. check that dates are in a specified format, numbers are within a given range and that text is no longer than a maximum length)
 
 Once the data has been validated all the files can then be copied and renamed automatically, along with creating an updated metadata CSV file that contains both the original filename and new filename. **None of the original files are changed**.
@@ -16,9 +29,8 @@ Once the data has been validated all the files can then be copied and renamed au
  ![](https://i.imgur.com/tWiJyKJ.png)
 
 ## Example usage
-You are working on a data collection project where you are required to take one image each day for the LRCFS [Transfer & Persistence project](https://www.dundee.ac.uk/leverhulme/projects/details/transfer-and-persistence.php)
 
-1. First download the latest version of the LRCFS File Renamer from our releases page: https://github.com/LRCFS/lrcfs-file-renamer/releases (macOS v10.10+, Windows v7+)
+1. First download the latest version of the LRCFS File Renamer from our releases page: https://github.com/LRCFS/lrcfs-file-renamer/releases/latest (macOS v10.10+, Windows v7+)
 
 2. If you haven't already, optionally create a empty metadata file in the correct format for your project by opening the LRCFS File Renamer, selecting the appropriate project and under the **"Show/Hide Metadata Requirements"** option select **"Create Blank Metadata File"**
    
@@ -32,14 +44,15 @@ c:\project\image-data.csv
 
 The `image-data.csv` is the metadata file that contains all the information we want to use to validate and rename our files in a [CSV format](https://en.wikipedia.org/wiki/Comma-separated_values). For the Transfer & Persistence project this requires metadata that has the following columns, but the content would change based on the exact data collection parameters you were using for each image taken. These requirements can be seen in the LRCFS File Renamer under the **"Show/Hide Metadata Requirements"** section after you have a selected a project.
 
-|Filename|Date|Experiment|Replicate|Substrate|SubstrateType|ObservationType|Mass (g)|TransferTime (s)|PersistenceTime (min)|Temperature (DegC)|Humidity (%)|
-|-|-|-|-|-|-|-|-|-|-|-|-|
-|image_001.jpg|20200101|1|1|Sub|SubT|ObT|50|30|15|NA|NA|
-|image_002.jpg|20200102|2|1|Sub|SubT|ObT|50|30|15|NA|NA|
+**Example `image-data.csv` contents:**
+|Filename|Date|Experiment|Replicate|Substrate|SubstrateType|ObservationType|EvidenceType|Mass (g)|TransferTime (s)|PersistenceTime (min)|Temperature (DegC)|Humidity (%)|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|image_001.jpg|20200101|1|1|Sub|SubT|ObT|EvT|50|30|15|NA|NA|
+|image_002.jpg|20200102|2|1|Sub|SubT|ObT|EvT|50|30|15|NA|NA|
 
 4. Once you are happy that all your files and metadata are complete, open the LRCFS File Renamer.
 
-5. Select the appropriate project that is relevant for your data collection (in our case this is going to be `Transfer & Persistence`)
+5. Select the appropriate project that is relevant for your data collection (e.g. `Transfer & Persistence`)
    
 6. Next, load your metadata by pressing the **"Select Metadata File (.csv)"** button.
    
@@ -57,17 +70,17 @@ The `image-data.csv` is the metadata file that contains all the information we w
 
 The output from the renamer, by default, will be placed in a newly created `output` folder.
 ```
-c:\project\output\20200101_EX1_RP1_SBSub_STSubT_OTObT_MA50_TT30_PT15_TPNA_HMNA.jpg
-c:\project\output\20200102_EX2_RP1_SBSub_STSubT_OTObT_MA50_TT30_PT15_TPNA_HMNA.jpg
+c:\project\output\20200101_EX1_RP1_SBSub_STSubT_OTObT_EVEvT_MA50_TT30_PT15_TPNA_HMNA.jpg
+c:\project\output\20200102_EX2_RP1_SBSub_STSubT_OTObT_EVEvT_MA50_TT30_PT15_TPNA_HMNA.jpg
 c:\project\output\image-data.csv
 ```
 Where the newly created metadata file  (`output\image-data.csv`) now contains the following CSV data:
-|Filename|OriginalFilename|Date|Experiment|Replicate|Substrate|SubstrateType|ObservationType|Mass (g)|TransferTime (s)|PersistenceTime (min)|Temperature (DegC)|Humidity (%)|
-|-|-|-|-|-|-|-|-|-|-|-|-|-|
-|20200101_EX1_RP1_SBSub_STSubT_OTObT_MA50_TT30_PT15_TPNA_HMNA.jpg|image_001.jpg|20200101|1|1|Sub|SubT|ObT|50|30|15|NA|NA|
-|20200102_EX2_RP1_SBSub_STSubT_OTObT_MA50_TT30_PT15_TPNA_HMNA.jpg|image_002.jpg|20200102|2|1|Sub|SubT|ObT|50|30|15|NA|NA|
+|Filename|OriginalFilename|Date|Experiment|Replicate|Substrate|SubstrateType|ObservationType|EvidenceType|Mass (g)|TransferTime (s)|PersistenceTime (min)|Temperature (DegC)|Humidity (%)|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|20200101_EX1_RP1_SBSub_STSubT_OTObT_EVEvT_MA50_TT30_PT15_TPNA_HMNA.jpg|image_001.jpg|20200101|1|1|Sub|SubT|ObT|EvT|50|30|15|NA|NA|
+|20200102_EX2_RP1_SBSub_STSubT_OTObT_EVEvT_MA50_TT30_PT15_TPNA_HMNA.jpg|image_002.jpg|20200102|2|1|Sub|SubT|ObT|EvT|50|30|15|NA|NA|
 
-12. Once processed, because the Transfer & Persistence project is collecting data from external participants, you will be presented with the option to **"Submit Your Data Online"**. Our online submission platform for this specific project expects data in a strict format which the LRCFS File Renamer ensures that your data is in. As such, you can now quickly and easily submit your **output data** to our data collection portal.
+12.  Once processed, because the Transfer & Persistence project is collecting data from external participants, you will be presented with the option to **"Submit Your Data Online"**.
 
 # Quick reminder/example
 1. Start the LRCFS File Renamer and generate a "Blank Metadata File" for your project.
@@ -95,10 +108,10 @@ While using the LRCFS File Renamer you will likely see errors if your data colle
 
 Possible errors and details for how to fix them have been outlined below.
 
-> NOTE: A quick for for many of these issues is to use the **"Create Blank Metadata File"** option within the LRCFS File Renamer **"Show/Hide Metadata Requirements"** section. This automatically creates a file that conforms to these standard requirement.
+> NOTE: A quick way to resolve many of these issues is to use the **"Create Blank Metadata File"** option within the LRCFS File Renamer **"Show/Hide Metadata Requirements"** section. This automatically creates a file that conforms to these standard requirement before you start collecting your data.
 
 ## **There are problems with the headings in your metadata**
-Headings are the column names in your metadata. It's important to note that the checks are case sensitive, so any difference in capitalisation of the column headers can result in errors. Please ensure they match the renamer configuration you have selected.
+Headings are the column names in your metadata. It's important to note that the checks are case sensitive, so any difference in capitalisation of the column headers can result in errors. Please ensure they match the renamer configuration you have selected in Step 1.
 
 ### **Malformed Columns Headings**
 Your headers contain single quotes around your headings. Please use double quotes to enclose all data if required.
@@ -117,7 +130,7 @@ Your selected Project has some required headers for renaming your files, but the
 ## **There are problems with your metadata**
 
 ### **Filename Capitalisation/Accent Errors**
-The LRCFS File Renamer will do its best to try and notify you if file names do not exactly match how you reference them in your meta metadata.
+The LRCFS File Renamer will do its best to try and notify you if file names do not exactly match how you reference them in your metadata.
 
 If you receive the following error ensure that all the files listed in your metadata exactly match the naming (including capitalisation) of the file on your computer.
 
@@ -146,7 +159,7 @@ Instead of overwriting your file the LRCFS File Renamer requires that you save y
 Either change the output directory or remove the existing file.
 
 ### **Same Current Filename**
-The LRCFS File Renamer assume that there is only one row per file in the metadata, as such, you cannot have two lines in your metadata csv file that reference the same filename. Either remove the duplicate row/rows from your metadata or correct the filename reference to a original file.
+The LRCFS File Renamer assume that there is only one row per file in the metadata, as such, you cannot have two lines in your metadata csv file that reference the same filename. Either remove the duplicate row/rows from your metadata or correct the filename reference to an original file.
 
 ### **Same New Filename**
 The LRCFS File Renamer creates filenames based on the metadata supplied. If two rows in the metadata have the same values this can result in two filenames that would be the same. Ensure that all the required columns for the listed files differ so that unique filenames will be generated.
@@ -263,7 +276,7 @@ This application has been built with [Electron](https://electronjs.org) to enabl
 To start development and to run the application from code, first install Install [Node.js (v15+)](https://nodejs.org/en/), then run:
 ```
 $ npm install
-$ npm start
+$ npm run start
 ```
 
 ## Creating a new distribution
@@ -271,6 +284,6 @@ $ npm start
 This application has been tested on Windows and MacOS. To build both versions run each command on the corresponding operating systems.
 
 ```
-$ npm distwin
-$ npm distmac
+$ npm run distwin
+$ npm run distmac
 ```
