@@ -26,13 +26,13 @@ By creating a folder that contains all the appropriate files (such as images fro
 
 Once the data has been validated all the files can then be copied and renamed automatically, along with creating an updated metadata CSV file that contains both the original filename and new filename. **None of the original files are changed**.
 
- ![](https://i.imgur.com/tWiJyKJ.png)
+ ![](https://i.imgur.com/UR3OFoj.png)
 
 ## Example usage
 
 1. First download the latest version of the LRCFS File Renamer from our releases page: https://github.com/LRCFS/lrcfs-file-renamer/releases/latest (macOS v10.10+, Windows v7+)
 
-2. If you haven't already, optionally create a empty metadata file in the correct format for your project by opening the LRCFS File Renamer, selecting the appropriate project and under the **"Show/Hide Metadata Requirements"** option select **"Create Blank Metadata File"**
+2. If you haven't already, optionally create an empty metadata file in the correct format for your project by opening the LRCFS File Renamer, selecting the appropriate project and under the **"Show/Hide Metadata Requirements"** option select **"Create Blank Metadata File"**
    
 3. Create a folder that **just contains your images and your metadata**, e.g.:
 ```
@@ -95,10 +95,10 @@ Where the newly created metadata file  (`output\image-data.csv`) now contains th
 # What makes a valid metadata file?
 The LRCFS File Renamer can't take any metadata file and rename your files. It needs to know what columns to use, what order to put them in and how it should use them to rename your file.
 
-As such, the LRCFS File Renamer relies on a `renamers.json` file that describes what metadata to expect and how it is then used to both validate and rename the files. Within the application you can see how the renamer associated with the project informs the user about the fields required in their metadata. This example below is for the Transfer & Persistence project:
-![](https://i.imgur.com/X2eV25S.png)
+As such, the LRCFS File Renamer relies on a [`renamers.json`](https://github.com/LRCFS/lrcfs-file-renamer/blob/master/app/renamers.json) file that describes what metadata to expect and how it is then used to both validate and rename the files. Within the application you can see how the renamer associated with the project informs the user about the fields required in their metadata. This example below is for the Transfer & Persistence project:
+![](https://i.imgur.com/FLFxT9v.png)
 
-The `renamers.json` file can contain many different expected formats for the metadata but it currently only supports one expected format for our Transfer & Persistence project. If you'd like to use this application to rename your files to different formats make sure to read [Creating a custom renamer config](https://github.com/LRCFS/lrcfs-file-renamer#creating-a-custom-renamer-config) below.
+The [`renamers.json`](https://github.com/LRCFS/lrcfs-file-renamer/blob/master/app/renamers.json) file can contain many different expected formats for the metadata but it currently only supports one expected format for our Transfer & Persistence project. If you'd like to use this application to rename your files to different formats make sure to read [Creating a custom renamer config](https://github.com/LRCFS/lrcfs-file-renamer#creating-a-custom-renamer-config) below.
 
 # Solving possible errors<a name="SolvingPossibleErrors"></a>
 
@@ -108,7 +108,7 @@ While using the LRCFS File Renamer you will likely see errors if your data colle
 
 Possible errors and details for how to fix them have been outlined below.
 
-> NOTE: A quick way to resolve many of these issues is to use the **"Create Blank Metadata File"** option within the LRCFS File Renamer **"Show/Hide Metadata Requirements"** section. This automatically creates a file that conforms to these standard requirement before you start collecting your data.
+> NOTE: A quick way to resolve many of these issues is to use the **"Create Blank Metadata File"** option within the LRCFS File Renamer **"Show/Hide Metadata Requirements"** section. This automatically creates a file that conforms to these standard requirements before you start collecting your data.
 
 ## **There are problems with the headings in your metadata**
 Headings are the column names in your metadata. It's important to note that the checks are case sensitive, so any difference in capitalisation of the column headers can result in errors. Please ensure they match the renamer configuration you have selected in Step 1.
@@ -186,7 +186,9 @@ The specified lines have integer (whole number) columns that have errors. Ensure
 ### **Float Number Errors**
 The specified lines have float (numbers with decimals places) columns that have errors. Ensure that the specified lines contain only decimal numbers and are within the allowable range as defined in the metadata requirements.
 
-# Creating a custom renamer config
+# Advanced - Creating a custom renamer config
+The LRCFS File Renamer can be configured to work with other metadata or projects by creating a custom "renamer configuration".
+
 The [renamers.json](https://github.com/LRCFS/lrcfs-file-renamer/blob/master/app/renamers.json) file contains the definitions of all possible renamer configurations.
 
 Currently, only one renamer definition exists for our Transfer & Persistence project but serves as a good example.
