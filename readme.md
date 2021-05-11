@@ -277,7 +277,7 @@ This application has been built with [Electron](https://electronjs.org) to enabl
 
 To start development and to run the application from code, first install Install [Node.js (v15+)](https://nodejs.org/en/), then run:
 ```
-$ npm install
+$ npm ci
 $ npm run start
 ```
 
