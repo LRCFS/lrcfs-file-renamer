@@ -2,17 +2,14 @@
 
 # LRCFS File Renamer
 
-Get the latest release of the LRCFS File Renamer:
+Get the [latest release](https://github.com/LRCFS/lrcfs-file-renamer/releases/latest) of the LRCFS File Renamer: 
 
-**Download: https://github.com/LRCFS/lrcfs-file-renamer/releases/latest**
+**Download your required files by clicking on the icon below.**
 
-|Windows|MacOS|
-|-|-|
-|Windows v7+|macOS v10.10+|
-|`LRCFS.File.Renamer-#.#.#-Windows.exe`|`LRCFS.File.Renamer-#.#.#-Mac.dmg`|
-
-Also included is an example data file (`LRCFS.File.Renamer-Example.Data.zip`) which can be extracted and tested to confirm the application works correctly on your computer.
-
+|Download for Windows|Download for Mac|Download Instructions|Example Dataset|
+|:-:|:-:|:-:|:-:|
+|[![Download for Windows](https://i.imgur.com/gqc8A9C.png)](https://github.com/LRCFS/lrcfs-file-renamer/releases/download/1.0.1/LRCFS.File.Renamer-1.0.1-Windows.exe)|[![Download for Mac](https://i.imgur.com/ZB9ICSv.png)](https://github.com/LRCFS/lrcfs-file-renamer/releases/download/1.0.1/LRCFS.File.Renamer-1.0.1-Mac.dmg)|[![Download Instructions](https://i.imgur.com/r2izaR1.png)](https://github.com/LRCFS/lrcfs-file-renamer/raw/master/readme.docx)|[![Download Example Dataset](https://i.imgur.com/TUpSQWz.png)](https://github.com/LRCFS/lrcfs-file-renamer/releases/download/1.0.1/LRCFS.File.Renamer-Example.Data.zip)|
+|Windows 7+|MacOSX v10.10+|||
 # Overview
 
 The LRCFS File Renamer has been created as a way of managing part of the process of file management, to ensure all files conform to a strict naming schema and that metadata is in an expected format.
