@@ -59,7 +59,7 @@
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="metadataFine">Metadata Loaded</h5>
+					<h5 class="modal-title" id="metadataFine">Metadata Loaded - Validation Successful</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 					</button>
@@ -81,7 +81,7 @@
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="errorModalPre">Metadata Errors</h5>
+					<h5 class="modal-title" id="errorModalPre">Metadata Errors - Validation Failed</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 					</button>
@@ -102,7 +102,7 @@
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="errorModalPost">Metadata Errors</h5>
+					<h5 class="modal-title" id="errorModalPost">Metadata Errors - Validation Failed</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 					</button>
@@ -198,11 +198,7 @@
 					<p class="lead">Welcome to the Leverhulme Research Centre for Forensic Science File Renamer.</p>
 					<hr>
 					<p>
-						This application has been developed to help you automatically rename files based on your metadata.
-					</p>
-					<p>
-						Based on a single metadata .csv file this application will automatically rename hundreds of files from: <br />
-						<strong>DCS_0002.jpg</strong> to <strong>20201231-Exp1-Rep2-UVLIGHT.jpg</strong>
+						This application has been developed to help you automatically rename files based on a single metadata (.csv) file.
 					</p>
 					<p>
 						Not only will this make your files more meaningful to you, but it will also allow your data to be better understood by people that you collaborate with as well as any future researchers that want to work with your data.
@@ -226,7 +222,7 @@
 					<div class="card text-center mt-2">
 						<div class="card-body">
 							<h5 class="card-title">What is Metadata</h5>
-							<p class="card-text">Metadata is <a href="https://en.wikipedia.org/wiki/Metadata">data about data</a>.<br />In the case of the LRCFS File Renamer, the metadata for your files should contain information for each file you want to rename.</p>
+							<p class="card-text">Metadata is <a href="https://en.wikipedia.org/wiki/Metadata" target="_blank">data about data</a>.<br />In the case of the LRCFS File Renamer, the metadata for your files should contain information for each file you want to rename.</p>
 						</div>
 					</div>							
 				</div>
@@ -323,10 +319,13 @@
 				<div class="col">
 					<h2>2. Load Your Metadata</h2>
 					<p>
-						Now that we know what project you're working on, and if you're happy with the <a href="#" class="showMetadataRequirements">metadata requirements outlined above</a>, we can load your metadata:
+						Your metadata (.csv) file should have the required metadata columns as explained in the <a href="#" class="showMetadataRequirements">metadata requirements outlined above</a>, and a row of data for each file you wish to rename.
 					</p>
 					<p>
-						<span class="note"><strong>Note: Before loading your metadata please ensure that your metadata and it's corresponding files are in the same directory, without any extra files.</strong></span>
+						<span class="note">
+							<p><strong>Note: Before loading your metadata please ensure that your metadata and it's corresponding files are in the same directory, without any extra files.</strong></p>
+							<p>The folder should contain the metadata (.csv) file with all of the metadata for each file and all of the corresponding files (these might for example be image files) that you wish to rename.</p>
+						</span>
 					</p>
 					<p>
 						<button id="btnFileSelect" class="btn btn-primary btn-block">Select Metadata File (.csv)</button>
@@ -334,7 +333,7 @@
 					</p>
 					<h5>Refresh your Metadata</h5>
 					<p>
-						If you've made changes to your metadata to fix any errors, or even if you're just added new data since you last loaded it, click below to refresh and check all your files.
+						If you've made changes to your metadata to fix any errors, or if you have added new data since you last loaded your file, click below to refresh and check all your files are correct.
 					</p>
 					<p>
 						<button id="btnRefershMetadata" class="btn btn-info btn-block" disabled>Refresh</button>
@@ -343,9 +342,8 @@
 				<div class="col">
 					<div class="row">
 						<div class="col">
-							<h2>3. Validate and Rename Your Files</h2>
-							<p>If you're happy with your data being renamed as outline in the <a id="linkScrollToResults" href="#">Results panel</a> below, click "Start Processing" to begin the validation of your metadata and rename your files.</p>
-							
+							<h2>3. Rename Your Files</h2>
+							<p>If you're happy with your data being renamed as outline in the <a id="linkScrollToResults" href="#">Results panel</a> below, click "Start Processing" to begin the renaming of your files.</p>
 							<!--<input id="chkCreateCopies" type="checkbox" checked data-toggle="toggle" data-on="Create Copies" data-off="Rename Originals" data-onstyle="success" data-offstyle="danger" data-width="180" data-height="39">-->
 							<button id="btnRename" class="btn btn-success btn-block" disabled>Start Processing</button>
 						</div>
@@ -354,7 +352,7 @@
 						<div class="col">
 							<br />
 							<h5>Output Directory</h5>
-							<p>By default you files will be copied to a folder called 'output' that will be created in the same directory as your metadata file. To change this, click the button below to select a new directory.</p>
+							<p>By default your files will be copied to a folder called 'output' that will be created in the same directory as your metadata file. To change this, click the button below to select a new directory.</p>
 							<button id="btnSelectOutputDir" class="btn btn-info btn-block">Change Output Directory</button>
 							<input id="txtOutputDir" type="text" class="form-control" disabled/><br />
 						</div>
