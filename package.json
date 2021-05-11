@@ -41,6 +41,7 @@
 	},
 	"build": {
 		"appId": "com.lrcfs.fileRenamer",
+		"artifactName": "${productName}-${version}-${os}.${ext}",
 		"win": {
 			"target": "portable"
 		},
