@@ -111,6 +111,14 @@ abbr, acronym
 		padding: 0px 3px 0 3px;
 	}
 
+#exampleFilenameContainer{
+	overflow-wrap: break-word;
+}
+
+	#exampleFilename{
+		font-size: large;
+	}
+
 #errorListPre{
 	display: none;
     background: #ff4242;
