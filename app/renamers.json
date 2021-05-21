@@ -50,5 +50,57 @@
 			"\\.localized$",
 			"desktop\\.ini$"
 		]
+	},
+	{
+		"name": "Transfer & Persistence - Biological",
+		"description": "We are undertaking research to understand the foundational aspects of how materials transfer between people, between people and external surfaces and, once transferred, how long materials will persist on the receiving surface.",
+		"url": "https://www.dundee.ac.uk/leverhulme/projects/details/transfer-and-persistence.php",
+		"metadataRequiredColumns":
+		{
+			"Date":						{"useInFilename": true,	"renameTo": "",		"type": "date",	"allowNull": false,	"dateFormatJs": "YYYYMMDD",	"dateFormatPhp": "Ymd"},
+			"Experiment":				{"useInFilename": true,	"renameTo": "EX",	"type": "int",	"allowNull": false, "minValue": 1, "maxValue": 1000},
+			"Replicate":				{"useInFilename": true,	"renameTo": "RP",	"type": "int",	"allowNull": false, "minValue": 1, "maxValue": 1000},
+			"Substrate":				{"useInFilename": true,	"renameTo": "SB",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"SubstrateType":			{"useInFilename": true,	"renameTo": "ST",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"ObservationType":			{"useInFilename": true,	"renameTo": "OT",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"EvidenceType":				{"useInFilename": true,	"renameTo": "ET",	"type": "text",	"allowNull": false,	"maxTextLength": 100},
+			"Mass (g)":					{"useInFilename": true,	"renameTo": "MA",	"type": "int",	"allowNull": false, "minValue": 0, "maxValue": 9999},
+			"DryingTime (min)":			{"useInFilename": true,	"renameTo": "DT",	"type": "int",	"allowNull": false, "minValue": 0, "maxValue": 99999},
+			"TransferTime (s)":			{"useInFilename": true,	"renameTo": "TT",	"type": "int",	"allowNull": false, "minValue": 0, "maxValue": 9999},
+			"PersistenceTime (min)":	{"useInFilename": true,	"renameTo": "PT",	"type": "int",	"allowNull": false, "minValue": 0, "maxValue": 99999},
+			"Temperature (DegC)":		{"useInFilename": true,	"renameTo": "TP",	"type": "int",	"allowNull": true, "minValue": -50, "maxValue": 300, "useInFilenameIfNull": true},
+			"Humidity (%)":				{"useInFilename": true,	"renameTo": "HM",	"type": "int",	"allowNull": true, "minValue": 0, "maxValue": 100,  "useInFilenameIfNull": true}
+		},
+		"nullDataTagRegex": "^[Nn][Aa]$",
+		"nullDataTagDisplay": "NA",
+		"metadataCurrentFilenameColumn": "Filename",
+		"metadataOldFilenameColumn": "OriginalFilename",
+		"metadataNewFilenameColumn": "Filename",
+		"filenamePropertySeparator": "_",
+		"filenameValueSeparator": "",
+		"replaceSpacesInFilenameWith": " ",
+		"replaceInvalidCharactersInFilenameWith": "",
+		"trimHeadersAndData": true,
+		"ignoreFoldersInInputDirectory": true,
+		"ignoreOutputFolderInInputDirectory": true,
+		"filesAndFoldersToIgnoreInInputDirectory": [
+			"^\\.DS_Store$",
+			"^[Tt]emp$",
+			"^[Tt]humbs\\.db$",
+			"^\\.gitignore$",
+			"^\\.gitattributes$",
+			"^\\.git$",
+			"^\\.\\_",
+			"^\\~\\$",
+			"^\\.Trashes$",
+			"^\\.Spotlight-V100$",
+			"^\\.fseventsd$",
+			"\\.url$",
+			"\\.lnk$",
+			"\\.Rhistory$",
+			"\\.localized$",
+			"desktop\\.ini$"
+		]
 	}
+	
 ]
