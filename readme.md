@@ -8,7 +8,7 @@ Get the [latest release](https://github.com/LRCFS/lrcfs-file-renamer/releases/la
 
 |Download for Windows|Download for Mac|Download Instructions|Example Dataset|
 |:-:|:-:|:-:|:-:|
-|[![Download for Windows](https://i.imgur.com/gqc8A9C.png)](https://github.com/LRCFS/lrcfs-file-renamer/releases/download/1.0.1/LRCFS.File.Renamer-1.0.1-Windows.exe)|[![Download for Mac](https://i.imgur.com/ZB9ICSv.png)](https://github.com/LRCFS/lrcfs-file-renamer/releases/download/1.0.1/LRCFS.File.Renamer-1.0.1-Mac.dmg)|[![Download Instructions](https://i.imgur.com/r2izaR1.png)](https://github.com/LRCFS/lrcfs-file-renamer/raw/master/readme.docx)|[![Download Example Dataset](https://i.imgur.com/TUpSQWz.png)](https://github.com/LRCFS/lrcfs-file-renamer/releases/download/1.0.1/LRCFS.File.Renamer-Example.Data.zip)|
+|[![Download for Windows](https://i.imgur.com/gqc8A9C.png)](https://github.com/LRCFS/lrcfs-file-renamer/releases/download/1.1.0/LRCFS.File.Renamer-1.1.0-Windows.exe)|[![Download for Mac](https://i.imgur.com/ZB9ICSv.png)](https://github.com/LRCFS/lrcfs-file-renamer/releases/download/1.1.0/LRCFS.File.Renamer-1.1.0-Mac.dmg)|[![Download Instructions](https://i.imgur.com/r2izaR1.png)](https://github.com/LRCFS/lrcfs-file-renamer/raw/master/readme.docx)|[![Download Example Dataset](https://i.imgur.com/TUpSQWz.png)](https://github.com/LRCFS/lrcfs-file-renamer/releases/download/1.1.0/LRCFS.File.Renamer-Example.Data.zip)|
 |Windows 7+|MacOSX v10.10+|||
 # Overview
 
