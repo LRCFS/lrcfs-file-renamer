@@ -101,6 +101,45 @@
 			"\\.localized$",
 			"desktop\\.ini$"
 		]
+	},
+	{
+		"name": "Simple Renamer",
+		"description": "A simple renamer configuration that has just two column required in the metadata: 'Filename' and 'RenameTo'. Note: The 'Filename' requires the extension, 'RenameTo' should NOT include the extension as this will be kept from the original filename.",
+		"url": "https://www.dundee.ac.uk/leverhulme/",
+		"metadataRequiredColumns":
+		{
+			"RenameTo":	{"useInFilename": true,	"renameTo": "",	"type": "text",	"allowNull": false,	"maxTextLength": 1000}
+		},
+		"nullDataTagRegex": "^[Nn][Aa]$",
+		"nullDataTagDisplay": "NA",
+		"metadataCurrentFilenameColumn": "Filename",
+		"metadataOldFilenameColumn": "OriginalFilename",
+		"metadataNewFilenameColumn": "Filename",
+		"filenamePropertySeparator": "_",
+		"filenameValueSeparator": "",
+		"replaceSpacesInFilenameWith": " ",
+		"replaceInvalidCharactersInFilenameWith": "",
+		"trimHeadersAndData": true,
+		"ignoreFoldersInInputDirectory": true,
+		"ignoreOutputFolderInInputDirectory": true,
+		"filesAndFoldersToIgnoreInInputDirectory": [
+			"^\\.DS_Store$",
+			"^[Tt]emp$",
+			"^[Tt]humbs\\.db$",
+			"^\\.gitignore$",
+			"^\\.gitattributes$",
+			"^\\.git$",
+			"^\\.\\_",
+			"^\\~\\$",
+			"^\\.Trashes$",
+			"^\\.Spotlight-V100$",
+			"^\\.fseventsd$",
+			"\\.url$",
+			"\\.lnk$",
+			"\\.Rhistory$",
+			"\\.localized$",
+			"desktop\\.ini$"
+		]
 	}
 	
 ]
